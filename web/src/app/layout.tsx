@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "PhysioTest — Raisonnement clinique",
   description: "Un parcours clinique clair pour structurer l'examen et interpréter les tests.",
+  icons: { icon: "https://github.com/Antonin-m84.png" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
