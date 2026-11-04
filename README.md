@@ -69,5 +69,6 @@ npm install
 npm run dev
 ```
 
-Le fichier `vercel.json` permet de déployer le projet depuis la racine du dépôt.
-La commande de production validée est `npm --prefix web run build`.
+Le fichier `vercel.json` déclare Next.js sans remplacer les commandes automatiques de Vercel.
+Le projet Vercel doit utiliser la racine du dépôt comme **Root Directory** (et non `web/`).
+La commande de production validée est `npm run build`.
