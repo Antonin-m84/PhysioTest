@@ -1,0 +1,200 @@
+BYR
+Build Your Rehab
+Épaule
+Genou
+ATM
+Lombaire
+CervicaleBIENTÔT
+ChevilleBIENTÔT
+HancheBIENTÔT
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+POINT D'ENTRÉE
+Douleur ou gêne de la mâchoire
+
+Douleur de la mâchoire, de la tempe ou devant l'oreille, bruits articulaires, blocage.
+
+1 test · valeurs diagnostiques
+QUESTION 1
+Drapeaux rouges ?
+
+Douleur non mécanique, signes généraux, déficit neurologique, plus de 50 ans avec céphalée récente.
+
+1 test · valeurs diagnostiques
+ORIENTATION
+Orientation médicale
+
+Urgence si artérite suspectée ou douleur cardiaque, dentiste ou ORL si origine dentaire ou infectieuse.
+
+PLUS DE 50 ANS
+Artérite à cellules géantes
+
+Céphalée récente, claudication de la mâchoire, troubles visuels : urgence médicale.
+
+NERF
+Névralgie du trijumeau
+
+Décharges électriques de quelques secondes, zone gâchette au toucher. Pas mécanique : avis médical.
+
+DENT, SINUS
+Origine dentaire ou ORL
+
+Douleur dentaire, sensibilité au chaud ou au froid, fièvre, gonflement : dentiste ou ORL.
+
+À L'EFFORT
+Douleur cardiaque projetée
+
+Douleur de mâchoire déclenchée par l'effort, avec douleur thoracique ou du bras : urgence.
+
+QUESTION 2
+Myalgie ?
+
+Douleur des muscles masticateurs (masséter, temporal), modifiée par la mâchoire.
+
+2 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Myalgie
+
+Préciser le type avec la palpation de 5 s.
+
+DOULEUR LOCALE
+Myalgie locale
+
+La douleur reste sous le doigt pendant la palpation de 5 s.
+
+DIFFUSION
+Douleur myofasciale
+
+La douleur diffuse dans le muscle, sans dépasser ses limites.
+
+PROJECTION
+Douleur myofasciale avec projection
+
+La douleur se projette au-delà du muscle (dent, oreille, œil). Critères : Se 86 %, Sp 98 %.
+
+QUESTION 3
+Arthralgie ?
+
+Douleur de l'articulation, devant l'oreille, modifiée par la mâchoire.
+
+1 test · valeurs diagnostiques
+TABLEAU CLINIQUE
+Arthralgie
+
+Douleur articulaire : éducation, mise au repos fonctionnel, mobilité progressive.
+
+SI PLUSIEURS ARTICULATIONS
+Arthrite inflammatoire
+
+Polyarthrite, spondylarthrite : raideur matinale, autres articulations touchées. Avis médical.
+
+QUESTION 4
+Céphalée attribuée aux DTM ?
+
+Céphalée de la tempe, modifiée par la mâchoire, reproduite à l'examen.
+
+1 test · valeurs diagnostiques
+TABLEAU CLINIQUE
+Céphalée attribuée aux DTM
+
+Traiter la myalgie ou l'arthralgie à l'origine, puis réévaluer la céphalée.
+
+AUTRE CÉPHALÉE ASSOCIÉE
+Migraine ou céphalée de tension
+
+Peuvent coexister. Orienter vers le médecin si la céphalée domine le tableau.
+
+QUESTION 5
+Déplacement discal ?
+
+Claquement à l'ouverture ou à la fermeture, blocage bouche fermée.
+
+4 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Déplacement discal
+
+Sous-classifier selon la réduction et l'ouverture.
+
+CLAQUEMENT
+Avec réduction
+
+Claquement à l'ouverture et à la fermeture. Diagnostic clinique peu sensible (34 %).
+
+BLOCAGES QUI CÈDENT
+Avec réduction et blocage intermittent
+
+Blocages passagers avec ouverture limitée, qui se débloquent seuls ou avec une manœuvre.
+
+MOINS DE 40 MM
+Sans réduction, ouverture limitée
+
+Blocage bouche fermée, ouverture assistée inférieure à 40 mm. Valide sans imagerie.
+
+40 MM OU PLUS
+Sans réduction, sans limitation
+
+Blocage dans le passé, ouverture récupérée. Peu fiable sans IRM.
+
+QUESTION 6
+Atteinte dégénérative ?
+
+Crépitations (bruit de sable ou de gravier) pendant les mouvements.
+
+1 test · valeurs diagnostiques
+TABLEAU CLINIQUE
+Atteinte articulaire dégénérative
+
+Arthrose de l'ATM : éducation, mobilité, gestion de la charge.
+
+ÉVOLUTION RAPIDE
+Changement de l'occlusion
+
+Béance qui apparaît ou déviation progressive : avis spécialisé (résorption condylienne, inflammatoire).
+
+QUESTION 7
+Subluxation ?
+
+Blocage bouche grande ouverte, besoin d'une manœuvre pour refermer.
+
+1 test · valeurs diagnostiques
+TABLEAU CLINIQUE
+Subluxation
+
+Hypermobilité : éducation et contrôle moteur de l'ouverture.
+
+TOUJOURS, EN PARALLÈLE
+Axe II : profil psychosocial
+
+Intensité, retentissement, détresse, parafonctions : indispensable si la douleur dure.
+
+2 tests · valeurs diagnostiques
+GCPS
+Douleur chronique à fort retentissement
+
+Incapacité élevée : approche biopsychosociale, coordination avec le médecin.
+
+OBC
+Parafonctions
+
+Serrer, grincer, mâchonner : repérer, expliquer, travailler la prise de conscience.
+
+Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc
++
+−
+Question
+Tableau clinique
+Sous-classification
+Orientation médicale
+✕

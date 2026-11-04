@@ -1,0 +1,275 @@
+BYR
+Build Your Rehab
+Épaule
+Genou
+ATM
+Lombaire
+CervicaleBIENTÔT
+ChevilleBIENTÔT
+HancheBIENTÔT
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+POINT D'ENTRÉE
+Genou douloureux ou gênant
+
+Anamnèse avant tout test : mécanisme, gonflement (immédiat ou retardé), blocage, âge, activité.
+
+2 tests · valeurs diagnostiques
+QUESTION 1
+Drapeaux rouges ?
+
+Fracture après trauma, genou chaud et fébrile, mollet suspect, douleur non mécanique.
+
+1 test · valeurs diagnostiques
+ORIENTATION
+Orientation médicale
+
+Radio si Ottawa positive, urgences si infection, thrombose ou luxation suspectées.
+
+GENOU CHAUD SANS TRAUMA
+Arthrite microcristalline ou inflammatoire
+
+Goutte, chondrocalcinose, rhumatisme inflammatoire. Gonflement chaud, raideur, parfois plusieurs articulations : avis médical.
+
+COUREUR
+Fracture de fatigue
+
+Douleur osseuse localisée (tibia proximal), après une augmentation rapide de la charge. Douleur à l'appui, parfois la nuit : imagerie.
+
+QUESTION 2
+Lésion ligamentaire ?
+
+Pivot, choc en valgus ou en varus, choc sur le tibia genou fléchi. Craquement, gonflement, dérobement.
+
+7 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Lésion ligamentaire
+
+Sous-classifier : quel ligament, lésion isolée ou associée, profil du patient.
+
+PIVOT CENTRAL
+Rupture du LCA
+
+Rééducation dès la phase aiguë : contrôle de l'épanchement, extension complète, quadriceps. Avis chirurgical selon sport et instabilité.
+
+PÉRIPHÉRIQUE MÉDIAL
+Entorse du LLI
+
+Choc en valgus. Douleur et laxité médiales. Lésion isolée : traitement fonctionnel en première intention.
+
+PIVOT CENTRAL
+Lésion du LCP
+
+Choc sur le tibia genou fléchi (tableau de bord, chute à genoux). Tiroir postérieur, tibia qui « s'avale » à 90°.
+
+PÉRIPHÉRIQUE LATÉRAL
+Coin postéro-latéral
+
+Varus et rotation externe. Souvent associé au LCA ou au LCP : avis orthopédique rapide, à ne pas rater.
+
+SOUS-TYPE
+Lésions associées
+
+LLI, ménisque, LCP ou coin postéro-latéral : examen complet et avis orthopédique plus rapide.
+
+QUESTION 3
+Lésion méniscale ?
+
+Torsion en charge, gonflement retardé (6–24 h), blocage ou accrochage.
+
+4 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Lésion méniscale
+
+Sous-classifier selon l'âge et le mécanisme.
+
+SOUS-TYPE
+Traumatique (jeune, sportif)
+
+Torsion en charge, souvent associée au LCA. Avis orthopédique si blocage ou échec de la rééducation.
+
+SOUS-TYPE
+Dégénérative (> 40 ans)
+
+Début progressif, souvent associée à l'arthrose. Exercice et rééducation en première intention.
+
+ADO, DIAGNOSTIC DIFFÉRENTIEL
+Ostéochondrite disséquante
+
+Enfant ou ado sportif, douleur mal localisée, épanchement, parfois blocage par un fragment. Diagnostic par imagerie.
+
+QUESTION 4
+Arthrose du genou ?
+
+45 ans ou plus, douleur à l'activité, raideur matinale de 30 min maximum.
+
+1 test · valeurs diagnostiques
+TABLEAU CLINIQUE
+Gonarthrose
+
+Éducation, exercice et gestion du poids en première ligne.
+
+ORIENTER LE TRAITEMENT
+Irritabilité et tolérance à la charge
+
+Doser l'exercice selon la douleur pendant et après l'effort, puis progresser.
+
+PLUS DE 60 ANS
+Ostéonécrose du genou
+
+Douleur médiale brutale, souvent nocturne, sans trauma. Radio initiale souvent normale : avis médical, IRM.
+
+QUESTION 5
+Tendinopathie ou bursite ?
+
+Douleur très localisée sur un tendon et liée à la charge, ou gonflement localisé sur une bourse.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Tendinopathie ou bursite
+
+Sous-classifier par localisation, puis doser la charge.
+
+ANTÉRIEUR BAS
+Tendinopathie patellaire
+
+Pôle inférieur de la rotule, sauteur jeune. Douleur assis genou fléchi, souvent pire le lendemain des sauts.
+
+ANTÉRIEUR HAUT
+Tendinopathie quadricipitale
+
+Pôle supérieur de la rotule. Plus rare : sauts, haltérophilie. Même logique de gestion de la charge.
+
+LATÉRAL
+Bandelette ilio-tibiale (essuie-glace)
+
+Au-dessus de l'interligne latéral. Coureur ou cycliste, douleur qui arrive après une distance assez constante.
+
+MÉDIAL
+Patte d'oie (tendinobursite)
+
+Sous l'interligne médial, souvent avec une gonarthrose. La palpation est aussi douloureuse chez environ 30 % des personnes sans douleur.
+
+POSTÉRIEUR
+Ischio-jambiers distaux et poplité
+
+Face postérieure ou postéro-latérale. Douleur en flexion contre résistance, en descente. Pas de test validé.
+
+BURSITE ANTÉRIEURE
+Bursite prépatellaire
+
+Gonflement bien limité devant la rotule, souvent après des appuis répétés à genoux. Rouge, chaude, plaie ou fièvre : penser bursite septique (environ un cas sur trois), avis médical.
+
+BURSITE POSTÉRIEURE
+Kyste poplité (Baker)
+
+Masse au creux poplité, souvent avec une arthrose ou une lésion méniscale. Rompu, il peut imiter une thrombose : la thrombose doit être éliminée par un médecin.
+
+QUESTION 6
+Douleur neuropathique ?
+
+Brûlure, décharges électriques, fourmillements, douleur au simple toucher, dans un territoire nerveux.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Composante neuropathique
+
+Cartographier la zone, puis trouver le nerf ou la racine en cause.
+
+NERF PÉRIPHÉRIQUE
+Nerf saphène (branche infrapatellaire)
+
+Sous la rotule, face antéro-médiale. Fréquent après chirurgie (prothèse, arthroscopie) : engourdissement ou brûlure près de la cicatrice.
+
+NERF PÉRIPHÉRIQUE
+Nerf fibulaire commun
+
+Col de la fibula. Face latérale de jambe et dos du pied, faiblesse des releveurs. Tinel possible au col de la fibula.
+
+RACINE
+Radiculopathie L3–L4
+
+Face antérieure de cuisse, réflexe rotulien, quadriceps. Déficit qui s'aggrave : avis médical.
+
+APRÈS TRAUMA OU CHIRURGIE
+SDRC (algodystrophie)
+
+Douleur disproportionnée, changements de couleur, de température, de sudation, œdème. Diagnostic avec les critères de Budapest.
+
+GONARTHROSE
+Arthrose avec douleur de type neuropathique
+
+Environ 20 % des patients arthrosiques au painDETECT. À repérer pour adapter l'éducation et la progression.
+
+QUESTION 7
+Douleur venant de la hanche ?
+
+Examiner la hanche devant toute douleur de genou atypique, surtout si l'examen du genou est presque normal.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Contribution de la hanche
+
+Traiter la source, puis réévaluer le genou.
+
+ADULTE
+Coxarthrose
+
+Douleur de genou projetée depuis la hanche. Rotation interne limitée, douleur dans l'aine.
+
+ADOLESCENT
+Épiphysiolyse fémorale
+
+Ado qui boite, douleur de genou ou de cuisse, rotation interne de hanche limitée : radio de hanche en urgence.
+
+DIAGNOSTIC D'EXCLUSION
+Douleur fémoro-patellaire
+
+Douleur autour ou derrière la rotule, aggravée en charge genou fléchi.
+
+2 tests · valeurs diagnostiques
+SOUS-TYPE
+Instabilité patellaire
+
+Épisodes de subluxation ou luxation, appréhension en poussée latérale de la rotule.
+
+ADO 10–15 ANS
+Osgood-Schlatter
+
+Douleur et saillie de la tubérosité tibiale antérieure, sports avec sauts et sprints. Diagnostic clinique. Gestion de la charge et renforcement progressif.
+
+ENFANT, ADO
+Sinding-Larsen-Johansson
+
+Douleur au pôle inférieur de la rotule chez l'enfant ou l'ado : même logique que l'Osgood, à l'autre extrémité du tendon.
+
+SOUS LA ROTULE
+Coussinet adipeux (Hoffa)
+
+Douleur sous la rotule, de part et d'autre du tendon patellaire, aggravée en hyperextension. Pas de test validé.
+
+ANTÉRO-MÉDIAL
+Plica médio-patellaire
+
+Douleur antéro-médiale, parfois ressaut ou accrochage en flexion. Pas de test validé : diagnostic d'exclusion.
+
+Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc
++
+−
+Question
+Tableau clinique
+Sous-classification
+Orientation médicale
+✕

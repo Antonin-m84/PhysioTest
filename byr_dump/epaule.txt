@@ -1,0 +1,154 @@
+BYR
+Build Your Rehab
+Épaule
+Genou
+ATM
+Lombaire
+CervicaleBIENTÔT
+ChevilleBIENTÔT
+HancheBIENTÔT
+Oui
+Non
+Non
+Oui
+Oui
+Non
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+POINT D'ENTRÉE
+Épaule douloureuse ou gênante
+
+Anamnèse complète avant tout test : mécanisme, irritabilité, nuit, attentes du patient.
+
+QUESTION 1
+Drapeaux rouges ?
+
+Trauma + perte de fonction, fièvre, antécédent néoplasique, douleur viscérale référée.
+
+ORIENTATION
+Orientation médicale
+
+Urgente si trauma récent, fièvre, suspicion cardiaque ou néoplasique.
+
+QUESTION 2
+Amplitudes passives complètes ?
+
+Comparer les rotations passives au côté sain, coude au corps.
+
+2 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Épaule raide
+
+Perte globale active ET passive, RE passive la plus touchée.
+
+QUESTION 2B
+Radiographie normale ?
+
+Face + profil axillaire ou de Lamy.
+
+TABLEAU CLINIQUE
+Capsulite rétractile
+
+Pic 40–60 ans, terrain diabétique ou thyroïdien. Évolution spontanément favorable mais longue.
+
+TABLEAU CLINIQUE
+Arthrose gléno-humérale
+
+Pincement articulaire, crépitements, sujet plus âgé.
+
+ORIENTATION
+Luxation postérieure verrouillée
+
+RE impossible après crise convulsive, électrocution ou trauma.
+
+QUESTION 3
+Signes d'instabilité ?
+
+Histoire de luxation ou sensation de déboîtement + appréhension.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Épaule instable
+
+Sous-classifier avec le triangle de Stanmore.
+
+STANMORE I
+Traumatique structurelle
+
+Luxation traumatique, lésion de Bankart. Jeune sportif : risque de récidive élevé → avis chirurgical à discuter.
+
+STANMORE II
+Atraumatique structurelle
+
+Laxité capsulaire, pas de trauma majeur. Rééducation en première intention.
+
+STANMORE III
+Pattern musculaire anormal
+
+Recrutement musculaire inadapté (ex. grand pectoral, grand dorsal). Rééducation du contrôle moteur, chirurgie contre-indiquée.
+
+QUESTION 4
+Cluster acromio-claviculaire ?
+
+Douleur localisée au sommet de l'épaule, sujet actif ou travailleur manuel.
+
+4 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Douleur d'origine AC
+
+Arthropathie AC, ostéolyse distale de la clavicule, entorse AC.
+
+QUESTION 5
+Contribution rachidienne ?
+
+Signes neurologiques, cluster de Wainner, symptômes modifiés par le rachis cervical.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Contribution rachidienne
+
+Sous-classifier selon le contexte.
+
+SOUS-TYPE
+Radiculopathie cervicale
+
+Signes neuro (déficit, réflexes, dermatome). Surveillance du déficit moteur ; aggravation → avis médical.
+
+SOUS-TYPE
+Douleur somatique référée
+
+Pas de déficit neuro, douleur reproduite par la mobilisation cervicale. Traitement du rachis cervical.
+
+DIAGNOSTIC D'EXCLUSION
+Douleur liée à la coiffe (sous-acromiale)
+
+RCRSP : douleur à l'élévation et à la RE, reproduite par la charge.
+
+ORIENTER LE TRAITEMENT
+Procédure de modification des symptômes
+
+SSMP : tester l'effet de la position thoracique, scapulaire et de la tête humérale sur la douleur.
+
+SOUS-TYPE
+Suspicion de rupture transfixiante
+
+Âge > 60 ans, faiblesse en élévation et en RE, lag signs, trauma. Les signes de faiblesse sont spécifiques mais peu sensibles → échographie et avis selon le profil.
+
+SOUS-TYPE
+Tendinopathie calcifiante
+
+Douleur aiguë intense, souvent nocturne, sans trauma. Radiographie pour confirmer.
+
+Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc
++
+−
+Question
+Tableau clinique
+Sous-classification
+Orientation médicale
+✕

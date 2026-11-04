@@ -1,0 +1,296 @@
+BYR
+Build Your Rehab
+Épaule
+Genou
+ATM
+Lombaire
+CervicaleBIENTÔT
+ChevilleBIENTÔT
+HancheBIENTÔT
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+Oui
+Non
+POINT D'ENTRÉE
+Lombalgie ou douleur irradiée
+
+Anamnèse avant tout test : début, trauma, douleur de jambe, horaire, âge, terrain.
+
+QUESTION 1
+Drapeaux rouges ?
+
+Queue de cheval, fracture, cancer, infection, douleur viscérale ou vasculaire.
+
+5 tests · valeurs diagnostiques
+ORIENTATION
+Orientation médicale
+
+Urgences pour la queue de cheval, l'infection, l'anévrisme ou un déficit qui s'aggrave.
+
+URGENCE
+Syndrome de la queue de cheval
+
+Anesthésie en selle, troubles urinaires ou fécaux, sciatique bilatérale. IRM en urgence.
+
+OSTÉOPOROSE, TRAUMA
+Fracture vertébrale / tassement
+
+Trauma parfois minime chez la personne âgée ou sous corticoïdes. Imagerie.
+
+2 tests · valeurs diagnostiques
+ANTÉCÉDENT DE CANCER
+Métastase ou tumeur
+
+Douleur progressive, nocturne, non mécanique, amaigrissement. Avis médical et imagerie rapides.
+
+FIÈVRE, TERRAIN
+Spondylodiscite
+
+Douleur intense permanente, fièvre parfois absente, terrain fragile ou geste récent : urgences.
+
+VASCULAIRE, VISCÉRAL
+Anévrisme, rein, pancréas
+
+Douleur non mécanique, non modifiée par le mouvement. Masse pulsatile, signes urinaires ou digestifs : urgences.
+
+ENFANT
+Lombalgie de l'enfant de moins de 10 ans
+
+Rare à cet âge : penser infection (discite), tumeur, ostéome ostéoïde (scoliose douloureuse, douleur nocturne). Avis médical.
+
+QUESTION 2
+Rachialgie inflammatoire ?
+
+Début avant 40 ans, réveils en fin de nuit, raideur matinale longue, mieux en bougeant.
+
+2 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Spondyloarthrite axiale suspectée
+
+Orientation vers le médecin ou le rhumatologue, et rééducation par l'exercice en parallèle.
+
+ADULTE JEUNE
+Spondyloarthrite axiale
+
+Lombalgie ou fessalgie à bascule, raideur matinale, réveils nocturnes. Diagnostic rhumatologique.
+
+ADO
+Spondyloarthrite juvénile
+
+Ado avec talalgie, enthésites, douleur fessière ou lombaire nocturne. Avis pédiatrique ou rhumatologique.
+
+QUESTION 3
+Douleur radiculaire ?
+
+Douleur de jambe, souvent plus forte que la douleur du dos, dans un territoire de racine. Fourmillements, engourdissement.
+
+7 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Radiculopathie lombaire
+
+Identifier la racine, puis suivre l'évolution neurologique.
+
+RACINE L5
+Sciatique L5
+
+Face latérale de jambe, dos du pied, gros orteil. Faiblesse de l'extenseur de l'hallux et des releveurs.
+
+RACINE S1
+Sciatique S1
+
+Face postérieure de jambe, plante et bord latéral du pied. Réflexe achilléen diminué, faiblesse sur pointe de pied.
+
+RACINES L2–L4
+Cruralgie
+
+Face antérieure de cuisse, parfois jusqu'au genou. Réflexe rotulien diminué, test d'étirement fémoral positif.
+
+ADO SPORTIF
+Hernie discale de l'adolescent
+
+Raideur importante, Lasègue souvent très positif, attitude antalgique. Moins de douleur que chez l'adulte.
+
+NERF PÉRIPHÉRIQUE
+Méralgie paresthésique
+
+Brûlure ou engourdissement de la face latérale de cuisse, sans déficit moteur. Nerf cutané latéral de la cuisse. Pas de test validé.
+
+FESSE
+Douleur fessière profonde (piriforme)
+
+Douleur fessière, parfois irradiée, assis prolongé. Diagnostic d'exclusion d'une radiculopathie. Pas de test validé.
+
+QUESTION 4
+Sténose du canal lombaire ?
+
+Plus de 50 ans, douleurs de jambes à la marche ou debout, soulagées assis ou penché en avant.
+
+6 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Sténose du canal lombaire
+
+Exercice en flexion, marche fractionnée, vélo, éducation.
+
+SOUS-TYPE
+Sténose centrale
+
+Claudication neurogène bilatérale, soulagement assis ou penché en avant.
+
+SOUS-TYPE
+Sténose foraminale ou latérale
+
+Douleur radiculaire unilatérale, souvent en extension et rotation du même côté. Même logique que la question 3.
+
+DIAGNOSTIC DIFFÉRENTIEL
+Claudication vasculaire
+
+Mollet surtout, soulagée à l'arrêt debout, pouls diminués, terrain vasculaire. Avis médical.
+
+PLUS DE 50 ANS
+Spondylolisthésis dégénératif
+
+Souvent L4–L5, chez la femme de plus de 50 ans. Peut donner une sténose. Diagnostic par imagerie si besoin.
+
+QUESTION 5
+Douleur sacro-iliaque ?
+
+Douleur sous L5, en regard de l'épine iliaque postéro-supérieure, montrée du doigt. Grossesse, post-partum.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Douleur sacro-iliaque ou de la ceinture pelvienne
+
+Éducation, exercices de contrôle et de renforcement, gestion de la charge.
+
+ADULTE
+Douleur sacro-iliaque
+
+Douleur unilatérale sous L5, sans centralisation, au moins 3 tests de provocation positifs.
+
+GROSSESSE, POST-PARTUM
+Douleur de la ceinture pelvienne
+
+Douleur sacro-iliaque ou symphysaire, au retournement au lit, à la marche, en appui unipodal. Test P4.
+
+INFLAMMATOIRE
+Sacro-iliite
+
+Fessalgie à bascule, réveils nocturnes, raideur matinale : profil de spondyloarthrite, voir la question 2.
+
+QUESTION 6
+Douleur venant de la hanche ?
+
+Douleur fessière, de l'aine ou de la cuisse. Examiner la hanche si le rachis ne reproduit pas la douleur.
+
+4 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Contribution de la hanche
+
+Bilan complet de la hanche, puis réévaluer le dos.
+
+PLUS DE 50 ANS
+Coxarthrose
+
+Douleur de l'aine ou fessière, rotation interne limitée, raideur matinale courte.
+
+DOULEUR LATÉRALE
+Tendinopathie fessière
+
+Douleur latérale de hanche, couché sur le côté, en montée d'escaliers, appui unipodal. Souvent confondue avec une lombalgie.
+
+ADOLESCENT
+Épiphysiolyse fémorale
+
+Ado qui boite, douleur de cuisse ou de genou, rotation interne de hanche limitée : radio de hanche en urgence.
+
+QUESTION 7
+Composante nociplastique ou psychosociale ?
+
+Douleur diffuse, disproportionnée, hypersensibilité, fatigue, sommeil perturbé, peur de bouger.
+
+3 tests · valeurs diagnostiques
+TABLEAU CLINIQUE
+Composante nociplastique ou psychosociale
+
+Éducation à la douleur, exercice progressif, lien avec le médecin.
+
+START BACK ÉLEVÉ
+Risque élevé de chronicité
+
+Peur, catastrophisme, humeur basse. Approche cognitive et fonctionnelle, réassurance, activité progressive.
+
+DOULEUR DIFFUSE
+Fibromyalgie ou douleur diffuse
+
+Douleurs multisites, fatigue, sommeil non réparateur. Diagnostic médical, exercice adapté.
+
+PLUS DE 3 MOIS
+Lombalgie chronique
+
+Les facteurs psychosociaux pèsent plus que l'imagerie. Exercice, éducation, reprise d'activité.
+
+DIAGNOSTIC D'EXCLUSION
+Lombalgie commune
+
+Aucun drapeau rouge, pas de radiculopathie, de sténose, de profil inflammatoire ou de source extra-rachidienne.
+
+1 test · valeurs diagnostiques
+SOUS-TYPE
+Préférence directionnelle
+
+Une direction de mouvement centralise ou diminue la douleur : elle guide les exercices.
+
+MOINS DE 6 SEMAINES
+Lombalgie aiguë
+
+Évolution le plus souvent favorable. Rassurer, rester actif, pas d'imagerie.
+
+EXTENSION, ROTATION
+Douleur facettaire
+
+Douleur en extension et rotation, sans irradiation sous le genou. Aucun test clinique validé : diagnostic d'exclusion. L'arthrose facettaire à l'imagerie ne suffit pas à le poser.
+
+ADO SPORTIF
+Spondylolyse
+
+Ado en sport d'hyperextension (gym, danse, foot), douleur en extension. Aucun test physique fiable, l'extension unipodale non plus : imagerie si suspicion.
+
+ADO, ADULTE JEUNE
+Spondylolisthésis isthmique
+
+Une « marche d'escalier » à la palpation des épineuses oriente vers un spondylolisthésis (Se 60–88 %, Sp 87–100 %).
+
+ADO
+Maladie de Scheuermann
+
+Cyphose raide, douleur thoracolombaire à l'effort chez l'ado. Radio de profil.
+
+COMPTE RENDU D'IMAGERIE
+Discopathie ou arthrose à l'imagerie
+
+Très fréquentes chez les personnes sans douleur : elles n'expliquent pas à elles seules la lombalgie.
+
+1 test · valeurs diagnostiques
+CHARNIÈRE THORACO-LOMBAIRE
+Syndrome de Maigne
+
+Douleur lombaire basse ou de la crête iliaque, avec origine haute (T11–L1). Concept français fréquent en cabinet, sans test validé.
+
+Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc
++
+−
+Question
+Tableau clinique
+Sous-classification
+Orientation médicale
+✕

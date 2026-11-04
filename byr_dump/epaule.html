@@ -1,0 +1,693 @@
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="utf-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=4971f02a-9af7-402f-983d-73de57eb486c
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build Your Rehab Map</title>
+<meta name="description" content="Carte de raisonnement clinique interactive du bilan d'épaule pour kinés : tests, Se/Sp, clusters et sources.">
+<meta property="og:title" content="Build Your Rehab · Map clinique de l'épaule">
+<meta property="og:description" content="Red flags, raideur, instabilité, AC, rachis, coiffe : chaque test avec ses valeurs diagnostiques et ses sources.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://buildyourrehab.netlify.app/epaule/">
+<meta name="theme-color" content="#0c1316">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Manrope:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+html,body{margin:0}
+/* Layout: plein écran, canvas zoomable infini + barre haute + panneau détail latéral (feuille basse sur mobile). Thème sombre unique, choisi. */
+:root{
+  color-scheme: dark;
+  --ink:#0c1316;        /* fond : anthracite bleuté */
+  --ink-2:#121c20;      /* surfaces */
+  --ink-3:#1a272c;      /* surfaces hautes */
+  --line:#2a3a40;       /* traits */
+  --fg:#e7efee;         /* texte */
+  --fg-dim:#8fa3a3;     /* texte secondaire */
+  --teal:#5fd3c3;       /* accent principal */
+  --teal-deep:#1f5c56;
+  --sand:#e6c58f;       /* décision / question */
+  --coral:#ff7a6b;      /* red flag / urgence */
+  --violet:#a99cf2;     /* sous-classification */
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body:"Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--ink);color:var(--fg);font-family:var(--body);font-size:14px;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+.app{position:relative;height:100%;display:flex;flex-direction:column}
+
+/* ---------- Barre haute ---------- */
+.top{position:relative;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:linear-gradient(180deg,rgba(12,19,22,.96),rgba(12,19,22,.82));border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--teal);color:var(--ink);font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:-.02em}
+.brand-name{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
+.brand-name span{color:var(--teal)}
+.regions{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.regions::-webkit-scrollbar{display:none}
+.reg{flex:none;border:1px solid transparent;background:none;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--fg-dim);cursor:pointer}
+a.reg{text-decoration:none;display:inline-flex;align-items:center}
+a.reg:hover{color:var(--fg)}
+.reg[aria-current="true"]{background:var(--ink-3);border-color:var(--line);color:var(--fg)}
+.reg[disabled]{cursor:not-allowed;opacity:.55}
+.reg small{font-family:var(--mono);font-size:10px;color:var(--fg-dim);margin-left:4px;letter-spacing:.04em}
+.search{position:relative;flex:0 1 240px;min-width:160px}
+.search input{width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:8px 12px 8px 32px;color:var(--fg);font:inherit;font-size:13px}
+.search input::placeholder{color:var(--fg-dim)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--fg-dim)}
+
+/* ---------- Canvas ---------- */
+.stage{position:relative;flex:1;overflow:hidden;cursor:grab;touch-action:none;
+  background-color:var(--ink);
+  background-image:radial-gradient(circle at 1px 1px, rgba(95,211,195,.09) 1px, transparent 0);
+  background-size:28px 28px}
+.stage.dragging{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.edges path{fill:none;stroke:var(--line);stroke-width:2;transition:stroke .25s,opacity .25s}
+.edges path.on{stroke:var(--teal);stroke-width:2.6}
+.edges text{fill:var(--fg-dim);font-family:var(--mono);font-size:12px;font-weight:500}
+.edges .lbl-bg{fill:var(--ink);stroke:var(--line);stroke-width:1}
+.edges .yes{fill:var(--teal)}
+.edges .no{fill:var(--coral)}
+.edges g.on .lbl-bg{stroke:var(--teal)}
+
+.node{position:absolute;transform:translate(-50%,-50%);width:250px;padding:14px 16px 14px;border-radius:14px;background:var(--ink-2);border:1px solid var(--line);
+  cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s,opacity .25s,transform .2s;user-select:none}
+.node:hover{border-color:var(--fg-dim)}
+.node .k{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:6px}
+.node .k i{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.node h3{margin:0;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.node p{margin:6px 0 0;color:var(--fg-dim);font-size:12.5px;line-height:1.4}
+.node .stat{margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--teal)}
+.node.start{background:var(--teal);border-color:var(--teal);color:var(--ink);width:270px}
+.node.start .k,.node.start p,.node.start .stat{color:rgba(12,19,22,.7)}
+.node.question{border-color:rgba(230,197,143,.45)}
+.node.question .k{color:var(--sand)}
+.node.outcome{border-color:rgba(95,211,195,.5);background:linear-gradient(160deg,#14292a,var(--ink-2) 70%)}
+.node.outcome .k{color:var(--teal)}
+.node.danger{border-color:rgba(255,122,107,.6);background:linear-gradient(160deg,#2a1716,var(--ink-2) 70%)}
+.node.danger .k{color:var(--coral)}
+.node.sub{width:220px;border-style:dashed;border-color:rgba(169,156,242,.45)}
+.node.sub .k{color:var(--violet)}
+.node.sub h3{font-size:15px}
+.node.sel{box-shadow:0 0 0 2px var(--teal),0 12px 40px rgba(0,0,0,.5);border-color:var(--teal)}
+.node.path{border-color:var(--teal)}
+.dim .node:not(.hit){opacity:.22}
+.dim .edges path,.dim .edges g{opacity:.25}
+.node.hit{box-shadow:0 0 0 2px var(--sand)}
+
+/* ---------- Contrôles ---------- */
+.ctrl{position:absolute;z-index:15;left:max(16px,calc(env(safe-area-inset-left,0px) + 16px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px}
+.ctrl button{width:40px;height:40px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);cursor:pointer;display:grid;place-items:center;font-size:18px}
+.ctrl button:hover{border-color:var(--teal)}
+.legend{position:absolute;z-index:15;left:max(72px,calc(env(safe-area-inset-left,0px) + 72px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:14px;flex-wrap:wrap;
+  padding:8px 12px;border-radius:10px;background:rgba(18,28,32,.9);border:1px solid var(--line);font-size:12px;color:var(--fg-dim);max-width:calc(100% - 100px)}
+.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.hint{position:absolute;z-index:15;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));padding:6px 12px;border-radius:999px;background:rgba(18,28,32,.9);border:1px solid var(--line);color:var(--fg-dim);font-size:12px;white-space:nowrap;transition:opacity .6s}
+
+/* ---------- Panneau ---------- */
+.panel{position:absolute;z-index:30;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--ink-2);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;transform:translateX(102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);box-shadow:-20px 0 60px rgba(0,0,0,.35)}
+.panel.open{transform:none}
+.p-head{padding:20px 22px 14px;padding-right:max(22px,calc(env(safe-area-inset-right,0px) + 22px));border-bottom:1px solid var(--line)}
+.p-close{position:absolute;top:14px;right:max(14px,calc(env(safe-area-inset-right,0px) + 14px));width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--ink);cursor:pointer;font-size:16px}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:11.5px;color:var(--fg-dim);margin:0 40px 10px 0}
+.crumbs button{background:none;border:0;padding:0;color:var(--fg-dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.crumbs button:hover{color:var(--teal)}
+.p-kind{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.p-title{margin:6px 0 0;font-family:var(--display);font-weight:800;font-size:26px;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+.p-body{flex:1;overflow-y:auto;padding:18px 22px 28px;padding-right:max(22px,calc(env(safe-area-inset-right,0px) + 22px));display:flex;flex-direction:column;gap:22px}
+.p-body h4{margin:0 0 10px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-dim);font-weight:500}
+.p-body p,.p-body li{line-height:1.55;font-size:14px;max-width:62ch}
+.p-body p{margin:0}
+.p-body ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.test{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--ink)}
+.test + .test{margin-top:8px}
+.test b{font-family:var(--display);font-size:15px;font-weight:700}
+.test p{color:var(--fg-dim);font-size:13px;margin-top:4px}
+.metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.metric{font-family:var(--mono);font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--ink-3);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.metric em{font-style:normal;color:var(--fg-dim);margin-right:4px}
+.metric.good{border-color:var(--teal-deep);color:var(--teal)}
+.next{display:flex;flex-direction:column;gap:8px}
+.go{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--ink);cursor:pointer;transition:border-color .2s,background .2s}
+.go:hover{border-color:var(--teal);background:#10201f}
+.go .tag{flex:none;font-family:var(--mono);font-size:11px;font-weight:500;padding:3px 8px;border-radius:6px;min-width:44px;text-align:center}
+.go .tag.yes{background:rgba(95,211,195,.14);color:var(--teal)}
+.go .tag.no{background:rgba(255,122,107,.14);color:var(--coral)}
+.go .tag.sub{background:rgba(169,156,242,.14);color:var(--violet)}
+.go span:last-child{font-weight:600;font-size:13.5px}
+.src li{font-size:12.5px;color:var(--fg-dim)}
+.old{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:5px;border:1px solid rgba(230,197,143,.4);color:var(--sand);margin-left:6px;white-space:nowrap}
+.alert{border-left:3px solid var(--coral);padding:10px 12px;background:rgba(255,122,107,.07);border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.5}
+.disclaimer{font-size:11.5px;color:var(--fg-dim);border-top:1px solid var(--line);padding-top:14px}
+
+@media (max-width:720px){
+  .search{flex:1 1 100%;order:3}
+  .panel{top:auto;width:100%;height:68%;border-left:0;border-top:1px solid var(--line);border-radius:18px 18px 0 0;transform:translateY(104%)}
+  .panel.open{transform:none}
+  .p-body{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+  .legend{display:none}
+  .hint{font-size:11px;white-space:normal;max-width:220px;border-radius:12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="brand-mark">BYR</div><div class="brand-name">Build Your <span>Rehab</span></div></div>
+    <nav class="regions" aria-label="Régions">
+      <button class="reg" aria-current="true">Épaule</button>
+      <a class="reg" href="/genou/">Genou</a>
+      <a class="reg" href="/atm/">ATM</a>
+      <a class="reg" href="/lombaire/">Lombaire</a>
+      <button class="reg" disabled="">Cervicale<small>BIENTÔT</small></button>
+      <button class="reg" disabled="">Cheville<small>BIENTÔT</small></button>
+      <button class="reg" disabled="">Hanche<small>BIENTÔT</small></button>
+    </nav>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input id="q" type="search" placeholder="Chercher un test, un cluster…" autocomplete="off">
+    </label>
+  </header>
+
+  <main class="stage" id="stage" aria-label="Carte de raisonnement clinique de l'épaule">
+    <div class="world" id="world" style="width: 2600px; height: 1800px; transition: none; transform: translate(163.659px, 5.73718px) scale(0.372141);">
+      <svg class="edges" id="edges" width="2600" height="1800"><path d="M1000,154.5 C1000,175 1000,175 1000,195.5" data-e="0"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,195.5) rotate(90)" data-e="0"></path><path d="M1125,260 L1375,260" data-e="1"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,260) rotate(0)" data-e="1"></path><g data-e="1"><rect class="lbl-bg" x="1228" y="249" width="44" height="22" rx="11"></rect><text x="1250" y="264" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,324.5 C1000,348.75 1000,348.75 1000,373" data-e="2"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,373) rotate(90)" data-e="2"></path><g data-e="2"><rect class="lbl-bg" x="978" y="337.75" width="44" height="22" rx="11"></rect><text x="1000" y="352.75" text-anchor="middle" class="no">Non</text></g><path d="M1125,450 L1375,450" data-e="3"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,450) rotate(0)" data-e="3"></path><g data-e="3"><rect class="lbl-bg" x="1228" y="439" width="44" height="22" rx="11"></rect><text x="1250" y="454" text-anchor="middle" class="no">Non</text></g><path d="M1000,527 C1000,560.25 1000,560.25 1000,593.5" data-e="4"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,593.5) rotate(90)" data-e="4"></path><g data-e="4"><rect class="lbl-bg" x="978" y="549.25" width="44" height="22" rx="11"></rect><text x="1000" y="564.25" text-anchor="middle" class="yes">Oui</text></g><path d="M1625,450 L1825,450" data-e="5"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1825,450) rotate(0)" data-e="5"></path><path d="M1950,497 C1950,536.25 1950,536.25 1950,575.5" data-e="6"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1950,575.5) rotate(90)" data-e="6"></path><g data-e="6"><rect class="lbl-bg" x="1928" y="525.25" width="44" height="22" rx="11"></rect><text x="1950" y="540.25" text-anchor="middle" class="yes">Oui</text></g><path d="M1950,497 C1950,540.75 2350,540.75 2350,584.5" data-e="7"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(2350,584.5) rotate(90)" data-e="7"></path><g data-e="7"><rect class="lbl-bg" x="2128" y="529.75" width="44" height="22" rx="11"></rect><text x="2150" y="544.75" text-anchor="middle" class="no">Non</text></g><path d="M2075,450 L2225,450" data-e="8"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(2225,450) rotate(0)" data-e="8"></path><g data-e="8"><rect class="lbl-bg" x="2128" y="439" width="44" height="22" rx="11"></rect><text x="2150" y="454" text-anchor="middle" class="no">Non</text></g><path d="M875,660 L645,660" data-e="9"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(645,660) rotate(180)" data-e="9"></path><g data-e="9"><rect class="lbl-bg" x="738" y="649" width="44" height="22" rx="11"></rect><text x="760" y="664" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,726.5 C1000,820.5 1000,820.5 1000,914.5" data-e="10"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,914.5) rotate(90)" data-e="10"></path><g data-e="10"><rect class="lbl-bg" x="978" y="809.5" width="44" height="22" rx="11"></rect><text x="1000" y="824.5" text-anchor="middle" class="no">Non</text></g><path d="M520,715.5 C520,746.75 150,746.75 150,778" data-e="11"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(150,778) rotate(90)" data-e="11"></path><path d="M520,715.5 C520,746.5 420,746.5 420,777.5" data-e="12"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(420,777.5) rotate(90)" data-e="12"></path><path d="M520,715.5 C520,737.75 690,737.75 690,760" data-e="13"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(690,760) rotate(90)" data-e="13"></path><path d="M1125,1000 L1375,1000" data-e="14"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,1000) rotate(0)" data-e="14"></path><g data-e="14"><rect class="lbl-bg" x="1228" y="989" width="44" height="22" rx="11"></rect><text x="1250" y="1004" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,1085.5 C1000,1105 1000,1105 1000,1124.5" data-e="15"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1124.5) rotate(90)" data-e="15"></path><g data-e="15"><rect class="lbl-bg" x="978" y="1094" width="44" height="22" rx="11"></rect><text x="1000" y="1109" text-anchor="middle" class="no">Non</text></g><path d="M875,1200 L645,1200" data-e="16"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(645,1200) rotate(180)" data-e="16"></path><g data-e="16"><rect class="lbl-bg" x="738" y="1189" width="44" height="22" rx="11"></rect><text x="760" y="1204" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,1275.5 C1000,1314.75 1000,1314.75 1000,1354" data-e="17"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1354) rotate(90)" data-e="17"></path><g data-e="17"><rect class="lbl-bg" x="978" y="1303.75" width="44" height="22" rx="11"></rect><text x="1000" y="1318.75" text-anchor="middle" class="no">Non</text></g><path d="M520,1247 C520,1282.5 330,1282.5 330,1318" data-e="18"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(330,1318) rotate(90)" data-e="18"></path><path d="M520,1247 C520,1278 690,1278 690,1309" data-e="19"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(690,1309) rotate(90)" data-e="19"></path><path d="M1000,1486 C1000,1508 1000,1508 1000,1530" data-e="20"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1530) rotate(90)" data-e="20"></path><path d="M1000,1486 C1000,1503.75 1360,1503.75 1360,1521.5" data-e="21"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1360,1521.5) rotate(90)" data-e="21"></path><path d="M1000,1486 C1000,1521.25 1720,1521.25 1720,1556.5" data-e="22"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1720,1556.5) rotate(90)" data-e="22"></path></svg>
+    <button class="node start" data-id="start" style="left: 1000px; top: 80px;"><div class="k"><i></i>Point d'entrée</div><h3>Épaule douloureuse ou gênante</h3><p>Anamnèse complète avant tout test : mécanisme, irritabilité, nuit, attentes du patient.</p></button><button class="node question" data-id="rf" style="left: 1000px; top: 260px;"><div class="k"><i></i>Question 1</div><h3>Drapeaux rouges ?</h3><p>Trauma + perte de fonction, fièvre, antécédent néoplasique, douleur viscérale référée.</p></button><button class="node danger" data-id="rfEnd" style="left: 1500px; top: 260px;"><div class="k"><i></i>Orientation</div><h3>Orientation médicale</h3><p>Urgente si trauma récent, fièvre, suspicion cardiaque ou néoplasique.</p></button><button class="node question" data-id="rom" style="left: 1000px; top: 450px;"><div class="k"><i></i>Question 2</div><h3>Amplitudes passives complètes ?</h3><p>Comparer les rotations passives au côté sain, coude au corps.</p><div class="stat">2 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="stiff" style="left: 1500px; top: 450px;"><div class="k"><i></i>Tableau clinique</div><h3>Épaule raide</h3><p>Perte globale active ET passive, RE passive la plus touchée.</p></button><button class="node question" data-id="xray" style="left: 1950px; top: 450px;"><div class="k"><i></i>Question 2b</div><h3>Radiographie normale ?</h3><p>Face + profil axillaire ou de Lamy.</p></button><button class="node outcome" data-id="caps" style="left: 1950px; top: 640px;"><div class="k"><i></i>Tableau clinique</div><h3>Capsulite rétractile</h3><p>Pic 40–60 ans, terrain diabétique ou thyroïdien. Évolution spontanément favorable mais longue.</p></button><button class="node outcome" data-id="oa" style="left: 2350px; top: 640px;"><div class="k"><i></i>Tableau clinique</div><h3>Arthrose gléno-humérale</h3><p>Pincement articulaire, crépitements, sujet plus âgé.</p></button><button class="node danger" data-id="lpd" style="left: 2350px; top: 450px;"><div class="k"><i></i>Orientation</div><h3>Luxation postérieure verrouillée</h3><p>RE impossible après crise convulsive, électrocution ou trauma.</p></button><button class="node question" data-id="inst" style="left: 1000px; top: 660px;"><div class="k"><i></i>Question 3</div><h3>Signes d'instabilité ?</h3><p>Histoire de luxation ou sensation de déboîtement + appréhension.</p><div class="stat">3 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="unstable" style="left: 520px; top: 660px;"><div class="k"><i></i>Tableau clinique</div><h3>Épaule instable</h3><p>Sous-classifier avec le triangle de Stanmore.</p></button><button class="node sub" data-id="s1" style="left: 150px; top: 850px;"><div class="k"><i></i>Stanmore I</div><h3>Traumatique structurelle</h3><p>Luxation traumatique, lésion de Bankart. Jeune sportif : risque de récidive élevé → avis chirurgical à discuter.</p></button><button class="node sub" data-id="s2" style="left: 420px; top: 850px;"><div class="k"><i></i>Stanmore II</div><h3>Atraumatique structurelle</h3><p>Laxité capsulaire, pas de trauma majeur. Rééducation en première intention.</p></button><button class="node sub" data-id="s3" style="left: 690px; top: 850px;"><div class="k"><i></i>Stanmore III</div><h3>Pattern musculaire anormal</h3><p>Recrutement musculaire inadapté (ex. grand pectoral, grand dorsal). Rééducation du contrôle moteur, chirurgie contre-indiquée.</p></button><button class="node question" data-id="ac" style="left: 1000px; top: 1000px;"><div class="k"><i></i>Question 4</div><h3>Cluster acromio-claviculaire ?</h3><p>Douleur localisée au sommet de l'épaule, sujet actif ou travailleur manuel.</p><div class="stat">4 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="acEnd" style="left: 1500px; top: 1000px;"><div class="k"><i></i>Tableau clinique</div><h3>Douleur d'origine AC</h3><p>Arthropathie AC, ostéolyse distale de la clavicule, entorse AC.</p></button><button class="node question" data-id="cerv" style="left: 1000px; top: 1200px;"><div class="k"><i></i>Question 5</div><h3>Contribution rachidienne ?</h3><p>Signes neurologiques, cluster de Wainner, symptômes modifiés par le rachis cervical.</p><div class="stat">3 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="cervEnd" style="left: 520px; top: 1200px;"><div class="k"><i></i>Tableau clinique</div><h3>Contribution rachidienne</h3><p>Sous-classifier selon le contexte.</p></button><button class="node sub" data-id="radic" style="left: 330px; top: 1390px;"><div class="k"><i></i>Sous-type</div><h3>Radiculopathie cervicale</h3><p>Signes neuro (déficit, réflexes, dermatome). Surveillance du déficit moteur ; aggravation → avis médical.</p></button><button class="node sub" data-id="refer" style="left: 690px; top: 1390px;"><div class="k"><i></i>Sous-type</div><h3>Douleur somatique référée</h3><p>Pas de déficit neuro, douleur reproduite par la mobilisation cervicale. Traitement du rachis cervical.</p></button><button class="node outcome" data-id="rcrsp" style="left: 1000px; top: 1420px;"><div class="k"><i></i>Diagnostic d'exclusion</div><h3>Douleur liée à la coiffe (sous-acromiale)</h3><p>RCRSP : douleur à l'élévation et à la RE, reproduite par la charge.</p></button><button class="node sub" data-id="smp" style="left: 1000px; top: 1620px;"><div class="k"><i></i>Orienter le traitement</div><h3>Procédure de modification des symptômes</h3><p>SSMP : tester l'effet de la position thoracique, scapulaire et de la tête humérale sur la douleur.</p></button><button class="node sub" data-id="tear" style="left: 1360px; top: 1620px;"><div class="k"><i></i>Sous-type</div><h3>Suspicion de rupture transfixiante</h3><p>Âge &gt; 60 ans, faiblesse en élévation et en RE, lag signs, trauma. Les signes de faiblesse sont spécifiques mais peu sensibles → échographie et avis selon le profil.</p></button><button class="node sub" data-id="calc" style="left: 1720px; top: 1620px;"><div class="k"><i></i>Sous-type</div><h3>Tendinopathie calcifiante</h3><p>Douleur aiguë intense, souvent nocturne, sans trauma. Radiographie pour confirmer.</p></button></div>
+    <div class="hint" id="hint">Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc</div>
+    <div class="ctrl">
+      <button id="zin" aria-label="Zoomer">+</button>
+      <button id="zout" aria-label="Dézoomer">−</button>
+      <button id="fit" aria-label="Recentrer la carte" title="Recentrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--sand)"></i>Question</span>
+      <span><i style="background:var(--teal)"></i>Tableau clinique</span>
+      <span><i style="background:var(--violet)"></i>Sous-classification</span>
+      <span><i style="background:var(--coral)"></i>Orientation médicale</span>
+    </div>
+  </main>
+
+  <aside class="panel" id="panel" aria-live="polite">
+    <div class="p-head">
+      <button class="p-close" id="close" aria-label="Fermer le panneau">✕</button>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="p-kind" id="pkind"></div>
+      <h2 class="p-title" id="ptitle"></h2>
+    </div>
+    <div class="p-body" id="pbody"></div>
+  </aside>
+</div>
+
+<script>
+/* ================= CONTENU CLINIQUE ================= */
+const SRC = {
+  bess: {t:"Kulkarni R et al. BESS/BOA Patient Care Pathways — Subacromial shoulder pain & red flags. Shoulder Elbow", y:2015},
+  bessFS: {t:"NICE CKS — Shoulder pain: frozen shoulder (mise à jour) ; BESS/BOA Frozen Shoulder pathway 2015", y:2022},
+  kelley: {t:"Kelley MJ et al. Shoulder pain and mobility deficits: adhesive capsulitis. JOSPT CPG", y:2013},
+  farber: {t:"Farber AJ et al. Clinical assessment of three common tests for traumatic anterior shoulder instability. JBJS Am", y:2006},
+  lo: {t:"Lo IK et al. An evaluation of the apprehension, relocation, and surprise tests. Am J Sports Med", y:2004},
+  lizzio: {t:"Lizzio VA et al. Clinical evaluation and physical exam findings in anterior shoulder instability. Curr Rev Musculoskelet Med", y:2017},
+  noorani: {t:"Lewis A, Kitamura T, Bayley JIL. The classification of shoulder instability: new light through old windows (triangle de Stanmore). Curr Orthop", y:2004},
+  chrono: {t:"Chronopoulos E et al. Diagnostic value of physical tests for isolated chronic acromioclavicular lesions. Am J Sports Med", y:2004},
+  walton: {t:"Walton J et al. Diagnostic values of tests for acromioclavicular joint pain. JBJS Am", y:2004},
+  wainner: {t:"Wainner RS et al. Reliability and diagnostic accuracy of the clinical examination for cervical radiculopathy. Spine", y:2003},
+  thoomes: {t:"Thoomes EJ et al. Value of physical tests in diagnosing cervical radiculopathy: systematic review. Spine J", y:2018},
+  requejo: {t:"Requejo-Salinas N, Lewis J et al. International consensus on clinical descriptors for diagnosing RCRSP (Delphi). Braz J Phys Ther", y:2022},
+  lewis: {t:"Lewis J. Rotator cuff related shoulder pain: assessment, management and uncertainties. Man Ther", y:2016},
+  smp: {t:"Lewis J et al. Inter-rater reliability of the Shoulder Symptom Modification Procedure. BMJ Open Sport Exerc Med", y:2016},
+  murrell: {t:"Murrell GA, Walton JR. Diagnosis of rotator cuff tears. Lancet", y:2001},
+  millar: {t:"Millar NL et al. Frozen shoulder. Nat Rev Dis Primers", y:2022},
+};
+const NOW = 2026;
+
+/* kind: start | question | outcome | danger | sub */
+const N = [
+ {id:"start", kind:"start", x:1000, y:80, k:"Point d'entrée", title:"Épaule douloureuse ou gênante",
+  p:"Anamnèse complète avant tout test : mécanisme, irritabilité, nuit, attentes du patient.",
+  body:[["Avant de tester",["Mécanisme : traumatique ou progressif ?","Irritabilité : intensité, facilité à déclencher, temps de retour au calme.","Localisation : douleur en-dessous du coude, paresthésies, douleur cervicale associée ?","Âge et terrain : >50 ans, diabète, dysthyroïdie (capsulite), antécédent de cancer."]]],
+  src:["lewis"]},
+
+ {id:"rf", kind:"question", x:1000, y:260, k:"Question 1", title:"Drapeaux rouges ?",
+  p:"Trauma + perte de fonction, fièvre, antécédent néoplasique, douleur viscérale référée.",
+  body:[["À rechercher systématiquement",["Luxation non réduite ou fracture après trauma (déformation, perte de rotation).","Suspicion tumorale : antécédent de cancer, amaigrissement inexpliqué, douleur nocturne non mécanique, masse.","Infection : fièvre, frissons, injection ou chirurgie récente, immunodépression.","Rupture aiguë de coiffe post-traumatique avec perte d'élévation active (pseudoparalysie).","Douleur référée viscérale : épaule G à l'effort + dyspnée (cardiaque), épaule D post-prandiale (biliaire), apex pulmonaire (Pancoast).","Déficit neurologique progressif."]]],
+  alert:"Un seul drapeau rouge crédible suffit à suspendre le bilan et orienter.",
+  src:["bess"]},
+
+ {id:"rfEnd", kind:"danger", x:1500, y:260, k:"Orientation", title:"Orientation médicale",
+  p:"Urgente si trauma récent, fièvre, suspicion cardiaque ou néoplasique.",
+  body:[["Conduite",["Urgences : suspicion cardiaque, infection articulaire, luxation non réduite.","Avis chirurgical rapide (< 2 semaines) : rupture aiguë de coiffe traumatique chez un patient actif.","Médecin traitant + imagerie : suspicion tumorale, douleur nocturne inexpliquée."]]],
+  src:["bess"]},
+
+ {id:"rom", kind:"question", x:1000, y:450, k:"Question 2", title:"Amplitudes passives complètes ?",
+  p:"Comparer les rotations passives au côté sain, coude au corps.",
+  tests:[{n:"Rotation externe passive coude au corps", h:"Patient assis ou couché, coude à 90°, scapula stabilisée. Comparer bilatéralement.", m:[["Critère","perte ≥ 50 % ou < 30°"]]},
+         {n:"Élévation et abduction passives", h:"Chercher une perte ≥ 25 % dans au moins 2 plans par rapport au côté sain."}],
+  body:[["Pourquoi en premier",["Une raideur vraie change toute la suite : les tests provocateurs perdent leur sens si l'articulation ne bouge pas.","Distinguer raideur vraie (capsule ou articulation) et pseudo-raideur antalgique : la garde musculaire cède souvent avec la mise en confiance."]]],
+  src:["kelley","bessFS"]},
+
+ {id:"stiff", kind:"outcome", x:1500, y:450, k:"Tableau clinique", title:"Épaule raide",
+  p:"Perte globale active ET passive, RE passive la plus touchée.",
+  body:[["Étape suivante",["Radiographie standard indiquée devant toute épaule raide : elle seule distingue capsulite et incongruence articulaire.","La capsulite est un diagnostic clinique, mais seulement si la radio est normale."]]],
+  src:["bessFS","millar"]},
+
+ {id:"xray", kind:"question", x:1950, y:450, k:"Question 2b", title:"Radiographie normale ?",
+  p:"Face + profil axillaire ou de Lamy.",
+  body:[["Ce que la radio exclut",["Arthrose gléno-humérale.","Luxation postérieure verrouillée (souvent manquée sur une seule incidence).","Nécrose de la tête humérale, calcification volumineuse."]]],
+  src:["bessFS"]},
+
+ {id:"caps", kind:"outcome", x:1950, y:640, k:"Tableau clinique", title:"Capsulite rétractile",
+  p:"Pic 40–60 ans, terrain diabétique ou thyroïdien. Évolution spontanément favorable mais longue.",
+  body:[["Repères",["Clinique : RE passive très limitée, radio normale, résistance testée peu douloureuse.","Évolution : souvent plus de 12 mois, gêne résiduelle possible."],],["Sous-classifier par irritabilité",["Haute : douleur au moindre mouvement, nuits perturbées → éducation, antalgie, mobilité douce sans douleur, discussion infiltration avec le médecin.","Basse : raideur > douleur → mobilisation en fin d'amplitude, étirements soutenus, renforcement."]]],
+  src:["kelley","millar","bessFS"]},
+
+ {id:"oa", kind:"outcome", x:2350, y:640, k:"Tableau clinique", title:"Arthrose gléno-humérale",
+  p:"Pincement articulaire, crépitements, sujet plus âgé.",
+  body:[["Conduite",["Rééducation : maintien d'amplitude, renforcement, gestion de charge.","Avis chirurgical si douleur et incapacité résistantes au traitement conservateur."]]],
+  src:["bessFS"]},
+
+ {id:"lpd", kind:"danger", x:2350, y:450, k:"Orientation", title:"Luxation postérieure verrouillée",
+  p:"RE impossible après crise convulsive, électrocution ou trauma.",
+  body:[["Conduite",["Orientation orthopédique rapide.","Piège classique : diagnostiquée à tort comme capsulite."]]],
+  src:["bessFS"]},
+
+ {id:"inst", kind:"question", x:1000, y:660, k:"Question 3", title:"Signes d'instabilité ?",
+  p:"Histoire de luxation ou sensation de déboîtement + appréhension.",
+  tests:[{n:"Test d'appréhension", h:"Couché, bras à 90° d'abduction, RE progressive. Positif si APPRÉHENSION (pas seulement douleur).", m:[["Se","72 %"],["Sp","96 %"],["LR+","20,2",1]], s:"farber"},
+         {n:"Relocation (Jobe)", h:"Même position, poussée postérieure sur la tête humérale. Positif si l'appréhension disparaît.", m:[["Se","81 %"],["Sp","92 %"],["LR+","10,4",1]], s:"farber"},
+         {n:"Surprise / release", h:"Retrait brutal de la poussée postérieure. Positif si l'appréhension réapparaît.", m:[["Se","64 %"],["Sp","99 %",1]], s:"lo"}],
+  body:[["Interprétation",["Le critère est l'appréhension. Si on retient la douleur, la précision chute nettement.","Les trois tests positifs ensemble sont très spécifiques d'une instabilité antérieure traumatique.","Hyperlaxité (sulcus, Beighton) ≠ instabilité : la laxité n'est pathologique que si elle est symptomatique."]]],
+  src:["farber","lo","lizzio"]},
+
+ {id:"unstable", kind:"outcome", x:520, y:660, k:"Tableau clinique", title:"Épaule instable",
+  p:"Sous-classifier avec le triangle de Stanmore.",
+  body:[["Pourquoi sous-classifier",["Le traitement s'oppose selon le type : stabilisation chirurgicale possible en type I, rééducation du contrôle moteur en type III.","Les patients glissent souvent d'une catégorie à l'autre : réévaluer."]]],
+  src:["noorani","lizzio"]},
+
+ {id:"s1", kind:"sub", x:150, y:850, k:"Stanmore I", title:"Traumatique structurelle",
+  p:"Luxation traumatique, lésion de Bankart. Jeune sportif : risque de récidive élevé → avis chirurgical à discuter.", src:["noorani"]},
+ {id:"s2", kind:"sub", x:420, y:850, k:"Stanmore II", title:"Atraumatique structurelle",
+  p:"Laxité capsulaire, pas de trauma majeur. Rééducation en première intention.", src:["noorani"]},
+ {id:"s3", kind:"sub", x:690, y:850, k:"Stanmore III", title:"Pattern musculaire anormal",
+  p:"Recrutement musculaire inadapté (ex. grand pectoral, grand dorsal). Rééducation du contrôle moteur, chirurgie contre-indiquée.", src:["noorani"]},
+
+ {id:"ac", kind:"question", x:1000, y:1000, k:"Question 4", title:"Cluster acromio-claviculaire ?",
+  p:"Douleur localisée au sommet de l'épaule, sujet actif ou travailleur manuel.",
+  tests:[{n:"Cross-body adduction", h:"Bras à 90° de flexion, adduction horizontale maximale. Positif si douleur AC.", m:[["Se","77 %"]], s:"chrono"},
+         {n:"AC resisted extension", h:"Bras à 90° de flexion et adduction, le patient pousse en abduction horizontale contre résistance.", m:[["Se","72 %"]], s:"chrono"},
+         {n:"O'Brien (compression active)", h:"Bras à 90° de flexion, 10° d'adduction, pouce vers le bas, résister à une poussée vers le bas. Positif si douleur AC.", m:[["Sp","95 %",1]], s:"chrono"},
+         {n:"Palpation de l'AC", h:"Sensible mais très peu spécifique : utile pour EXCLURE.", m:[["Se","96 %",1],["Sp","10 %"]], s:"walton"}],
+  body:[["Lecture du cluster",["3 tests positifs sur 3 : Se 25 %, Sp 97 %. Très bon pour confirmer, faible pour exclure.","Palpation non douloureuse : l'origine AC devient peu probable."]]],
+  src:["chrono","walton"]},
+
+ {id:"acEnd", kind:"outcome", x:1500, y:1000, k:"Tableau clinique", title:"Douleur d'origine AC",
+  p:"Arthropathie AC, ostéolyse distale de la clavicule, entorse AC.",
+  body:[["Sous-classifier",["Traumatique : grade de Rockwood (radio) → les grades I–III se traitent majoritairement en conservateur.","Non traumatique : arthropathie, ostéolyse du sportif de musculation → gestion de charge (développé couché, dips)."]]],
+  src:["chrono"]},
+
+ {id:"cerv", kind:"question", x:1000, y:1200, k:"Question 5", title:"Contribution rachidienne ?",
+  p:"Signes neurologiques, cluster de Wainner, symptômes modifiés par le rachis cervical.",
+  tests:[{n:"Cluster de Wainner", h:"ULTT A (médian) + rotation cervicale < 60° côté symptomatique + test de distraction + Spurling A.", m:[["3/4 Sp","94 %"],["LR+","6,1"],["4/4 Sp","99 %",1],["LR+","30,3",1]], s:"wainner"},
+         {n:"ULTT A seul", h:"Très sensible : un ULTT A négatif rend une radiculopathie cervicale peu probable.", m:[["Se","97 %",1],["Sp","22 %"]], s:"wainner"},
+         {n:"Modification par le cou", h:"Les mouvements ou le positionnement cervical modifient-ils la douleur d'épaule ?"}],
+  body:[["Limites",["Wainner : petit échantillon, intervalles de confiance très larges, recrutement hospitalier.","Une validation externe récente retrouve une faible sensibilité du cluster complet : il sert à confirmer, pas à exclure.","Douleur sous le coude, paresthésies ou déficit dermatomal : penser rachis d'emblée."]]],
+  src:["wainner","thoomes"]},
+
+ {id:"cervEnd", kind:"outcome", x:520, y:1200, k:"Tableau clinique", title:"Contribution rachidienne",
+  p:"Sous-classifier selon le contexte.",
+  body:[["Avant de traiter l'épaule",["Bilan neurologique complet : dermatomes, myotomes, réflexes.","Traiter le cou et réévaluer l'épaule : si la douleur d'épaule change, la contribution est confirmée."]]],
+  src:["thoomes"]},
+
+ {id:"radic", kind:"sub", x:330, y:1390, k:"Sous-type", title:"Radiculopathie cervicale",
+  p:"Signes neuro (déficit, réflexes, dermatome). Surveillance du déficit moteur ; aggravation → avis médical.", src:["thoomes"]},
+ {id:"refer", kind:"sub", x:690, y:1390, k:"Sous-type", title:"Douleur somatique référée",
+  p:"Pas de déficit neuro, douleur reproduite par la mobilisation cervicale. Traitement du rachis cervical.", src:["thoomes"]},
+
+ {id:"rcrsp", kind:"outcome", x:1000, y:1420, k:"Diagnostic d'exclusion", title:"Douleur liée à la coiffe (sous-acromiale)",
+  p:"RCRSP : douleur à l'élévation et à la RE, reproduite par la charge.",
+  body:[["Ce que dit le consensus",["Consensus international 2022 : 18 descripteurs cliniques retenus, aucun test spécial n'a atteint le consensus.","Le diagnostic repose sur le tableau : douleur à l'élévation et en RE, douleur à la mise en charge isométrique ou résistée, absence de douleur référée, amplitudes passives conservées.","Les tests « d'impingement » (Neer, Hawkins) ne localisent pas une structure."]],["Sous-classifier selon le contexte",["Irritabilité et tolérance à la charge.","Trauma récent + faiblesse franche : penser rupture transfixiante.","Douleur aiguë très intense sans trauma : penser tendinopathie calcifiante."]]],
+  src:["requejo","lewis"]},
+
+ {id:"smp", kind:"sub", x:1000, y:1620, k:"Orienter le traitement", title:"Procédure de modification des symptômes",
+  p:"SSMP : tester l'effet de la position thoracique, scapulaire et de la tête humérale sur la douleur.", src:["smp"]},
+ {id:"tear", kind:"sub", x:1360, y:1620, k:"Sous-type", title:"Suspicion de rupture transfixiante",
+  p:"Âge > 60 ans, faiblesse en élévation et en RE, lag signs, trauma. Les signes de faiblesse sont spécifiques mais peu sensibles → échographie et avis selon le profil.", src:["murrell","requejo"]},
+ {id:"calc", kind:"sub", x:1720, y:1620, k:"Sous-type", title:"Tendinopathie calcifiante",
+  p:"Douleur aiguë intense, souvent nocturne, sans trauma. Radiographie pour confirmer.", src:["lewis"]},
+];
+
+const E = [
+ ["start","rf",""],
+ ["rf","rfEnd","Oui"],["rf","rom","Non"],
+ ["rom","stiff","Non"],["rom","inst","Oui"],
+ ["stiff","xray",""],["xray","caps","Oui"],["xray","oa","Non"],["xray","lpd","Non"],
+ ["inst","unstable","Oui"],["inst","ac","Non"],
+ ["unstable","s1","sub"],["unstable","s2","sub"],["unstable","s3","sub"],
+ ["ac","acEnd","Oui"],["ac","cerv","Non"],
+ ["cerv","cervEnd","Oui"],["cerv","rcrsp","Non"],
+ ["cervEnd","radic","sub"],["cervEnd","refer","sub"],
+ ["rcrsp","smp","sub"],["rcrsp","tear","sub"],["rcrsp","calc","sub"],
+];
+
+/* ================= RENDU ================= */
+const W = 2600, H = 1800;
+const world = document.getElementById("world");
+const svg = document.getElementById("edges");
+const stage = document.getElementById("stage");
+world.style.width = W+"px"; world.style.height = H+"px";
+svg.setAttribute("width",W); svg.setAttribute("height",H);
+const byId = Object.fromEntries(N.map(n=>[n.id,n]));
+const KIND = {start:"Départ",question:"Question",outcome:"Tableau clinique",danger:"Orientation médicale",sub:"Sous-classification"};
+
+N.forEach(n=>{
+  const el = document.createElement("button");
+  el.className = "node "+n.kind;
+  el.style.left = n.x+"px"; el.style.top = n.y+"px";
+  el.dataset.id = n.id;
+  const firstStat = (n.tests||[]).flatMap(t=>t.m||[]).find(m=>m[2]);
+  el.innerHTML = `<div class="k"><i></i>${n.k}</div><h3>${n.title}</h3>${n.p?`<p>${n.p}</p>`:""}${n.tests?`<div class="stat">${n.tests.length} test${n.tests.length>1?"s":""} · valeurs diagnostiques</div>`:""}`;
+  el.addEventListener("click", ev=>{ if(moved) return; select(n.id,true); });
+  world.appendChild(el);
+  n.el = el;
+});
+
+function box(n){ return {x:n.x, y:n.y, w:n.el.offsetWidth, h:n.el.offsetHeight}; }
+function drawEdges(){
+  svg.innerHTML = "";
+  E.forEach((e,i)=>{
+    const a = box(byId[e[0]]), b = box(byId[e[1]]);
+    let x1,y1,x2,y2,d;
+    const horiz = Math.abs(a.y-b.y) < 40;
+    if(horiz){
+      const dir = b.x > a.x ? 1 : -1;
+      x1 = a.x + dir*a.w/2; y1 = a.y; x2 = b.x - dir*b.w/2; y2 = b.y;
+      d = `M${x1},${y1} L${x2},${y2}`;
+    } else {
+      x1 = a.x; y1 = a.y + a.h/2; x2 = b.x; y2 = b.y - b.h/2;
+      const my = (y1+y2)/2;
+      d = `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`;
+    }
+    const p = document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",d); p.dataset.e = i; svg.appendChild(p);
+    // flèche
+    const ang = horiz ? (x2 > x1 ? 0 : 180) : 90;
+    const ar = document.createElementNS("http://www.w3.org/2000/svg","path");
+    ar.setAttribute("d","M-7,-5 L0,0 L-7,5"); ar.setAttribute("transform",`translate(${x2},${y2}) rotate(${ang})`);
+    ar.dataset.e = i; svg.appendChild(ar);
+    if(e[2] && e[2]!=="sub"){
+      const g = document.createElementNS("http://www.w3.org/2000/svg","g"); g.dataset.e = i;
+      const lx = horiz ? (x1+x2)/2 : (x1+x2)/2, ly = horiz ? y1 : (y1+y2)/2;
+      const yes = e[2]==="Oui";
+      g.innerHTML = `<rect class="lbl-bg" x="${lx-22}" y="${ly-11}" width="44" height="22" rx="11"/><text x="${lx}" y="${ly+4}" text-anchor="middle" class="${yes?"yes":"no"}">${e[2]}</text>`;
+      svg.appendChild(g);
+    }
+  });
+}
+
+/* ---------- Pan / zoom ---------- */
+let s = 1, tx = 0, ty = 0;
+function apply(anim){
+  world.style.transition = anim ? "transform .55s cubic-bezier(.2,.8,.2,1)" : "none";
+  world.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
+}
+function clampS(v){ return Math.min(1.8, Math.max(.1, v)); }
+function zoomAt(f, cx, cy, anim){
+  const ns = clampS(s*f); const k = ns/s;
+  tx = cx - (cx - tx)*k; ty = cy - (cy - ty)*k; s = ns; apply(anim);
+}
+function fit(anim){
+  const r = stage.getBoundingClientRect();
+  if(r.width < 720){ s = clampS(r.width/700); tx = r.width/2 - 1000*s; ty = 24 - 20*s; apply(anim); return; }
+  const minX=0, minY=20, maxX=2560, maxY=1720;
+  s = clampS(Math.min(r.width/(maxX-minX), r.height/(maxY-minY)) * .96);
+  tx = (r.width - (maxX-minX)*s)/2 - minX*s;
+  ty = (r.height - (maxY-minY)*s)/2 - minY*s;
+  apply(anim);
+}
+function focusNode(id){
+  const n = byId[id], r = stage.getBoundingClientRect();
+  const panelW = window.innerWidth > 720 ? Math.min(440, r.width) : 0;
+  const panelH = window.innerWidth <= 720 ? r.height*.68 : 0;
+  s = Math.max(s, .75);
+  tx = (r.width - panelW)/2 - n.x*s;
+  ty = (r.height - panelH)/2 - n.y*s;
+  apply(true);
+}
+
+const pts = new Map(); let moved = false, start = null, pinch = null;
+stage.addEventListener("pointerdown", e=>{
+  if(e.target.closest(".ctrl,.legend")) return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  moved = false; start = {x:e.clientX,y:e.clientY,tx,ty};
+  if(pts.size===2){ const [a,b]=[...pts.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y), s}; }
+});
+stage.addEventListener("pointermove", e=>{
+  if(!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const r = stage.getBoundingClientRect();
+  if(pts.size===2 && pinch){
+    const [a,b]=[...pts.values()];
+    const d = Math.hypot(a.x-b.x,a.y-b.y);
+    zoomAt((pinch.s*d/pinch.d)/s, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top);
+    if(!moved){ try{stage.setPointerCapture(e.pointerId);}catch(_){} } moved = true; return;
+  }
+  const dx = e.clientX-start.x, dy = e.clientY-start.y;
+  if(Math.abs(dx)+Math.abs(dy) > 5){ if(!moved){ try{stage.setPointerCapture(e.pointerId);}catch(_){} } moved = true; stage.classList.add("dragging"); hideHint(); }
+  if(moved){ tx = start.tx+dx; ty = start.ty+dy; apply(); }
+});
+function up(e){ pts.delete(e.pointerId); if(pts.size<2) pinch=null; stage.classList.remove("dragging");
+  if(pts.size===1){ const p=[...pts.values()][0]; start={x:p.x,y:p.y,tx,ty}; }
+  setTimeout(()=>{ if(!pts.size) moved=false; },0); }
+stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+stage.addEventListener("wheel", e=>{ e.preventDefault(); hideHint();
+  const r = stage.getBoundingClientRect();
+  zoomAt(Math.exp(-e.deltaY*0.0015), e.clientX-r.left, e.clientY-r.top);
+},{passive:false});
+document.getElementById("zin").onclick = ()=>{ const r=stage.getBoundingClientRect(); zoomAt(1.25,r.width/2,r.height/2,true); };
+document.getElementById("zout").onclick = ()=>{ const r=stage.getBoundingClientRect(); zoomAt(.8,r.width/2,r.height/2,true); };
+document.getElementById("fit").onclick = ()=>fit(true);
+let hintT; function hideHint(){ const h=document.getElementById("hint"); h.style.opacity=0; }
+
+/* ---------- Sélection & panneau ---------- */
+const parents = {}; E.forEach(e=>{ (parents[e[1]] ||= []).push(e[0]); });
+function pathTo(id){ const p=[id]; let c=id; while(parents[c]){ c=parents[c][0]; p.unshift(c);} return p; }
+const panel = document.getElementById("panel");
+let current = null;
+
+function metricHTML(m){ return `<span class="metric${m[2]?" good":""}"><em>${m[0]}</em>${m[1]}</span>`; }
+function srcHTML(k){ const o=SRC[k]; return `<li>${o.t}, ${o.y}${NOW-o.y>10?`<span class="old">étude fondatrice &gt;10 ans</span>`:""}</li>`; }
+
+function select(id, focus){
+  current = id;
+  const n = byId[id], path = pathTo(id);
+  document.querySelectorAll(".node").forEach(el=>{
+    el.classList.toggle("sel", el.dataset.id===id);
+    el.classList.toggle("path", path.includes(el.dataset.id) && el.dataset.id!==id);
+  });
+  const onEdges = new Set(); E.forEach((e,i)=>{ const ia=path.indexOf(e[0]); if(ia>=0 && path[ia+1]===e[1]) onEdges.add(String(i)); });
+  svg.querySelectorAll("[data-e]").forEach(el=>el.classList.toggle("on", onEdges.has(el.dataset.e)));
+
+  document.getElementById("crumbs").innerHTML = path.slice(0,-1).map(p=>`<button data-go="${p}">${byId[p].title}</button>`).join("<span>›</span>");
+  const kc = {start:"var(--teal)",question:"var(--sand)",outcome:"var(--teal)",danger:"var(--coral)",sub:"var(--violet)"}[n.kind];
+  const pk = document.getElementById("pkind"); pk.textContent = n.k; pk.style.color = kc;
+  document.getElementById("ptitle").textContent = n.title;
+
+  let h = "";
+  if(n.p) h += `<p>${n.p}</p>`;
+  if(n.alert) h += `<div class="alert">${n.alert}</div>`;
+  if(n.tests) h += `<section><h4>Tests & valeurs diagnostiques</h4>${n.tests.map(t=>`<div class="test"><b>${t.n}</b><p>${t.h}</p>${t.m?`<div class="metrics">${t.m.map(metricHTML).join("")}</div>`:""}</div>`).join("")}</section>`;
+  (n.body||[]).forEach(([t,items])=>{ h += `<section><h4>${t}</h4><ul>${items.map(i=>`<li>${i}</li>`).join("")}</ul></section>`; });
+  const outs = E.filter(e=>e[0]===id);
+  if(outs.length) h += `<section><h4>${n.kind==="question"?"Ta réponse":"Suite du raisonnement"}</h4><div class="next">${outs.map(e=>{
+      const cls = e[2]==="Oui"?"yes":e[2]==="Non"?"no":"sub"; const lab = e[2]==="sub"?"Type":(e[2]||"Suite");
+      return `<button class="go" data-go="${e[1]}"><span class="tag ${e[2]?cls:"yes"}">${lab}</span><span>${byId[e[1]].title}</span></button>`; }).join("")}</div></section>`;
+  if(n.src) h += `<section class="src"><h4>Sources</h4><ul>${n.src.map(srcHTML).join("")}</ul></section>`;
+  h += `<p class="disclaimer">Outil pédagogique d'aide au raisonnement clinique. Il ne remplace ni l'examen ni le jugement du praticien.</p>`;
+  const body = document.getElementById("pbody"); body.innerHTML = h; body.scrollTop = 0;
+  panel.classList.add("open");
+  if(focus) focusNode(id);
+  try{ history.replaceState(null,"","#"+id); }catch(_){}
+}
+panel.addEventListener("click", e=>{ const b=e.target.closest("[data-go]"); if(b) select(b.dataset.go,true); });
+document.getElementById("close").onclick = ()=>{ panel.classList.remove("open"); document.querySelectorAll(".node.sel,.node.path").forEach(el=>el.classList.remove("sel","path")); svg.querySelectorAll(".on").forEach(el=>el.classList.remove("on")); current=null; };
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.getElementById("close").click(); });
+
+/* ---------- Recherche ---------- */
+const norm = t=>t.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const index = N.map(n=>({id:n.id, txt:norm([n.title,n.k,n.p,(n.tests||[]).map(t=>t.n+" "+t.h).join(" "),(n.body||[]).flat(2).join(" ")].join(" "))}));
+const q = document.getElementById("q");
+q.addEventListener("input", ()=>{
+  const v = norm(q.value.trim());
+  document.querySelectorAll(".node").forEach(el=>el.classList.remove("hit"));
+  if(!v){ stage.classList.remove("dim"); return; }
+  const hits = index.filter(i=>i.txt.includes(v)).map(i=>i.id);
+  stage.classList.toggle("dim", true);
+  hits.forEach(id=>byId[id].el.classList.add("hit"));
+});
+q.addEventListener("keydown", e=>{ if(e.key==="Enter"){ const h=document.querySelector(".node.hit"); if(h){ select(h.dataset.id,true); } } });
+
+/* ---------- Démarrage ---------- */
+function init(){
+  drawEdges(); fit(false);
+  const h = (location.hash||"").slice(1);
+  if(byId[h]) setTimeout(()=>select(h,true),300);
+  setTimeout(hideHint, 6000);
+}
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(init); } else { window.addEventListener("load", init); }
+window.addEventListener("resize", ()=>{ if(!current) fit(false); });
+</script>
+
+
+
+<script async="" src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="4971f02a-9af7-402f-983d-73de57eb486c" data-app-host="app.netlify.com" data-account-tier="free"></script>
+<iframe id="nl-badge-frame" title="Powered by Netlify" srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;dark&quot;&gt;&lt;style&gt;
+    :root{--nl-vw:1280px;--nl-vh:720px}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+    body{display:flex;align-items:flex-end;justify-content:flex-end;height:100vh;
+      padding:8px 18px 18px 8px;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#f4f9f9;-webkit-font-smoothing:antialiased}
+    .nl-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:10px;width:max-content;max-width:calc(var(--nl-vw,100vw) - 26px)}
+    button{font-family:inherit;cursor:pointer}
+    :focus-visible{outline:2px solid #32e6e2;outline-offset:2px;border-radius:6px}
+    .nl-icon-btn{position:relative;flex:none;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid transparent;background:transparent;color:#d5e3e6;transition:background .15s ease,color .15s ease}
+    .nl-icon-btn:hover{background:rgba(255,255,255,0.08);color:#f4f9f9}
+    .nl-tap::after{content:&quot;&quot;;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:max(100%,44px);height:max(100%,44px)}
+    @keyframes nl-rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+  
+      .nl-card{position:relative;display:none;width:min(340px,calc(var(--nl-vw,100vw) - 26px));max-height:calc(var(--nl-vh,100vh) - 84px);overflow-y:auto;background:linear-gradient(180deg,#132832 0%,#0e1e25 100%);border:1px solid rgba(255,255,255,0.09);border-radius:18px;padding:18px;transform-origin:bottom right;animation:nl-rise .3s cubic-bezier(.34,1.4,.4,1) both}
+      .nl-card.open{display:block}
+      .nl-card-close{position:absolute;top:10px;right:10px}
+      .nl-card h2{margin:0;padding-right:30px;font-size:16px;font-weight:750;letter-spacing:-0.015em;line-height:1.35}
+      .nl-card h2 em{font-style:normal;background:linear-gradient(90deg,#32e6e2,#4d7cfe,#9a6bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .nl-card p{margin:8px 0 0;font-size:12.5px;color:#d5e3e6}
+      .nl-prompt{position:relative;margin-top:14px;background:#10222b;border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;transition:border-color .15s ease,box-shadow .15s ease}
+      .nl-prompt:focus-within{border-color:#05bdba;box-shadow:0 0 0 3px rgba(5,189,186,0.18)}
+      .nl-prompt textarea{display:block;width:100%;height:38px;resize:none;border:0;outline:none;background:transparent;color:#f4f9f9;font:inherit;font-size:13px;line-height:19px;padding:0 28px 0 0}
+      .nl-prompt textarea::placeholder{color:#a9bdc2}
+      .nl-send{position:absolute;right:9px;bottom:9px;width:24px;height:24px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:#05bdba;color:#02191b;transition:background .15s ease}
+      .nl-send:hover{background:#32e6e2}
+      @media (pointer: coarse){
+        .nl-prompt textarea{font-size:16px;line-height:21px;height:42px}
+      }
+      .nl-or{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a9bdc2}
+      .nl-or::before,.nl-or::after{content:&quot;&quot;;flex:1;height:1px;background:rgba(255,255,255,0.09)}
+      .nl-drop{display:flex;align-items:center;justify-content:space-between;gap:6px;text-decoration:none;background:#1b3a45;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:#cfe0e3;transition:background .15s ease,color .15s ease,border-color .15s ease}
+      .nl-drop:hover{background:#224753;color:#f4f9f9;border-color:rgba(50,230,226,0.3)}
+      .nl-drop .nl-arrow{transition:transform .18s cubic-bezier(.34,1.4,.4,1)}
+      .nl-drop:hover .nl-arrow{transform:translateX(3px)}
+      .nl-badge{display:flex;align-items:center;gap:9px;white-space:nowrap;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(180deg,#142b34,#0e1e25);color:#f4f9f9;border-radius:999px;padding:9px 14px 9px 11px;font-size:13px;font-weight:600;letter-spacing:0.01em;transition:border-color .2s ease}
+      .nl-badge:hover{border-color:rgba(50,230,226,0.26)}
+      .nl-hide{display:block;width:100%;margin-top:10px;border:0;background:transparent;color:#a9bdc2;font-size:11.5px;font-weight:600;padding:4px;border-radius:8px;transition:color .15s ease}
+      .nl-hide:hover{color:#d5e3e6;text-decoration:underline}
+      .nl-badge-label{color:#d5e3e6;font-weight:500}
+      .nl-badge-brand{font-weight:750}
+    &lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+      &lt;div class=&quot;nl-wrap&quot;&gt;
+        &lt;section class=&quot;nl-card&quot; id=&quot;nl-card&quot; aria-label=&quot;Build your own site on Netlify&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;nl-icon-btn nl-tap nl-card-close&quot; id=&quot;nl-card-close&quot; aria-label=&quot;Close&quot;&gt;&lt;svg width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4.5 4.5 11.5 11.5M11.5 4.5 4.5 11.5&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+          &lt;h2&gt;&lt;em&gt;Build your own site with Netlify&lt;/em&gt;&lt;/h2&gt;
+          &lt;p&gt;Describe what you want, and an AI agent designs, builds and deploys it in minutes.&lt;/p&gt;
+          &lt;form class=&quot;nl-prompt&quot; action=&quot;https://app.netlify.com/start&quot; method=&quot;get&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;textarea name=&quot;prompt&quot; rows=&quot;2&quot; required maxlength=&quot;300&quot; autocomplete=&quot;off&quot;
+                      enterkeyhint=&quot;go&quot;
+                      placeholder=&quot;A shop for my handmade surfboards&amp;hellip;&quot;
+                      aria-label=&quot;Describe the site you want to build&quot;&gt;&lt;/textarea&gt;
+            &lt;button type=&quot;submit&quot; class=&quot;nl-send nl-tap&quot; aria-label=&quot;Build this site&quot;&gt;&lt;svg width=&quot;13&quot; height=&quot;13&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 12.75v-9.5M3.9 7.35 8 3.25l4.1 4.1&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_source&quot; value=&quot;netlify_badge&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_campaign&quot; value=&quot;loops&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_medium&quot; value=&quot;owned&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_content&quot; value=&quot;prompt&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_id&quot; value=&quot;4971f02a-9af7-402f-983d-73de57eb486c&quot;&gt;
+            
+          &lt;/form&gt;
+          &lt;div class=&quot;nl-or&quot;&gt;&lt;span&gt;or&lt;/span&gt;&lt;/div&gt;
+          &lt;a class=&quot;nl-drop&quot; href=&quot;https://app.netlify.com/drop?utm_source=netlify_badge&amp;utm_campaign=loops&amp;utm_medium=owned&amp;utm_content=drop&amp;utm_id=4971f02a-9af7-402f-983d-73de57eb486c&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;span&gt;Drop a site you already have&lt;/span&gt;&lt;span class=&quot;nl-arrow&quot; aria-hidden=&quot;true&quot;&gt;&amp;rarr;&lt;/span&gt;
+          &lt;/a&gt;
+          
+        &lt;/section&gt;
+        &lt;button type=&quot;button&quot; class=&quot;nl-badge&quot; id=&quot;nl-badge&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;nl-card&quot;
+                aria-label=&quot;Powered by Netlify — build your own site&quot;&gt;
+          &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 32 32&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot;&gt;
+    &lt;path fill=&quot;#fff&quot; d=&quot;M17.9922 18.3225H14.005L13.6746 17.9921V14.005L14.005 13.6746H17.9922L18.3226 14.005V17.9921L17.9922 18.3225Z&quot;/&gt;
+    &lt;g fill=&quot;#05BDBA&quot;&gt;
+      &lt;path d=&quot;M9.6958 24.3311H9.35705L7.6661 22.6401V22.3041L10.2511 19.7164L12.042 19.7191L12.2808 19.9552V21.7461L9.6958 24.3311Z&quot;/&gt;
+      &lt;path d=&quot;M7.6661 9.69576V9.35701L9.35705 7.66606H9.6958L12.2808 10.2511V12.0392L12.042 12.2808H10.2511L7.6661 9.69576Z&quot;/&gt;
+      &lt;path d=&quot;M10.0457 17.4369H0.205466L0 17.2314V14.7658L0.205466 14.5603H10.0457L10.2511 14.7658V17.2314L10.0457 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M31.7945 17.4369H21.9544L21.7489 17.2314V14.7658L21.9544 14.5603H31.7945L32 14.7658V17.2314L31.7945 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 10.0456V2.66547L14.7686 2.46001H17.2343L17.4396 2.66547V10.0456L17.2343 10.2511H14.7686L14.5631 10.0456Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 29.3316V21.9515L14.7686 21.746H17.2343L17.4396 21.9515V29.3316L17.2343 29.5371H14.7686L14.5631 29.3316Z&quot;/&gt;
+    &lt;/g&gt;&lt;/svg&gt;
+          &lt;span&gt;&lt;span class=&quot;nl-badge-label&quot;&gt;Powered by&lt;/span&gt; &lt;span class=&quot;nl-badge-brand&quot;&gt;Netlify&lt;/span&gt;&lt;/span&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;script&gt;
+        
+    function nlSend(){
+      var wrap=document.querySelector('.nl-wrap'),boxes=[];
+      for(var i=0;i&lt;wrap.children.length;i++){
+        var c=wrap.children[i];
+        if(!c.offsetWidth||!c.offsetHeight)continue;
+        boxes.push({x:c.offsetLeft-wrap.offsetLeft+8,
+                    y:c.offsetTop-wrap.offsetTop+8,
+                    w:c.offsetWidth,h:c.offsetHeight});
+      }
+      parent.postMessage({nlHud:'resize',
+        width:wrap.offsetWidth+26,
+        height:wrap.offsetHeight+26,
+        boxes:boxes},'*');
+    }
+    function nlSendSoon(){requestAnimationFrame(nlSend);}
+    window.addEventListener('load',nlSend);
+    window.addEventListener('message',function(e){
+      if(e.source!==parent||!e.data||e.data.nlHud!=='viewport')return;
+      var s=document.documentElement.style;
+      s.setProperty('--nl-vw',e.data.w+'px');
+      s.setProperty('--nl-vh',e.data.h+'px');
+      document.documentElement.classList.toggle('nl-narrow',e.data.w&lt;600);
+      nlSendSoon();
+    });
+    var nlCoarse=window.matchMedia('(pointer: coarse)').matches;
+    function nlSubmit(form){
+      if(form.requestSubmit)return form.requestSubmit();
+      if(form.checkValidity&amp;&amp;!form.checkValidity())
+        return form.reportValidity&amp;&amp;form.reportValidity();
+      form.submit();
+    }
+  
+        var badge=document.getElementById('nl-badge'),card=document.getElementById('nl-card'),
+            box=card.querySelector('textarea');
+        function setOpen(open){
+          card.classList.toggle('open',open);
+          badge.setAttribute('aria-expanded',open?'true':'false');
+          nlSendSoon();
+          if(open&amp;&amp;!nlCoarse)box.focus();
+        }
+        box.addEventListener('keydown',function(e){
+          if(e.key==='Enter'&amp;&amp;!e.shiftKey){e.preventDefault();nlSubmit(box.form);}
+        });
+        badge.addEventListener('click',function(){setOpen(!card.classList.contains('open'));});
+        document.getElementById('nl-card-close').addEventListener('click',function(){setOpen(false);badge.focus();});
+        document.addEventListener('keydown',function(e){
+          if(e.key==='Escape'&amp;&amp;card.classList.contains('open')){setOpen(false);badge.focus();}
+        });
+        card.addEventListener('click',function(e){
+          if(e.target.closest('#nl-hide'))parent.postMessage({nlHud:'state',value:'hidden'},'*');
+        });
+      &lt;/script&gt;
+    &lt;/body&gt;&lt;/html&gt;" style="position: fixed; bottom: 0px; right: 0px; border: 0px; margin: 0px; padding: 0px; background: transparent; color-scheme: dark; z-index: 2147483645; width: 197px; height: 64px; clip-path: path(&quot;M 3 3 H 184 V 51 H 3 Z&quot;);" data-nl-ready="1"></iframe></body></html>

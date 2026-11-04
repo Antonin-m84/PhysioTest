@@ -1,0 +1,786 @@
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="utf-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=4971f02a-9af7-402f-983d-73de57eb486c
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Build Your Rehab · Lombaire</title>
+<meta name="description" content="Carte de raisonnement clinique interactive du bilan lombaire pour kinés : drapeaux rouges, radiculopathie, sténose, sacro-iliaque, tests, Se/Sp et sources.">
+<meta property="og:title" content="Build Your Rehab · Map clinique lombaire">
+<meta property="og:description" content="Drapeaux rouges, rachialgie inflammatoire, radiculopathie, sténose, sacro-iliaque, hanche, composante nociplastique, lombalgie commune : chaque test avec ses valeurs diagnostiques et ses sources.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://buildyourrehab.netlify.app/lombaire/">
+<meta name="theme-color" content="#0c1316">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;family=Manrope:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+html,body{margin:0}
+/* Layout: plein écran, canvas zoomable infini + barre haute + panneau détail latéral (feuille basse sur mobile). Thème sombre unique, choisi. */
+:root{
+  color-scheme: dark;
+  --ink:#0c1316;        /* fond : anthracite bleuté */
+  --ink-2:#121c20;      /* surfaces */
+  --ink-3:#1a272c;      /* surfaces hautes */
+  --line:#2a3a40;       /* traits */
+  --fg:#e7efee;         /* texte */
+  --fg-dim:#8fa3a3;     /* texte secondaire */
+  --teal:#5fd3c3;       /* accent principal */
+  --teal-deep:#1f5c56;
+  --sand:#e6c58f;       /* décision / question */
+  --coral:#ff7a6b;      /* red flag / urgence */
+  --violet:#a99cf2;     /* sous-classification */
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body:"Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--ink);color:var(--fg);font-family:var(--body);font-size:14px;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+.app{position:relative;height:100%;display:flex;flex-direction:column}
+
+/* ---------- Barre haute ---------- */
+.top{position:relative;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:linear-gradient(180deg,rgba(12,19,22,.96),rgba(12,19,22,.82));border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--teal);color:var(--ink);font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:-.02em}
+.brand-name{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em;white-space:nowrap}
+.brand-name span{color:var(--teal)}
+.regions{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.regions::-webkit-scrollbar{display:none}
+.reg{flex:none;border:1px solid transparent;background:none;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--fg-dim);cursor:pointer}
+a.reg{text-decoration:none;display:inline-flex;align-items:center}
+a.reg:hover{color:var(--fg)}
+.reg[aria-current="true"]{background:var(--ink-3);border-color:var(--line);color:var(--fg)}
+.reg[disabled]{cursor:not-allowed;opacity:.55}
+.reg small{font-family:var(--mono);font-size:10px;color:var(--fg-dim);margin-left:4px;letter-spacing:.04em}
+.search{position:relative;flex:0 1 240px;min-width:160px}
+.search input{width:100%;background:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:8px 12px 8px 32px;color:var(--fg);font:inherit;font-size:13px}
+.search input::placeholder{color:var(--fg-dim)}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--fg-dim)}
+
+/* ---------- Canvas ---------- */
+.stage{position:relative;flex:1;overflow:hidden;cursor:grab;touch-action:none;
+  background-color:var(--ink);
+  background-image:radial-gradient(circle at 1px 1px, rgba(95,211,195,.09) 1px, transparent 0);
+  background-size:28px 28px}
+.stage.dragging{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.edges path{fill:none;stroke:var(--line);stroke-width:2;transition:stroke .25s,opacity .25s}
+.edges path.on{stroke:var(--teal);stroke-width:2.6}
+.edges text{fill:var(--fg-dim);font-family:var(--mono);font-size:12px;font-weight:500}
+.edges .lbl-bg{fill:var(--ink);stroke:var(--line);stroke-width:1}
+.edges .yes{fill:var(--teal)}
+.edges .no{fill:var(--coral)}
+.edges g.on .lbl-bg{stroke:var(--teal)}
+
+.node{position:absolute;transform:translate(-50%,-50%);width:250px;padding:14px 16px 14px;border-radius:14px;background:var(--ink-2);border:1px solid var(--line);
+  cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s,opacity .25s,transform .2s;user-select:none}
+.node:hover{border-color:var(--fg-dim)}
+.node .k{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:6px}
+.node .k i{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+.node h3{margin:0;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+.node p{margin:6px 0 0;color:var(--fg-dim);font-size:12.5px;line-height:1.4}
+.node .stat{margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--teal)}
+.node.start{background:var(--teal);border-color:var(--teal);color:var(--ink);width:270px}
+.node.start .k,.node.start p,.node.start .stat{color:rgba(12,19,22,.7)}
+.node.question{border-color:rgba(230,197,143,.45)}
+.node.question .k{color:var(--sand)}
+.node.outcome{border-color:rgba(95,211,195,.5);background:linear-gradient(160deg,#14292a,var(--ink-2) 70%)}
+.node.outcome .k{color:var(--teal)}
+.node.danger{border-color:rgba(255,122,107,.6);background:linear-gradient(160deg,#2a1716,var(--ink-2) 70%)}
+.node.danger .k{color:var(--coral)}
+.node.sub{width:220px;border-style:dashed;border-color:rgba(169,156,242,.45)}
+.node.sub .k{color:var(--violet)}
+.node.sub h3{font-size:15px}
+.node.sel{box-shadow:0 0 0 2px var(--teal),0 12px 40px rgba(0,0,0,.5);border-color:var(--teal)}
+.node.path{border-color:var(--teal)}
+.dim .node:not(.hit){opacity:.22}
+.dim .edges path,.dim .edges g{opacity:.25}
+.node.hit{box-shadow:0 0 0 2px var(--sand)}
+
+/* ---------- Contrôles ---------- */
+.ctrl{position:absolute;z-index:15;left:max(16px,calc(env(safe-area-inset-left,0px) + 16px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px}
+.ctrl button{width:40px;height:40px;border-radius:10px;background:var(--ink-2);border:1px solid var(--line);cursor:pointer;display:grid;place-items:center;font-size:18px}
+.ctrl button:hover{border-color:var(--teal)}
+.legend{position:absolute;z-index:15;left:max(72px,calc(env(safe-area-inset-left,0px) + 72px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:14px;flex-wrap:wrap;
+  padding:8px 12px;border-radius:10px;background:rgba(18,28,32,.9);border:1px solid var(--line);font-size:12px;color:var(--fg-dim);max-width:calc(100% - 100px)}
+.legend span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.hint{position:absolute;z-index:15;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:max(16px,calc(env(safe-area-inset-right,0px) + 16px));padding:6px 12px;border-radius:999px;background:rgba(18,28,32,.9);border:1px solid var(--line);color:var(--fg-dim);font-size:12px;white-space:nowrap;transition:opacity .6s}
+
+/* ---------- Panneau ---------- */
+.panel{position:absolute;z-index:30;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--ink-2);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;transform:translateX(102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);box-shadow:-20px 0 60px rgba(0,0,0,.35)}
+.panel.open{transform:none}
+.p-head{padding:20px 22px 14px;padding-right:max(22px,calc(env(safe-area-inset-right,0px) + 22px));border-bottom:1px solid var(--line)}
+.p-close{position:absolute;top:14px;right:max(14px,calc(env(safe-area-inset-right,0px) + 14px));width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--ink);cursor:pointer;font-size:16px}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:11.5px;color:var(--fg-dim);margin:0 40px 10px 0}
+.crumbs button{background:none;border:0;padding:0;color:var(--fg-dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line)}
+.crumbs button:hover{color:var(--teal)}
+.p-kind{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.p-title{margin:6px 0 0;font-family:var(--display);font-weight:800;font-size:26px;line-height:1.1;letter-spacing:-.02em;text-wrap:balance}
+.p-body{flex:1;overflow-y:auto;padding:18px 22px 28px;padding-right:max(22px,calc(env(safe-area-inset-right,0px) + 22px));display:flex;flex-direction:column;gap:22px}
+.p-body h4{margin:0 0 10px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-dim);font-weight:500}
+.p-body p,.p-body li{line-height:1.55;font-size:14px;max-width:62ch}
+.p-body p{margin:0}
+.p-body ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.test{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--ink)}
+.test + .test{margin-top:8px}
+.test b{font-family:var(--display);font-size:15px;font-weight:700}
+.test p{color:var(--fg-dim);font-size:13px;margin-top:4px}
+.metrics{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.metric{font-family:var(--mono);font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--ink-3);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.metric em{font-style:normal;color:var(--fg-dim);margin-right:4px}
+.metric.good{border-color:var(--teal-deep);color:var(--teal)}
+.next{display:flex;flex-direction:column;gap:8px}
+.go{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--ink);cursor:pointer;transition:border-color .2s,background .2s}
+.go:hover{border-color:var(--teal);background:#10201f}
+.go .tag{flex:none;font-family:var(--mono);font-size:11px;font-weight:500;padding:3px 8px;border-radius:6px;min-width:44px;text-align:center}
+.go .tag.yes{background:rgba(95,211,195,.14);color:var(--teal)}
+.go .tag.no{background:rgba(255,122,107,.14);color:var(--coral)}
+.go .tag.sub{background:rgba(169,156,242,.14);color:var(--violet)}
+.go span:last-child{font-weight:600;font-size:13.5px}
+.src li{font-size:12.5px;color:var(--fg-dim)}
+.old{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:5px;border:1px solid rgba(230,197,143,.4);color:var(--sand);margin-left:6px;white-space:nowrap}
+.alert{border-left:3px solid var(--coral);padding:10px 12px;background:rgba(255,122,107,.07);border-radius:0 10px 10px 0;font-size:13.5px;line-height:1.5}
+.disclaimer{font-size:11.5px;color:var(--fg-dim);border-top:1px solid var(--line);padding-top:14px}
+
+@media (max-width:720px){
+  .search{flex:1 1 100%;order:3}
+  .panel{top:auto;width:100%;height:68%;border-left:0;border-top:1px solid var(--line);border-radius:18px 18px 0 0;transform:translateY(104%)}
+  .panel.open{transform:none}
+  .p-body{padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+  .legend{display:none}
+  .hint{font-size:11px;white-space:normal;max-width:220px;border-radius:12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><div class="brand-mark">BYR</div><div class="brand-name">Build Your <span>Rehab</span></div></div>
+    <nav class="regions" aria-label="Régions">
+      <a class="reg" href="/epaule/">Épaule</a>
+      <a class="reg" href="/genou/">Genou</a>
+      <a class="reg" href="/atm/">ATM</a>
+      <button class="reg" aria-current="true">Lombaire</button>
+      <button class="reg" disabled="">Cervicale<small>BIENTÔT</small></button>
+      <button class="reg" disabled="">Cheville<small>BIENTÔT</small></button>
+      <button class="reg" disabled="">Hanche<small>BIENTÔT</small></button>
+    </nav>
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      <input id="q" type="search" placeholder="Chercher un test, un cluster…" autocomplete="off">
+    </label>
+  </header>
+
+  <main class="stage" id="stage" aria-label="Carte de raisonnement clinique lombaire">
+    <div class="world" id="world" style="width: 2000px; height: 3000px; transition: none; transform: translate(422.317px, 8.64495px) scale(0.226753);">
+      <svg class="edges" id="edges" width="2000" height="3000"><path d="M1000,154.5 C1000,169.5 1000,169.5 1000,184.5" data-e="0"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,184.5) rotate(90)" data-e="0"></path><path d="M1125,260 L1375,260" data-e="1"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,260) rotate(0)" data-e="1"></path><g data-e="1"><rect class="lbl-bg" x="1228" y="249" width="44" height="22" rx="11"></rect><text x="1250" y="264" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,335.5 C1000,400 1000,400 1000,464.5" data-e="2"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,464.5) rotate(90)" data-e="2"></path><g data-e="2"><rect class="lbl-bg" x="978" y="389" width="44" height="22" rx="11"></rect><text x="1000" y="404" text-anchor="middle" class="no">Non</text></g><path d="M1500,324.5 C1500,351 1260,351 1260,377.5" data-e="3"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,377.5) rotate(90)" data-e="3"></path><path d="M1500,324.5 C1500,342 1500,342 1500,359.5" data-e="4"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,359.5) rotate(90)" data-e="4"></path><path d="M1500,324.5 C1500,351.25 1740,351.25 1740,378" data-e="5"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,378) rotate(90)" data-e="5"></path><path d="M1500,324.5 C1500,446.25 1260,446.25 1260,568" data-e="6"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,568) rotate(90)" data-e="6"></path><path d="M1500,324.5 C1500,441.75 1500,441.75 1500,559" data-e="7"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,559) rotate(90)" data-e="7"></path><path d="M1500,324.5 C1500,441.75 1740,441.75 1740,559" data-e="8"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,559) rotate(90)" data-e="8"></path><path d="M875,540 L645,540" data-e="9"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(645,540) rotate(180)" data-e="9"></path><g data-e="9"><rect class="lbl-bg" x="738" y="529" width="44" height="22" rx="11"></rect><text x="760" y="544" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,615.5 C1000,680.75 1000,680.75 1000,746" data-e="10"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,746) rotate(90)" data-e="10"></path><g data-e="10"><rect class="lbl-bg" x="978" y="669.75" width="44" height="22" rx="11"></rect><text x="1000" y="684.75" text-anchor="middle" class="no">Non</text></g><path d="M520,614.5 C520,636.25 400,636.25 400,658" data-e="11"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(400,658) rotate(90)" data-e="11"></path><path d="M520,614.5 C520,636.25 640,636.25 640,658" data-e="12"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(640,658) rotate(90)" data-e="12"></path><path d="M1125,830 L1375,830" data-e="13"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,830) rotate(0)" data-e="13"></path><g data-e="13"><rect class="lbl-bg" x="1228" y="819" width="44" height="22" rx="11"></rect><text x="1250" y="834" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,914 C1000,979.25 1000,979.25 1000,1044.5" data-e="14"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1044.5) rotate(90)" data-e="14"></path><g data-e="14"><rect class="lbl-bg" x="978" y="968.25" width="44" height="22" rx="11"></rect><text x="1000" y="983.25" text-anchor="middle" class="no">Non</text></g><path d="M1500,885.5 C1500,916.75 1260,916.75 1260,948" data-e="15"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,948) rotate(90)" data-e="15"></path><path d="M1500,885.5 C1500,916.75 1500,916.75 1500,948" data-e="16"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,948) rotate(90)" data-e="16"></path><path d="M1500,885.5 C1500,916.75 1740,916.75 1740,948" data-e="17"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,948) rotate(90)" data-e="17"></path><path d="M1500,885.5 C1500,1007.25 1260,1007.25 1260,1129" data-e="18"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,1129) rotate(90)" data-e="18"></path><path d="M1500,885.5 C1500,1007.25 1500,1007.25 1500,1129" data-e="19"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,1129) rotate(90)" data-e="19"></path><path d="M1500,885.5 C1500,1002.75 1740,1002.75 1740,1120" data-e="20"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,1120) rotate(90)" data-e="20"></path><path d="M875,1130 L645,1130" data-e="21"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(645,1130) rotate(180)" data-e="21"></path><g data-e="21"><rect class="lbl-bg" x="738" y="1119" width="44" height="22" rx="11"></rect><text x="760" y="1134" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,1215.5 C1000,1290 1000,1290 1000,1364.5" data-e="22"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1364.5) rotate(90)" data-e="22"></path><g data-e="22"><rect class="lbl-bg" x="978" y="1279" width="44" height="22" rx="11"></rect><text x="1000" y="1294" text-anchor="middle" class="no">Non</text></g><path d="M520,1185.5 C520,1221 400,1221 400,1256.5" data-e="23"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(400,1256.5) rotate(90)" data-e="23"></path><path d="M520,1185.5 C520,1212.25 640,1212.25 640,1239" data-e="24"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(640,1239) rotate(90)" data-e="24"></path><path d="M520,1185.5 C520,1221 160,1221 160,1256.5" data-e="25"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(160,1256.5) rotate(90)" data-e="25"></path><path d="M520,1185.5 C520,1307.25 520,1307.25 520,1429" data-e="26"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(520,1429) rotate(90)" data-e="26"></path><path d="M1125,1440 L1375,1440" data-e="27"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,1440) rotate(0)" data-e="27"></path><g data-e="27"><rect class="lbl-bg" x="1228" y="1429" width="44" height="22" rx="11"></rect><text x="1250" y="1444" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,1515.5 C1000,1580 1000,1580 1000,1644.5" data-e="28"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1644.5) rotate(90)" data-e="28"></path><g data-e="28"><rect class="lbl-bg" x="978" y="1569" width="44" height="22" rx="11"></rect><text x="1000" y="1584" text-anchor="middle" class="no">Non</text></g><path d="M1500,1514.5 C1500,1540.5 1260,1540.5 1260,1566.5" data-e="29"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,1566.5) rotate(90)" data-e="29"></path><path d="M1500,1514.5 C1500,1531.75 1500,1531.75 1500,1549" data-e="30"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,1549) rotate(90)" data-e="30"></path><path d="M1500,1514.5 C1500,1536.25 1740,1536.25 1740,1558" data-e="31"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,1558) rotate(90)" data-e="31"></path><path d="M875,1730 L645,1730" data-e="32"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(645,1730) rotate(180)" data-e="32"></path><g data-e="32"><rect class="lbl-bg" x="738" y="1719" width="44" height="22" rx="11"></rect><text x="760" y="1734" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,1815.5 C1000,1874.75 1000,1874.75 1000,1934" data-e="33"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,1934) rotate(90)" data-e="33"></path><g data-e="33"><rect class="lbl-bg" x="978" y="1863.75" width="44" height="22" rx="11"></rect><text x="1000" y="1878.75" text-anchor="middle" class="no">Non</text></g><path d="M520,1785.5 C520,1821 160,1821 160,1856.5" data-e="34"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(160,1856.5) rotate(90)" data-e="34"></path><path d="M520,1785.5 C520,1812.25 400,1812.25 400,1839" data-e="35"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(400,1839) rotate(90)" data-e="35"></path><path d="M520,1785.5 C520,1816.75 640,1816.75 640,1848" data-e="36"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(640,1848) rotate(90)" data-e="36"></path><path d="M1125,2030 L1375,2030" data-e="37"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1375,2030) rotate(0)" data-e="37"></path><g data-e="37"><rect class="lbl-bg" x="1228" y="2019" width="44" height="22" rx="11"></rect><text x="1250" y="2034" text-anchor="middle" class="yes">Oui</text></g><path d="M1000,2126 C1000,2186 1000,2186 1000,2246" data-e="38"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,2246) rotate(90)" data-e="38"></path><g data-e="38"><rect class="lbl-bg" x="978" y="2175" width="44" height="22" rx="11"></rect><text x="1000" y="2190" text-anchor="middle" class="no">Non</text></g><path d="M1500,2106 C1500,2122.5 1260,2122.5 1260,2139" data-e="39"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1260,2139) rotate(90)" data-e="39"></path><path d="M1500,2106 C1500,2122.5 1500,2122.5 1500,2139" data-e="40"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1500,2139) rotate(90)" data-e="40"></path><path d="M1500,2106 C1500,2127 1740,2127 1740,2148" data-e="41"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1740,2148) rotate(90)" data-e="41"></path><path d="M1000,2414 C1000,2435.25 280,2435.25 280,2456.5" data-e="42"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(280,2456.5) rotate(90)" data-e="42"></path><path d="M1000,2414 C1000,2435.25 520,2435.25 520,2456.5" data-e="43"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(520,2456.5) rotate(90)" data-e="43"></path><path d="M1000,2414 C1000,2422.25 760,2422.25 760,2430.5" data-e="44"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(760,2430.5) rotate(90)" data-e="44"></path><path d="M1000,2414 C1000,2426.5 1240,2426.5 1240,2439" data-e="45"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1240,2439) rotate(90)" data-e="45"></path><path d="M1000,2414 C1000,2426.5 1480,2426.5 1480,2439" data-e="46"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1480,2439) rotate(90)" data-e="46"></path><path d="M1000,2414 C1000,2435.25 1720,2435.25 1720,2456.5" data-e="47"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1720,2456.5) rotate(90)" data-e="47"></path><path d="M1000,2414 C1000,2518 1000,2518 1000,2622" data-e="48"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1000,2622) rotate(90)" data-e="48"></path><path d="M1000,2414 C1000,2512.5 1240,2512.5 1240,2611" data-e="49"></path><path d="M-7,-5 L0,0 L-7,5" transform="translate(1240,2611) rotate(90)" data-e="49"></path></svg>
+    <button class="node start" data-id="start" style="left: 1000px; top: 80px;"><div class="k"><i></i>Point d'entrée</div><h3>Lombalgie ou douleur irradiée</h3><p>Anamnèse avant tout test : début, trauma, douleur de jambe, horaire, âge, terrain.</p></button><button class="node question" data-id="rf" style="left: 1000px; top: 260px;"><div class="k"><i></i>Question 1</div><h3>Drapeaux rouges ?</h3><p>Queue de cheval, fracture, cancer, infection, douleur viscérale ou vasculaire.</p><div class="stat">5 tests · valeurs diagnostiques</div></button><button class="node danger" data-id="rfEnd" style="left: 1500px; top: 260px;"><div class="k"><i></i>Orientation</div><h3>Orientation médicale</h3><p>Urgences pour la queue de cheval, l'infection, l'anévrisme ou un déficit qui s'aggrave.</p></button><button class="node sub" data-id="rfS1" style="left: 1260px; top: 450px;"><div class="k"><i></i>Urgence</div><h3>Syndrome de la queue de cheval</h3><p>Anesthésie en selle, troubles urinaires ou fécaux, sciatique bilatérale. IRM en urgence.</p></button><button class="node sub" data-id="rfS2" style="left: 1500px; top: 450px;"><div class="k"><i></i>Ostéoporose, trauma</div><h3>Fracture vertébrale / tassement</h3><p>Trauma parfois minime chez la personne âgée ou sous corticoïdes. Imagerie.</p><div class="stat">2 tests · valeurs diagnostiques</div></button><button class="node sub" data-id="rfS3" style="left: 1740px; top: 450px;"><div class="k"><i></i>Antécédent de cancer</div><h3>Métastase ou tumeur</h3><p>Douleur progressive, nocturne, non mécanique, amaigrissement. Avis médical et imagerie rapides.</p></button><button class="node sub" data-id="rfS4" style="left: 1260px; top: 640px;"><div class="k"><i></i>Fièvre, terrain</div><h3>Spondylodiscite</h3><p>Douleur intense permanente, fièvre parfois absente, terrain fragile ou geste récent : urgences.</p></button><button class="node sub" data-id="rfS5" style="left: 1500px; top: 640px;"><div class="k"><i></i>Vasculaire, viscéral</div><h3>Anévrisme, rein, pancréas</h3><p>Douleur non mécanique, non modifiée par le mouvement. Masse pulsatile, signes urinaires ou digestifs : urgences.</p></button><button class="node sub" data-id="rfS6" style="left: 1740px; top: 640px;"><div class="k"><i></i>Enfant</div><h3>Lombalgie de l'enfant de moins de 10 ans</h3><p>Rare à cet âge : penser infection (discite), tumeur, ostéome ostéoïde (scoliose douloureuse, douleur nocturne). Avis médical.</p></button><button class="node question" data-id="spa" style="left: 1000px; top: 540px;"><div class="k"><i></i>Question 2</div><h3>Rachialgie inflammatoire ?</h3><p>Début avant 40 ans, réveils en fin de nuit, raideur matinale longue, mieux en bougeant.</p><div class="stat">2 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="spaEnd" style="left: 520px; top: 540px;"><div class="k"><i></i>Tableau clinique</div><h3>Spondyloarthrite axiale suspectée</h3><p>Orientation vers le médecin ou le rhumatologue, et rééducation par l'exercice en parallèle.</p></button><button class="node sub" data-id="spaS1" style="left: 400px; top: 730px;"><div class="k"><i></i>Adulte jeune</div><h3>Spondyloarthrite axiale</h3><p>Lombalgie ou fessalgie à bascule, raideur matinale, réveils nocturnes. Diagnostic rhumatologique.</p></button><button class="node sub" data-id="spaS2" style="left: 640px; top: 730px;"><div class="k"><i></i>Ado</div><h3>Spondyloarthrite juvénile</h3><p>Ado avec talalgie, enthésites, douleur fessière ou lombaire nocturne. Avis pédiatrique ou rhumatologique.</p></button><button class="node question" data-id="radic" style="left: 1000px; top: 830px;"><div class="k"><i></i>Question 3</div><h3>Douleur radiculaire ?</h3><p>Douleur de jambe, souvent plus forte que la douleur du dos, dans un territoire de racine. Fourmillements, engourdissement.</p><div class="stat">7 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="radicEnd" style="left: 1500px; top: 830px;"><div class="k"><i></i>Tableau clinique</div><h3>Radiculopathie lombaire</h3><p>Identifier la racine, puis suivre l'évolution neurologique.</p></button><button class="node sub" data-id="radS1" style="left: 1260px; top: 1020px;"><div class="k"><i></i>Racine L5</div><h3>Sciatique L5</h3><p>Face latérale de jambe, dos du pied, gros orteil. Faiblesse de l'extenseur de l'hallux et des releveurs.</p></button><button class="node sub" data-id="radS2" style="left: 1500px; top: 1020px;"><div class="k"><i></i>Racine S1</div><h3>Sciatique S1</h3><p>Face postérieure de jambe, plante et bord latéral du pied. Réflexe achilléen diminué, faiblesse sur pointe de pied.</p></button><button class="node sub" data-id="radS3" style="left: 1740px; top: 1020px;"><div class="k"><i></i>Racines L2–L4</div><h3>Cruralgie</h3><p>Face antérieure de cuisse, parfois jusqu'au genou. Réflexe rotulien diminué, test d'étirement fémoral positif.</p></button><button class="node sub" data-id="radS4" style="left: 1260px; top: 1210px;"><div class="k"><i></i>Ado sportif</div><h3>Hernie discale de l'adolescent</h3><p>Raideur importante, Lasègue souvent très positif, attitude antalgique. Moins de douleur que chez l'adulte.</p></button><button class="node sub" data-id="radS5" style="left: 1500px; top: 1210px;"><div class="k"><i></i>Nerf périphérique</div><h3>Méralgie paresthésique</h3><p>Brûlure ou engourdissement de la face latérale de cuisse, sans déficit moteur. Nerf cutané latéral de la cuisse. Pas de test validé.</p></button><button class="node sub" data-id="radS6" style="left: 1740px; top: 1210px;"><div class="k"><i></i>Fesse</div><h3>Douleur fessière profonde (piriforme)</h3><p>Douleur fessière, parfois irradiée, assis prolongé. Diagnostic d'exclusion d'une radiculopathie. Pas de test validé.</p></button><button class="node question" data-id="sten" style="left: 1000px; top: 1130px;"><div class="k"><i></i>Question 4</div><h3>Sténose du canal lombaire ?</h3><p>Plus de 50 ans, douleurs de jambes à la marche ou debout, soulagées assis ou penché en avant.</p><div class="stat">6 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="stenEnd" style="left: 520px; top: 1130px;"><div class="k"><i></i>Tableau clinique</div><h3>Sténose du canal lombaire</h3><p>Exercice en flexion, marche fractionnée, vélo, éducation.</p></button><button class="node sub" data-id="stS1" style="left: 400px; top: 1320px;"><div class="k"><i></i>Sous-type</div><h3>Sténose centrale</h3><p>Claudication neurogène bilatérale, soulagement assis ou penché en avant.</p></button><button class="node sub" data-id="stS2" style="left: 640px; top: 1320px;"><div class="k"><i></i>Sous-type</div><h3>Sténose foraminale ou latérale</h3><p>Douleur radiculaire unilatérale, souvent en extension et rotation du même côté. Même logique que la question 3.</p></button><button class="node sub" data-id="stS3" style="left: 160px; top: 1320px;"><div class="k"><i></i>Diagnostic différentiel</div><h3>Claudication vasculaire</h3><p>Mollet surtout, soulagée à l'arrêt debout, pouls diminués, terrain vasculaire. Avis médical.</p></button><button class="node sub" data-id="stS4" style="left: 520px; top: 1510px;"><div class="k"><i></i>Plus de 50 ans</div><h3>Spondylolisthésis dégénératif</h3><p>Souvent L4–L5, chez la femme de plus de 50 ans. Peut donner une sténose. Diagnostic par imagerie si besoin.</p></button><button class="node question" data-id="sij" style="left: 1000px; top: 1440px;"><div class="k"><i></i>Question 5</div><h3>Douleur sacro-iliaque ?</h3><p>Douleur sous L5, en regard de l'épine iliaque postéro-supérieure, montrée du doigt. Grossesse, post-partum.</p><div class="stat">3 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="sijEnd" style="left: 1500px; top: 1440px;"><div class="k"><i></i>Tableau clinique</div><h3>Douleur sacro-iliaque ou de la ceinture pelvienne</h3><p>Éducation, exercices de contrôle et de renforcement, gestion de la charge.</p></button><button class="node sub" data-id="sijS1" style="left: 1260px; top: 1630px;"><div class="k"><i></i>Adulte</div><h3>Douleur sacro-iliaque</h3><p>Douleur unilatérale sous L5, sans centralisation, au moins 3 tests de provocation positifs.</p></button><button class="node sub" data-id="sijS2" style="left: 1500px; top: 1630px;"><div class="k"><i></i>Grossesse, post-partum</div><h3>Douleur de la ceinture pelvienne</h3><p>Douleur sacro-iliaque ou symphysaire, au retournement au lit, à la marche, en appui unipodal. Test P4.</p></button><button class="node sub" data-id="sijS3" style="left: 1740px; top: 1630px;"><div class="k"><i></i>Inflammatoire</div><h3>Sacro-iliite</h3><p>Fessalgie à bascule, réveils nocturnes, raideur matinale : profil de spondyloarthrite, voir la question 2.</p></button><button class="node question" data-id="hip" style="left: 1000px; top: 1730px;"><div class="k"><i></i>Question 6</div><h3>Douleur venant de la hanche ?</h3><p>Douleur fessière, de l'aine ou de la cuisse. Examiner la hanche si le rachis ne reproduit pas la douleur.</p><div class="stat">4 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="hipEnd" style="left: 520px; top: 1730px;"><div class="k"><i></i>Tableau clinique</div><h3>Contribution de la hanche</h3><p>Bilan complet de la hanche, puis réévaluer le dos.</p></button><button class="node sub" data-id="hipS1" style="left: 160px; top: 1920px;"><div class="k"><i></i>Plus de 50 ans</div><h3>Coxarthrose</h3><p>Douleur de l'aine ou fessière, rotation interne limitée, raideur matinale courte.</p></button><button class="node sub" data-id="hipS2" style="left: 400px; top: 1920px;"><div class="k"><i></i>Douleur latérale</div><h3>Tendinopathie fessière</h3><p>Douleur latérale de hanche, couché sur le côté, en montée d'escaliers, appui unipodal. Souvent confondue avec une lombalgie.</p></button><button class="node sub" data-id="hipS3" style="left: 640px; top: 1920px;"><div class="k"><i></i>Adolescent</div><h3>Épiphysiolyse fémorale</h3><p>Ado qui boite, douleur de cuisse ou de genou, rotation interne de hanche limitée : radio de hanche en urgence.</p></button><button class="node question" data-id="noci" style="left: 1000px; top: 2030px;"><div class="k"><i></i>Question 7</div><h3>Composante nociplastique ou psychosociale ?</h3><p>Douleur diffuse, disproportionnée, hypersensibilité, fatigue, sommeil perturbé, peur de bouger.</p><div class="stat">3 tests · valeurs diagnostiques</div></button><button class="node outcome" data-id="nociEnd" style="left: 1500px; top: 2030px;"><div class="k"><i></i>Tableau clinique</div><h3>Composante nociplastique ou psychosociale</h3><p>Éducation à la douleur, exercice progressif, lien avec le médecin.</p></button><button class="node sub" data-id="nS1" style="left: 1260px; top: 2220px;"><div class="k"><i></i>STarT Back élevé</div><h3>Risque élevé de chronicité</h3><p>Peur, catastrophisme, humeur basse. Approche cognitive et fonctionnelle, réassurance, activité progressive.</p></button><button class="node sub" data-id="nS2" style="left: 1500px; top: 2220px;"><div class="k"><i></i>Douleur diffuse</div><h3>Fibromyalgie ou douleur diffuse</h3><p>Douleurs multisites, fatigue, sommeil non réparateur. Diagnostic médical, exercice adapté.</p></button><button class="node sub" data-id="nS3" style="left: 1740px; top: 2220px;"><div class="k"><i></i>Plus de 3 mois</div><h3>Lombalgie chronique</h3><p>Les facteurs psychosociaux pèsent plus que l'imagerie. Exercice, éducation, reprise d'activité.</p></button><button class="node outcome" data-id="lc" style="left: 1000px; top: 2330px;"><div class="k"><i></i>Diagnostic d'exclusion</div><h3>Lombalgie commune</h3><p>Aucun drapeau rouge, pas de radiculopathie, de sténose, de profil inflammatoire ou de source extra-rachidienne.</p><div class="stat">1 test · valeurs diagnostiques</div></button><button class="node sub" data-id="lcS1" style="left: 280px; top: 2520px;"><div class="k"><i></i>Sous-type</div><h3>Préférence directionnelle</h3><p>Une direction de mouvement centralise ou diminue la douleur : elle guide les exercices.</p></button><button class="node sub" data-id="lcS2" style="left: 520px; top: 2520px;"><div class="k"><i></i>Moins de 6 semaines</div><h3>Lombalgie aiguë</h3><p>Évolution le plus souvent favorable. Rassurer, rester actif, pas d'imagerie.</p></button><button class="node sub" data-id="lcS3" style="left: 760px; top: 2520px;"><div class="k"><i></i>Extension, rotation</div><h3>Douleur facettaire</h3><p>Douleur en extension et rotation, sans irradiation sous le genou. Aucun test clinique validé : diagnostic d'exclusion. L'arthrose facettaire à l'imagerie ne suffit pas à le poser.</p></button><button class="node sub" data-id="lcS4" style="left: 1240px; top: 2520px;"><div class="k"><i></i>Ado sportif</div><h3>Spondylolyse</h3><p>Ado en sport d'hyperextension (gym, danse, foot), douleur en extension. Aucun test physique fiable, l'extension unipodale non plus : imagerie si suspicion.</p></button><button class="node sub" data-id="lcS5" style="left: 1480px; top: 2520px;"><div class="k"><i></i>Ado, adulte jeune</div><h3>Spondylolisthésis isthmique</h3><p>Une « marche d'escalier » à la palpation des épineuses oriente vers un spondylolisthésis (Se 60–88 %, Sp 87–100 %).</p></button><button class="node sub" data-id="lcS6" style="left: 1720px; top: 2520px;"><div class="k"><i></i>Ado</div><h3>Maladie de Scheuermann</h3><p>Cyphose raide, douleur thoracolombaire à l'effort chez l'ado. Radio de profil.</p></button><button class="node sub" data-id="lcS8" style="left: 1240px; top: 2710px;"><div class="k"><i></i>Compte rendu d'imagerie</div><h3>Discopathie ou arthrose à l'imagerie</h3><p>Très fréquentes chez les personnes sans douleur : elles n'expliquent pas à elles seules la lombalgie.</p><div class="stat">1 test · valeurs diagnostiques</div></button><button class="node sub" data-id="lcS7" style="left: 1000px; top: 2710px;"><div class="k"><i></i>Charnière thoraco-lombaire</div><h3>Syndrome de Maigne</h3><p>Douleur lombaire basse ou de la crête iliaque, avec origine haute (T11–L1). Concept français fréquent en cabinet, sans test validé.</p></button></div>
+    <div class="hint" id="hint">Glisse pour naviguer · molette ou pincer pour zoomer · clique un bloc</div>
+    <div class="ctrl">
+      <button id="zin" aria-label="Zoomer">+</button>
+      <button id="zout" aria-label="Dézoomer">−</button>
+      <button id="fit" aria-label="Recentrer la carte" title="Recentrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--sand)"></i>Question</span>
+      <span><i style="background:var(--teal)"></i>Tableau clinique</span>
+      <span><i style="background:var(--violet)"></i>Sous-classification</span>
+      <span><i style="background:var(--coral)"></i>Orientation médicale</span>
+    </div>
+  </main>
+
+  <aside class="panel" id="panel" aria-live="polite">
+    <div class="p-head">
+      <button class="p-close" id="close" aria-label="Fermer le panneau">✕</button>
+      <div class="crumbs" id="crumbs"></div>
+      <div class="p-kind" id="pkind"></div>
+      <h2 class="p-title" id="ptitle"></h2>
+    </div>
+    <div class="p-body" id="pbody"></div>
+  </aside>
+</div>
+
+<script>
+/* ================= CONTENU CLINIQUE ================= */
+const SRC = {
+  finucane: {t:"Finucane LM et al. International framework for red flags for potential serious spinal pathologies. J Orthop Sports Phys Ther", y:2020},
+  downie: {t:"Downie A et al. Red flags to screen for malignancy and fracture in patients with low back pain: systematic review. BMJ", y:2013},
+  dionne: {t:"Dionne N et al. What is the diagnostic accuracy of red flags related to cauda equina syndrome (CES), when compared to MRI? A systematic review. Musculoskelet Sci Pract", y:2019},
+  has: {t:"HAS. Prise en charge du patient présentant une lombalgie commune. Recommandation de bonne pratique", y:2019},
+  nice: {t:"NICE NG59. Low back pain and sciatica in over 16s: assessment and management (mise à jour 2020)", y:2020},
+  sieper: {t:"Sieper J et al. New criteria for inflammatory back pain in patients with chronic back pain: a real patient exercise by experts from ASAS. Ann Rheum Dis", y:2009},
+  poddubnyy: {t:"Poddubnyy D et al. Diagnostic accuracy of inflammatory back pain for axial spondyloarthritis in rheumatological care. RMD Open", y:2018},
+  sepriano: {t:"Sepriano A et al. Performance of the ASAS classification criteria for axial and peripheral spondyloarthritis: a systematic literature review and meta-analysis. Ann Rheum Dis", y:2017},
+  windt: {t:"van der Windt DA et al. Physical examination for lumbar radiculopathy due to disc herniation in patients with low-back pain. Cochrane Database Syst Rev", y:2010},
+  montaner: {t:"Montaner-Cuello A et al. Is the Straight Leg Raise suitable for the diagnosis of radiculopathy? Analysis of diagnostic accuracy in a phase III study. Healthcare (Basel)", y:2023},
+  pesonen: {t:"Pesonen J et al. Extending the straight leg raise test for improved clinical evaluation of sciatica: validity and diagnostic performance with reference to MRI. BMC Musculoskelet Disord", y:2021},
+  majlesi: {t:"Majlesi J et al. The sensitivity and specificity of the Slump and the Straight Leg Raising tests in patients with lumbar disc herniation. J Clin Rheumatol", y:2008},
+  suri11: {t:"Suri P et al. The accuracy of the physical examination for the diagnosis of midlumbar and low lumbar nerve root impingement. Spine", y:2011},
+  tawa: {t:"Tawa N, Rhoda A, Diener I. Accuracy of clinical neurological examination in diagnosing lumbo-sacral radiculopathy: a systematic literature review. BMC Musculoskelet Disord", y:2017},
+  suri10: {t:"Suri P et al. Does this older adult with lower extremity pain have the clinical syndrome of lumbar spinal stenosis? JAMA Rational Clinical Examination", y:2010},
+  cook11: {t:"Cook C et al. The clinical value of a cluster of patient history and observational findings as a diagnostic support tool for lumbar spine stenosis. Physiother Res Int", y:2011},
+  cook20: {t:"Cook CJ et al. Systematic review of diagnostic accuracy of patient history, clinical findings, and physical tests in the diagnosis of lumbar spinal stenosis. Eur Spine J", y:2020},
+  laslett05: {t:"Laslett M et al. Diagnosis of sacroiliac joint pain: validity of individual provocation tests and composites of tests. Man Ther", y:2005},
+  saueressig: {t:"Saueressig T et al. Diagnostic accuracy of clusters of pain provocation tests for detecting sacroiliac joint pain: systematic review with meta-analysis. J Orthop Sports Phys Ther", y:2021},
+  vleeming: {t:"Vleeming A et al. European guidelines for the diagnosis and treatment of pelvic girdle pain. Eur Spine J", y:2008},
+  metcalfe: {t:"Metcalfe D et al. Does this patient have hip osteoarthritis? The Rational Clinical Examination systematic review. JAMA", y:2019},
+  kosek: {t:"Kosek E et al. Chronic nociplastic pain affecting the musculoskeletal system: clinical criteria and grading system. Pain", y:2021},
+  neblett: {t:"Neblett R et al. The Central Sensitization Inventory (CSI): establishing clinically significant values for identifying central sensitivity syndromes in an outpatient chronic pain sample. J Pain", y:2013},
+  hill: {t:"Hill JC et al. Comparison of stratified primary care management for low back pain with current best practice (STarT Back): a randomised controlled trial. Lancet", y:2011},
+  laslettC: {t:"Laslett M et al. Centralization as a predictor of provocation discography results in chronic low back pain. Spine J", y:2005},
+  may: {t:"May S, Aina A. Centralization and directional preference: a systematic review. Man Ther", y:2012},
+  grodahl: {t:"Grødahl LH et al. Diagnostic utility of patient history and physical examination data to detect spondylolysis and spondylolisthesis in athletes with low back pain: a systematic review. Man Ther", y:2016},
+  langdon: {t:"Langdon J et al. Vertebral compression fractures – new clinical signs to aid diagnosis. Ann R Coll Surg Engl", y:2010},
+  brinjikji: {t:"Brinjikji W et al. Systematic literature review of imaging features of spinal degeneration in asymptomatic populations. AJNR Am J Neuroradiol", y:2015},
+  alqarni: {t:"Alqarni AM et al. Clinical tests to diagnose lumbar spondylolysis and spondylolisthesis: a systematic review. Phys Ther Sport", y:2015},
+};
+const NOW = 2026;
+
+/* kind: start | question | outcome | danger | sub */
+const N = [
+ {id:"start", kind:"start", x:1000, y:80, k:"Point d'entrée", title:"Lombalgie ou douleur irradiée",
+  p:"Anamnèse avant tout test : début, trauma, douleur de jambe, horaire, âge, terrain.",
+  body:[["Avant de tester",["Début : brutal après un effort ou une chute, ou progressif sans cause ?","Douleur de jambe : sous le genou, avec fourmillements ou engourdissement (penser radiculaire) ?","Horaire : douleur mécanique, ou réveils en fin de nuit et raideur matinale longue (penser inflammatoire) ?","Marche : douleur de jambes qui oblige à s'asseoir ou à se pencher (penser sténose) ?","Âge et terrain : moins de 20 ans ou plus de 50 ans, antécédent de cancer, corticoïdes au long cours, ostéoporose.","Vécu : peur de bouger, catastrophisme, arrêt de travail, attentes du patient."]]],
+  src:["has","nice","finucane"]},
+
+ {id:"rf", kind:"question", x:1000, y:260, k:"Question 1", title:"Drapeaux rouges ?",
+  p:"Queue de cheval, fracture, cancer, infection, douleur viscérale ou vasculaire.",
+  tests:[{n:"Antécédent de cancer", h:"Le drapeau rouge le plus informatif pour une lombalgie d'origine tumorale. Probabilité après un test positif rapportée par la revue Downie 2013.", m:[["Proba post-test","33 %",1]], s:"downie"},
+         {n:"Contusion ou abrasion (après trauma)", h:"Trace visible d'un choc sur le rachis. Probabilité de fracture après un test positif.", m:[["Proba post-test","62 %",1]], s:"downie"},
+         {n:"Corticoïdes au long cours", h:"Fragilité osseuse : penser fracture vertébrale, même après un trauma minime.", m:[["Proba post-test","33 %",1]], s:"downie"},
+         {n:"Plusieurs drapeaux associés (fracture)", h:"Par exemple âge avancé, femme, corticoïdes, trauma. Un drapeau isolé change peu la probabilité, plusieurs ensemble la font monter fortement.", m:[["Proba post-test","90 %",1]], s:"downie"},
+         {n:"Signes de queue de cheval", h:"Anesthésie en selle, rétention ou incontinence urinaire, incontinence fécale, troubles sexuels récents, déficit bilatéral. Ces signes sont plus spécifiques que sensibles : leur absence n'élimine pas le syndrome.", m:[["Se","19–43 %"],["Sp","62–88 %"]], s:"dionne"}],
+  body:[["À rechercher systématiquement",["Queue de cheval : anesthésie en selle, troubles urinaires ou fécaux récents, sciatique bilatérale, faiblesse qui progresse.","Fracture : trauma important, ou trauma minime avec ostéoporose, corticoïdes, âge avancé.","Cancer : antécédent de cancer, amaigrissement inexpliqué, douleur nocturne non mécanique, plus de 50 ans.","Infection (spondylodiscite) : fièvre, toxicomanie IV, immunodépression, infection ou geste rachidien récent.","Vasculaire ou viscéral : douleur non mécanique, pulsatile, homme de plus de 60 ans fumeur (anévrisme de l'aorte), douleur liée aux repas ou à la miction.","Enfant de moins de 10 ans, douleur constante ou nocturne : toujours un avis médical."]]],
+  alert:"Suspicion de queue de cheval (anesthésie en selle, troubles sphinctériens récents) : urgences le jour même, IRM en urgence. Ne pas attendre que tous les signes soient présents.",
+  src:["finucane","downie","dionne"]},
+
+ {id:"rfEnd", kind:"danger", x:1500, y:260, k:"Orientation", title:"Orientation médicale",
+  p:"Urgences pour la queue de cheval, l'infection, l'anévrisme ou un déficit qui s'aggrave.",
+  body:[["Conduite",["Urgences le jour même : queue de cheval, suspicion d'infection, d'anévrisme de l'aorte, déficit moteur qui s'aggrave.","Médecin traitant rapidement et imagerie : suspicion de fracture ou de cancer.","Avis pédiatrique : enfant de moins de 10 ans, douleur nocturne ou constante, fièvre."]]],
+  src:["finucane"]},
+ {id:"rfS1", kind:"sub", x:1260, y:450, k:"Urgence", title:"Syndrome de la queue de cheval",
+  p:"Anesthésie en selle, troubles urinaires ou fécaux, sciatique bilatérale. IRM en urgence.", src:["dionne"]},
+ {id:"rfS2", kind:"sub", x:1500, y:450, k:"Ostéoporose, trauma", title:"Fracture vertébrale / tassement",
+  p:"Trauma parfois minime chez la personne âgée ou sous corticoïdes. Imagerie.",
+  tests:[{n:"Percussion poing fermé", h:"Patient debout, dos au praticien. Percussion ferme, poing fermé, le long des épineuses. Positif si douleur vive et localisée. Petite étude, référence IRM : aide à la suspicion, ne remplace pas l'imagerie.", m:[["Se","87,5 %",1],["Sp","90 %",1]], s:"langdon"},
+         {n:"Signe du décubitus (supine sign)", h:"Le patient ne peut pas s'allonger à plat sur le dos, même avec un oreiller, à cause de la douleur rachidienne. Même étude que ci-dessus.", m:[["Se","81 %"],["Sp","93 %",1]], s:"langdon"}],
+  body:[["Qui suspecter ?",["Âge avancé, surtout la femme ménopausée.","Corticothérapie prolongée.","Trauma important, ou trauma minime sur terrain ostéoporotique.","Contusion ou abrasion : la combinaison de plusieurs signes augmente la probabilité (Downie 2013)."]],["Conduite",["Suspicion : avis médical et imagerie avant toute rééducation.","Tassement stable confirmé : antalgie, mobilisation précoce, renforcement des extenseurs, travail de l'équilibre et prévention des chutes.","Penser au bilan d'ostéoporose avec le médecin."]]],
+  src:["downie","langdon"]},
+ {id:"rfS3", kind:"sub", x:1740, y:450, k:"Antécédent de cancer", title:"Métastase ou tumeur",
+  p:"Douleur progressive, nocturne, non mécanique, amaigrissement. Avis médical et imagerie rapides.", src:["downie"]},
+ {id:"rfS4", kind:"sub", x:1260, y:640, k:"Fièvre, terrain", title:"Spondylodiscite",
+  p:"Douleur intense permanente, fièvre parfois absente, terrain fragile ou geste récent : urgences."},
+ {id:"rfS5", kind:"sub", x:1500, y:640, k:"Vasculaire, viscéral", title:"Anévrisme, rein, pancréas",
+  p:"Douleur non mécanique, non modifiée par le mouvement. Masse pulsatile, signes urinaires ou digestifs : urgences."},
+ {id:"rfS6", kind:"sub", x:1740, y:640, k:"Enfant", title:"Lombalgie de l'enfant de moins de 10 ans",
+  p:"Rare à cet âge : penser infection (discite), tumeur, ostéome ostéoïde (scoliose douloureuse, douleur nocturne). Avis médical."},
+
+ {id:"spa", kind:"question", x:1000, y:540, k:"Question 2", title:"Rachialgie inflammatoire ?",
+  p:"Début avant 40 ans, réveils en fin de nuit, raideur matinale longue, mieux en bougeant.",
+  tests:[{n:"Critères ASAS de lombalgie inflammatoire", h:"Lombalgie depuis plus de 3 mois. Positif si au moins 4 critères sur 5 : âge de début avant 40 ans, début insidieux, amélioration par l'exercice, pas d'amélioration au repos, douleur nocturne qui s'améliore au lever. Valeurs de l'étude initiale (ateliers d'experts), plus faibles dans la cohorte de validation (Se 79,6 %, Sp 72,4 %).", m:[["Se","77 %"],["Sp","91,7 %",1]], s:"sieper"},
+         {n:"Lombalgie inflammatoire en consultation spécialisée", h:"Patients adressés en rhumatologie : quels que soient les critères utilisés, la lombalgie inflammatoire seule augmente peu la probabilité de spondyloarthrite. Il faut l'associer aux autres signes (uvéite, psoriasis, enthésite, antécédents familiaux, HLA-B27, CRP).", m:[["Se","74–81 %"],["Sp","25–44 %"],["LR+","1,1–1,4"]], s:"poddubnyy"}],
+  body:[["Signes associés qui renforcent la suspicion",["Uvéite, psoriasis, maladie inflammatoire de l'intestin.","Talalgie ou enthésite, doigt ou orteil « en saucisse ».","Antécédents familiaux de spondyloarthrite.","Bonne réponse aux anti-inflammatoires."]],["Interprétation",["Le kiné n'a pas à poser le diagnostic : il repère le profil et oriente.","Les critères ASAS de classification (avec imagerie et HLA-B27) relèvent du rhumatologue."]]],
+  src:["sieper","poddubnyy","sepriano"]},
+ {id:"spaEnd", kind:"outcome", x:520, y:540, k:"Tableau clinique", title:"Spondyloarthrite axiale suspectée",
+  p:"Orientation vers le médecin ou le rhumatologue, et rééducation par l'exercice en parallèle.",
+  body:[["Conduite",["Courrier au médecin traitant avec les éléments relevés, pour un avis rhumatologique.","L'exercice régulier reste au cœur de la prise en charge : mobilité, renforcement, activité aérobie."]]],
+  src:["sepriano"]},
+ {id:"spaS1", kind:"sub", x:400, y:730, k:"Adulte jeune", title:"Spondyloarthrite axiale",
+  p:"Lombalgie ou fessalgie à bascule, raideur matinale, réveils nocturnes. Diagnostic rhumatologique.", src:["sepriano"]},
+ {id:"spaS2", kind:"sub", x:640, y:730, k:"Ado", title:"Spondyloarthrite juvénile",
+  p:"Ado avec talalgie, enthésites, douleur fessière ou lombaire nocturne. Avis pédiatrique ou rhumatologique."},
+
+ {id:"radic", kind:"question", x:1000, y:830, k:"Question 3", title:"Douleur radiculaire ?",
+  p:"Douleur de jambe, souvent plus forte que la douleur du dos, dans un territoire de racine. Fourmillements, engourdissement.",
+  tests:[{n:"Lasègue (élévation jambe tendue)", h:"Patient couché, élévation passive de la jambe tendue. Positif si la douleur de jambe est reproduite entre 30° et 70°. Très sensible en population chirurgicale, peu spécifique.", m:[["Se","92 %",1],["Sp","28 %"]], s:"windt"},
+         {n:"Lasègue : étude récente", h:"Étude de phase III en population clinique. Un Lasègue négatif oriente contre une radiculopathie, un Lasègue positif ne la confirme pas.", m:[["Se","89 %",1],["Sp","25 %"],["LR+","1,19"],["LR−","0,44"]], s:"montaner"},
+         {n:"Lasègue controlatéral (croisé)", h:"Élever la jambe saine reproduit la douleur de la jambe atteinte. Peu sensible mais spécifique : positif, il oriente vers une hernie discale.", m:[["Se","28 %"],["Sp","90 %",1]], s:"windt"},
+         {n:"Slump test", h:"Assis, flexion du tronc et du cou, puis extension du genou et flexion dorsale de cheville. Positif si les symptômes sont reproduits et changent avec le relâchement du cou.", m:[["Se","84 %",1],["Sp","83 %",1]], s:"majlesi"},
+         {n:"Lasègue étendu (Pesonen)", h:"Lasègue suivi de manœuvres de sensibilisation (cou, cheville, hanche). Comparé à l'IRM (hernie discale).", m:[["Se","61 %"],["Sp","75 %"]], s:"pesonen"},
+         {n:"Étirement du nerf fémoral (Léri)", h:"Patient à plat ventre, flexion du genou. Positif si douleur à la face antérieure de cuisse : racines L2 à L4.", m:[["LR+","≥ 5",1]], s:"suri11"},
+         {n:"Examen neurologique (sensibilité, force, réflexes)", h:"Dermatomes, myotomes et réflexes rotulien (L4) et achilléen (S1). Chaque élément seul est peu précis : c'est l'ensemble qui oriente.", m:[["Se sensibilité","61 %"],["Sp sensibilité","63 %"]], s:"tawa"}],
+  body:[["Grader la douleur neuropathique",["Douleur radiculaire : douleur de jambe dans un territoire de racine, sans déficit.","Radiculopathie : en plus, déficit sensitif, moteur ou réflexe dans le même territoire.","Le Lasègue et le slump testent la mécanosensibilité du nerf, pas la présence d'une hernie à l'IRM."]],["Interprétation",["Aucun test isolé ne suffit : l'histoire (douleur de jambe sous le genou, territoire précis) compte autant que les tests.","Lasègue négatif : radiculopathie moins probable. Lasègue croisé positif : hernie discale plus probable."]]],
+  alert:"Déficit moteur important (pied tombant) ou qui s'aggrave, signes bilatéraux ou troubles sphinctériens : avis médical urgent, retour à la question 1.",
+  src:["windt","montaner","majlesi","pesonen","suri11","tawa"]},
+ {id:"radicEnd", kind:"outcome", x:1500, y:830, k:"Tableau clinique", title:"Radiculopathie lombaire",
+  p:"Identifier la racine, puis suivre l'évolution neurologique.",
+  body:[["Conduite",["Noter le territoire, la force et les réflexes au premier bilan pour comparer ensuite.","Rester actif, exercices adaptés, éducation : l'évolution est souvent favorable en quelques semaines.","Avis médical si douleur non contrôlée, déficit moteur ou absence d'amélioration."]]],
+  src:["nice","has"]},
+ {id:"radS1", kind:"sub", x:1260, y:1020, k:"Racine L5", title:"Sciatique L5",
+  p:"Face latérale de jambe, dos du pied, gros orteil. Faiblesse de l'extenseur de l'hallux et des releveurs."},
+ {id:"radS2", kind:"sub", x:1500, y:1020, k:"Racine S1", title:"Sciatique S1",
+  p:"Face postérieure de jambe, plante et bord latéral du pied. Réflexe achilléen diminué, faiblesse sur pointe de pied."},
+ {id:"radS3", kind:"sub", x:1740, y:1020, k:"Racines L2–L4", title:"Cruralgie",
+  p:"Face antérieure de cuisse, parfois jusqu'au genou. Réflexe rotulien diminué, test d'étirement fémoral positif.", src:["suri11"]},
+ {id:"radS4", kind:"sub", x:1260, y:1210, k:"Ado sportif", title:"Hernie discale de l'adolescent",
+  p:"Raideur importante, Lasègue souvent très positif, attitude antalgique. Moins de douleur que chez l'adulte."},
+ {id:"radS5", kind:"sub", x:1500, y:1210, k:"Nerf périphérique", title:"Méralgie paresthésique",
+  p:"Brûlure ou engourdissement de la face latérale de cuisse, sans déficit moteur. Nerf cutané latéral de la cuisse. Pas de test validé."},
+ {id:"radS6", kind:"sub", x:1740, y:1210, k:"Fesse", title:"Douleur fessière profonde (piriforme)",
+  p:"Douleur fessière, parfois irradiée, assis prolongé. Diagnostic d'exclusion d'une radiculopathie. Pas de test validé."},
+
+ {id:"sten", kind:"question", x:1000, y:1130, k:"Question 4", title:"Sténose du canal lombaire ?",
+  p:"Plus de 50 ans, douleurs de jambes à la marche ou debout, soulagées assis ou penché en avant.",
+  tests:[{n:"Pas de douleur en position assise", h:"Interrogatoire : les douleurs de jambes disparaissent en s'asseyant.", m:[["LR+","7,4",1]], s:"suri10"},
+         {n:"Amélioration en flexion du tronc", h:"Se pencher en avant (caddie, vélo, montée) soulage les jambes.", m:[["LR+","6,4",1]], s:"suri10"},
+         {n:"Douleur fessière ou de jambes bilatérale", h:"Symptômes des deux côtés.", m:[["LR+","6,3",1]], s:"suri10"},
+         {n:"Claudication neurogène", h:"Douleur, lourdeur ou fourmillements des jambes à la marche, qui obligent à s'arrêter. Absente, elle rend la sténose peu probable.", m:[["LR+","3,7"],["LR−","0,23",1]], s:"suri10"},
+         {n:"Marche à base élargie, Romberg anormal", h:"Observation de la marche et équilibre pieds joints yeux fermés.", m:[["LR+ base élargie","13",1],["LR+ Romberg","4,2"]], s:"suri10"},
+         {n:"Cluster de Cook (5 critères)", h:"Symptômes bilatéraux, douleur de jambe plus forte que la douleur du dos, douleur à la marche ou debout, soulagement assis, âge de plus de 48 ans. 4 critères sur 5 : sténose probable. Aucun critère : sténose peu probable.", m:[["4/5 LR+","4,6",1],["0/5 LR−","0,19",1]], s:"cook11"}],
+  body:[["Interprétation",["Une revue récente (2020) conclut qu'aucun signe isolé ne suffit à poser ou écarter le diagnostic : c'est l'association des signes qui oriente.","Distinguer de la claudication vasculaire : pouls distaux, douleur soulagée debout à l'arrêt, sans besoin de s'asseoir, vélo aussi douloureux que la marche."]]],
+  src:["suri10","cook11","cook20"]},
+ {id:"stenEnd", kind:"outcome", x:520, y:1130, k:"Tableau clinique", title:"Sténose du canal lombaire",
+  p:"Exercice en flexion, marche fractionnée, vélo, éducation.",
+  body:[["Conduite",["Rééducation active et marche progressive en première intention.","Avis chirurgical si déficit qui s'aggrave ou périmètre de marche très réduit malgré la rééducation."]]],
+  src:["suri10","cook20"]},
+ {id:"stS1", kind:"sub", x:400, y:1320, k:"Sous-type", title:"Sténose centrale",
+  p:"Claudication neurogène bilatérale, soulagement assis ou penché en avant.", src:["suri10"]},
+ {id:"stS2", kind:"sub", x:640, y:1320, k:"Sous-type", title:"Sténose foraminale ou latérale",
+  p:"Douleur radiculaire unilatérale, souvent en extension et rotation du même côté. Même logique que la question 3."},
+ {id:"stS3", kind:"sub", x:160, y:1320, k:"Diagnostic différentiel", title:"Claudication vasculaire",
+  p:"Mollet surtout, soulagée à l'arrêt debout, pouls diminués, terrain vasculaire. Avis médical."},
+ {id:"stS4", kind:"sub", x:520, y:1510, k:"Plus de 50 ans", title:"Spondylolisthésis dégénératif",
+  p:"Souvent L4–L5, chez la femme de plus de 50 ans. Peut donner une sténose. Diagnostic par imagerie si besoin."},
+
+ {id:"sij", kind:"question", x:1000, y:1440, k:"Question 5", title:"Douleur sacro-iliaque ?",
+  p:"Douleur sous L5, en regard de l'épine iliaque postéro-supérieure, montrée du doigt. Grossesse, post-partum.",
+  tests:[{n:"Cluster de Laslett (6 tests)", h:"Distraction, compression, poussée sur la cuisse (thigh thrust), poussée sacrée, Gaenslen des deux côtés. Positif si au moins 3 tests reproduisent la douleur habituelle. Tous négatifs : sacro-iliaque très peu probable.", m:[["Se","94 %",1],["Sp","78 %"]], s:"laslett05"},
+         {n:"Clusters de provocation : méta-analyse", h:"Revue de 2021, 5 études, niveau de preuve très faible. Positif, le cluster ne suffit pas à confirmer : il est plus utile pour écarter.", m:[["LR+","2,13"],["LR−","0,33",1]], s:"saueressig"},
+         {n:"Test P4 (thigh thrust) chez la femme enceinte", h:"Couchée, hanche à 90°, poussée axiale sur le fémur. Recommandé par les guides européens pour la douleur de la ceinture pelvienne, avec Patrick (FABER), Gaenslen et Trendelenburg modifié. Pas de valeurs chiffrées fiables.", s:"vleeming"}],
+  body:[["Interprétation",["Faire les tests de provocation seulement si la douleur n'est pas centralisée par les mouvements répétés du rachis.","Les tests de mobilité ou de palpation de la sacro-iliaque ne sont pas fiables : à éviter."]]],
+  src:["laslett05","saueressig","vleeming"]},
+ {id:"sijEnd", kind:"outcome", x:1500, y:1440, k:"Tableau clinique", title:"Douleur sacro-iliaque ou de la ceinture pelvienne",
+  p:"Éducation, exercices de contrôle et de renforcement, gestion de la charge.",
+  body:[["Conduite",["Rassurer : ce n'est pas une sacro-iliaque « déplacée ».","Exercices adaptés, en lien avec la sage-femme ou le médecin pendant la grossesse.","Sacro-iliite inflammatoire suspectée : revoir la question 2."]]],
+  src:["vleeming","laslett05"]},
+ {id:"sijS1", kind:"sub", x:1260, y:1630, k:"Adulte", title:"Douleur sacro-iliaque",
+  p:"Douleur unilatérale sous L5, sans centralisation, au moins 3 tests de provocation positifs.", src:["laslett05"]},
+ {id:"sijS2", kind:"sub", x:1500, y:1630, k:"Grossesse, post-partum", title:"Douleur de la ceinture pelvienne",
+  p:"Douleur sacro-iliaque ou symphysaire, au retournement au lit, à la marche, en appui unipodal. Test P4.", src:["vleeming"]},
+ {id:"sijS3", kind:"sub", x:1740, y:1630, k:"Inflammatoire", title:"Sacro-iliite",
+  p:"Fessalgie à bascule, réveils nocturnes, raideur matinale : profil de spondyloarthrite, voir la question 2.", src:["sepriano"]},
+
+ {id:"hip", kind:"question", x:1000, y:1730, k:"Question 6", title:"Douleur venant de la hanche ?",
+  p:"Douleur fessière, de l'aine ou de la cuisse. Examiner la hanche si le rachis ne reproduit pas la douleur.",
+  tests:[{n:"Accroupissement", h:"Douleur postérieure à l'accroupissement complet.", m:[["LR+","6,1",1]], s:"metcalfe"},
+         {n:"Abduction / adduction passives", h:"Douleur dans l'aine en abduction ou adduction passive de hanche.", m:[["LR+","5,7",1]], s:"metcalfe"},
+         {n:"Rotation interne passive de hanche", h:"Rotation interne diminuée par rapport au côté sain.", m:[["LR+","3,2"]], s:"metcalfe"},
+         {n:"Adduction passive normale", h:"Une adduction passive complète rend une coxarthrose moins probable.", m:[["LR−","0,25",1]], s:"metcalfe"}],
+  body:[["Pourquoi l'examiner",["Coxarthrose et tendinopathie fessière donnent des douleurs fessières ou de cuisse qui imitent une douleur lombaire.","Si la douleur change en mobilisant la hanche et pas le rachis, la contribution de la hanche est probable."]]],
+  src:["metcalfe"]},
+ {id:"hipEnd", kind:"outcome", x:520, y:1730, k:"Tableau clinique", title:"Contribution de la hanche",
+  p:"Bilan complet de la hanche, puis réévaluer le dos.",
+  body:[["Conduite",["Traiter la hanche, puis réévaluer la douleur lombaire.","Si le dos s'améliore en traitant la hanche, la contribution est confirmée."]]],
+  src:["metcalfe"]},
+ {id:"hipS1", kind:"sub", x:160, y:1920, k:"Plus de 50 ans", title:"Coxarthrose",
+  p:"Douleur de l'aine ou fessière, rotation interne limitée, raideur matinale courte.", src:["metcalfe"]},
+ {id:"hipS2", kind:"sub", x:400, y:1920, k:"Douleur latérale", title:"Tendinopathie fessière",
+  p:"Douleur latérale de hanche, couché sur le côté, en montée d'escaliers, appui unipodal. Souvent confondue avec une lombalgie."},
+ {id:"hipS3", kind:"sub", x:640, y:1920, k:"Adolescent", title:"Épiphysiolyse fémorale",
+  p:"Ado qui boite, douleur de cuisse ou de genou, rotation interne de hanche limitée : radio de hanche en urgence."},
+
+ {id:"noci", kind:"question", x:1000, y:2030, k:"Question 7", title:"Composante nociplastique ou psychosociale ?",
+  p:"Douleur diffuse, disproportionnée, hypersensibilité, fatigue, sommeil perturbé, peur de bouger.",
+  tests:[{n:"Central Sensitization Inventory (CSI)", h:"Questionnaire de 25 items sur 100. Au-delà de 40 : syndrome de sensibilité centrale probable. Il repère des symptômes, il ne prouve pas un mécanisme.", m:[["Se","81 %",1],["Sp","75 %"]], s:"neblett"},
+         {n:"Critères IASP de douleur nociplastique (2021)", h:"Douleur depuis plus de 3 mois, régionale ou diffuse, non expliquée entièrement par une lésion nociceptive ou neuropathique, avec hypersensibilité clinique dans la zone douloureuse. « Possible » ou « probable » selon les signes associés (sommeil, fatigue, troubles cognitifs, hypersensibilité sensorielle).", s:"kosek"},
+         {n:"STarT Back (9 questions)", h:"Classe le patient en risque faible, moyen ou élevé de chronicité. Il oriente la prise en charge (prise en charge stratifiée), il ne fait pas un diagnostic.", s:"hill"}],
+  body:[["Drapeaux jaunes à repérer",["Croyance que la douleur signifie une lésion grave, peur du mouvement, catastrophisme.","Humeur basse, stress, sommeil perturbé.","Arrêt de travail prolongé, conflit, insatisfaction au travail.","Attentes passives (« il faut me remettre en place »)."]]],
+  src:["kosek","neblett","hill","has"]},
+ {id:"nociEnd", kind:"outcome", x:1500, y:2030, k:"Tableau clinique", title:"Composante nociplastique ou psychosociale",
+  p:"Éducation à la douleur, exercice progressif, lien avec le médecin.",
+  body:[["Conduite",["Expliquer la douleur sans discours lésionnel, viser l'activité et le retour au travail.","Exercice progressif par paliers, en tenant compte du sommeil et du stress.","Risque élevé STarT Back : prise en charge plus intensive, éventuellement pluridisciplinaire."]]],
+  src:["kosek","hill","has"]},
+ {id:"nS1", kind:"sub", x:1260, y:2220, k:"STarT Back élevé", title:"Risque élevé de chronicité",
+  p:"Peur, catastrophisme, humeur basse. Approche cognitive et fonctionnelle, réassurance, activité progressive.", src:["hill"]},
+ {id:"nS2", kind:"sub", x:1500, y:2220, k:"Douleur diffuse", title:"Fibromyalgie ou douleur diffuse",
+  p:"Douleurs multisites, fatigue, sommeil non réparateur. Diagnostic médical, exercice adapté.", src:["kosek"]},
+ {id:"nS3", kind:"sub", x:1740, y:2220, k:"Plus de 3 mois", title:"Lombalgie chronique",
+  p:"Les facteurs psychosociaux pèsent plus que l'imagerie. Exercice, éducation, reprise d'activité.", src:["has"]},
+
+ {id:"lc", kind:"outcome", x:1000, y:2330, k:"Diagnostic d'exclusion", title:"Lombalgie commune",
+  p:"Aucun drapeau rouge, pas de radiculopathie, de sténose, de profil inflammatoire ou de source extra-rachidienne.",
+  tests:[{n:"Centralisation aux mouvements répétés", h:"Mouvements répétés dans une direction (souvent l'extension) : la douleur remonte de la jambe vers le dos. Oriente vers une origine discale et une préférence directionnelle. Valeurs mesurées en lombalgie chronique, référence discographie.", m:[["Se","40 %"],["Sp","94 %",1],["LR+","6,9",1]], s:"laslettC"}],
+  body:[["Critères (HAS 2019)",["Diagnostic clinique : l'imagerie n'est pas utile sans drapeau rouge ni projet chirurgical.","Rester actif, reprendre tôt les activités, exercice : traitement de fond.","Préférence directionnelle présente chez une majorité de patients : elle guide les exercices.","Les tests de palpation ou de mobilité segmentaire ne permettent pas de localiser une structure."]],["Avant de conclure",["Drapeaux rouges (question 1), profil inflammatoire (question 2), radiculopathie (question 3), sténose (question 4), sacro-iliaque (question 5) et hanche (question 6) ont été écartés.","Ado sportif : penser spondylolyse et Scheuermann."]]],
+  src:["has","nice","laslettC","may"]},
+ {id:"lcS1", kind:"sub", x:280, y:2520, k:"Sous-type", title:"Préférence directionnelle",
+  p:"Une direction de mouvement centralise ou diminue la douleur : elle guide les exercices.", src:["may","laslettC"]},
+ {id:"lcS2", kind:"sub", x:520, y:2520, k:"Moins de 6 semaines", title:"Lombalgie aiguë",
+  p:"Évolution le plus souvent favorable. Rassurer, rester actif, pas d'imagerie.", src:["has"]},
+ {id:"lcS3", kind:"sub", x:760, y:2520, k:"Extension, rotation", title:"Douleur facettaire",
+  p:"Douleur en extension et rotation, sans irradiation sous le genou. Aucun test clinique validé : diagnostic d'exclusion. L'arthrose facettaire à l'imagerie ne suffit pas à le poser.", src:["brinjikji"]},
+ {id:"lcS4", kind:"sub", x:1240, y:2520, k:"Ado sportif", title:"Spondylolyse",
+  p:"Ado en sport d'hyperextension (gym, danse, foot), douleur en extension. Aucun test physique fiable, l'extension unipodale non plus : imagerie si suspicion.", src:["grodahl"]},
+ {id:"lcS5", kind:"sub", x:1480, y:2520, k:"Ado, adulte jeune", title:"Spondylolisthésis isthmique",
+  p:"Une « marche d'escalier » à la palpation des épineuses oriente vers un spondylolisthésis (Se 60–88 %, Sp 87–100 %).", src:["alqarni"]},
+ {id:"lcS6", kind:"sub", x:1720, y:2520, k:"Ado", title:"Maladie de Scheuermann",
+  p:"Cyphose raide, douleur thoracolombaire à l'effort chez l'ado. Radio de profil."},
+ {id:"lcS8", kind:"sub", x:1240, y:2710, k:"Compte rendu d'imagerie", title:"Discopathie ou arthrose à l'imagerie",
+  p:"Très fréquentes chez les personnes sans douleur : elles n'expliquent pas à elles seules la lombalgie.",
+  tests:[{n:"Prévalence chez les asymptomatiques", h:"Revue systématique de 33 études d'imagerie (scanner, IRM) chez des personnes sans lombalgie. Estimations selon l'âge.", m:[["Discopathie 20 ans","37 %"],["Discopathie 80 ans","96 %",1],["Arthrose facettaire 80 ans","83 %",1]], s:"brinjikji"}],
+  body:[["Ce que ça change pour le patient",["Expliquer : « Ce que montre l'IRM est fréquent avec l'âge, comme des rides à l'intérieur. »","Éviter les mots qui inquiètent : « usé », « écrasé », « dégénéré ».","La prise en charge reste celle de la lombalgie commune : activité, exercice, réassurance.","L'imagerie n'est utile qu'en cas de drapeau rouge ou de projet chirurgical (HAS 2019)."]]],
+  src:["brinjikji","has"]},
+ {id:"lcS7", kind:"sub", x:1000, y:2710, k:"Charnière thoraco-lombaire", title:"Syndrome de Maigne",
+  p:"Douleur lombaire basse ou de la crête iliaque, avec origine haute (T11–L1). Concept français fréquent en cabinet, sans test validé."},
+];
+
+const E = [
+ ["start","rf",""],
+ ["rf","rfEnd","Oui"],["rf","spa","Non"],
+ ["rfEnd","rfS1","sub"],["rfEnd","rfS2","sub"],["rfEnd","rfS3","sub"],["rfEnd","rfS4","sub"],["rfEnd","rfS5","sub"],["rfEnd","rfS6","sub"],
+ ["spa","spaEnd","Oui"],["spa","radic","Non"],
+ ["spaEnd","spaS1","sub"],["spaEnd","spaS2","sub"],
+ ["radic","radicEnd","Oui"],["radic","sten","Non"],
+ ["radicEnd","radS1","sub"],["radicEnd","radS2","sub"],["radicEnd","radS3","sub"],["radicEnd","radS4","sub"],["radicEnd","radS5","sub"],["radicEnd","radS6","sub"],
+ ["sten","stenEnd","Oui"],["sten","sij","Non"],
+ ["stenEnd","stS1","sub"],["stenEnd","stS2","sub"],["stenEnd","stS3","sub"],["stenEnd","stS4","sub"],
+ ["sij","sijEnd","Oui"],["sij","hip","Non"],
+ ["sijEnd","sijS1","sub"],["sijEnd","sijS2","sub"],["sijEnd","sijS3","sub"],
+ ["hip","hipEnd","Oui"],["hip","noci","Non"],
+ ["hipEnd","hipS1","sub"],["hipEnd","hipS2","sub"],["hipEnd","hipS3","sub"],
+ ["noci","nociEnd","Oui"],["noci","lc","Non"],
+ ["nociEnd","nS1","sub"],["nociEnd","nS2","sub"],["nociEnd","nS3","sub"],
+ ["lc","lcS1","sub"],["lc","lcS2","sub"],["lc","lcS3","sub"],["lc","lcS4","sub"],["lc","lcS5","sub"],["lc","lcS6","sub"],["lc","lcS7","sub"],
+ ["lc","lcS8","sub"],
+];
+
+/* ================= RENDU ================= */
+const W = 2000, H = 3000;
+const world = document.getElementById("world");
+const svg = document.getElementById("edges");
+const stage = document.getElementById("stage");
+world.style.width = W+"px"; world.style.height = H+"px";
+svg.setAttribute("width",W); svg.setAttribute("height",H);
+const byId = Object.fromEntries(N.map(n=>[n.id,n]));
+const KIND = {start:"Départ",question:"Question",outcome:"Tableau clinique",danger:"Orientation médicale",sub:"Sous-classification"};
+
+N.forEach(n=>{
+  const el = document.createElement("button");
+  el.className = "node "+n.kind;
+  el.style.left = n.x+"px"; el.style.top = n.y+"px";
+  el.dataset.id = n.id;
+  const firstStat = (n.tests||[]).flatMap(t=>t.m||[]).find(m=>m[2]);
+  el.innerHTML = `<div class="k"><i></i>${n.k}</div><h3>${n.title}</h3>${n.p?`<p>${n.p}</p>`:""}${n.tests?`<div class="stat">${n.tests.length} test${n.tests.length>1?"s":""} · valeurs diagnostiques</div>`:""}`;
+  el.addEventListener("click", ev=>{ if(moved) return; select(n.id,true); });
+  world.appendChild(el);
+  n.el = el;
+});
+
+function box(n){ return {x:n.x, y:n.y, w:n.el.offsetWidth, h:n.el.offsetHeight}; }
+function drawEdges(){
+  svg.innerHTML = "";
+  E.forEach((e,i)=>{
+    const a = box(byId[e[0]]), b = box(byId[e[1]]);
+    let x1,y1,x2,y2,d;
+    const horiz = Math.abs(a.y-b.y) < 40;
+    if(horiz){
+      const dir = b.x > a.x ? 1 : -1;
+      x1 = a.x + dir*a.w/2; y1 = a.y; x2 = b.x - dir*b.w/2; y2 = b.y;
+      d = `M${x1},${y1} L${x2},${y2}`;
+    } else {
+      x1 = a.x; y1 = a.y + a.h/2; x2 = b.x; y2 = b.y - b.h/2;
+      const my = (y1+y2)/2;
+      d = `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`;
+    }
+    const p = document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("d",d); p.dataset.e = i; svg.appendChild(p);
+    // flèche
+    const ang = horiz ? (x2 > x1 ? 0 : 180) : 90;
+    const ar = document.createElementNS("http://www.w3.org/2000/svg","path");
+    ar.setAttribute("d","M-7,-5 L0,0 L-7,5"); ar.setAttribute("transform",`translate(${x2},${y2}) rotate(${ang})`);
+    ar.dataset.e = i; svg.appendChild(ar);
+    if(e[2] && e[2]!=="sub"){
+      const g = document.createElementNS("http://www.w3.org/2000/svg","g"); g.dataset.e = i;
+      const lx = horiz ? (x1+x2)/2 : (x1+x2)/2, ly = horiz ? y1 : (y1+y2)/2;
+      const yes = e[2]==="Oui";
+      g.innerHTML = `<rect class="lbl-bg" x="${lx-22}" y="${ly-11}" width="44" height="22" rx="11"/><text x="${lx}" y="${ly+4}" text-anchor="middle" class="${yes?"yes":"no"}">${e[2]}</text>`;
+      svg.appendChild(g);
+    }
+  });
+}
+
+/* ---------- Pan / zoom ---------- */
+let s = 1, tx = 0, ty = 0;
+function apply(anim){
+  world.style.transition = anim ? "transform .55s cubic-bezier(.2,.8,.2,1)" : "none";
+  world.style.transform = `translate(${tx}px,${ty}px) scale(${s})`;
+}
+function clampS(v){ return Math.min(1.8, Math.max(.1, v)); }
+function zoomAt(f, cx, cy, anim){
+  const ns = clampS(s*f); const k = ns/s;
+  tx = cx - (cx - tx)*k; ty = cy - (cy - ty)*k; s = ns; apply(anim);
+}
+function fit(anim){
+  const r = stage.getBoundingClientRect();
+  if(r.width < 720){ s = clampS(r.width/700); tx = r.width/2 - 1000*s; ty = 24 - 20*s; apply(anim); return; }
+  const minX=40, minY=20, maxX=1880, maxY=2810;
+  s = clampS(Math.min(r.width/(maxX-minX), r.height/(maxY-minY)) * .96);
+  tx = (r.width - (maxX-minX)*s)/2 - minX*s;
+  ty = (r.height - (maxY-minY)*s)/2 - minY*s;
+  apply(anim);
+}
+function focusNode(id){
+  const n = byId[id], r = stage.getBoundingClientRect();
+  const panelW = window.innerWidth > 720 ? Math.min(440, r.width) : 0;
+  const panelH = window.innerWidth <= 720 ? r.height*.68 : 0;
+  s = Math.max(s, .75);
+  tx = (r.width - panelW)/2 - n.x*s;
+  ty = (r.height - panelH)/2 - n.y*s;
+  apply(true);
+}
+
+const pts = new Map(); let moved = false, start = null, pinch = null;
+stage.addEventListener("pointerdown", e=>{
+  if(e.target.closest(".ctrl,.legend")) return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  moved = false; start = {x:e.clientX,y:e.clientY,tx,ty};
+  if(pts.size===2){ const [a,b]=[...pts.values()]; pinch={d:Math.hypot(a.x-b.x,a.y-b.y), s}; }
+});
+stage.addEventListener("pointermove", e=>{
+  if(!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const r = stage.getBoundingClientRect();
+  if(pts.size===2 && pinch){
+    const [a,b]=[...pts.values()];
+    const d = Math.hypot(a.x-b.x,a.y-b.y);
+    zoomAt((pinch.s*d/pinch.d)/s, (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top);
+    if(!moved){ try{stage.setPointerCapture(e.pointerId);}catch(_){} } moved = true; return;
+  }
+  const dx = e.clientX-start.x, dy = e.clientY-start.y;
+  if(Math.abs(dx)+Math.abs(dy) > 5){ if(!moved){ try{stage.setPointerCapture(e.pointerId);}catch(_){} } moved = true; stage.classList.add("dragging"); hideHint(); }
+  if(moved){ tx = start.tx+dx; ty = start.ty+dy; apply(); }
+});
+function up(e){ pts.delete(e.pointerId); if(pts.size<2) pinch=null; stage.classList.remove("dragging");
+  if(pts.size===1){ const p=[...pts.values()][0]; start={x:p.x,y:p.y,tx,ty}; }
+  setTimeout(()=>{ if(!pts.size) moved=false; },0); }
+stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+stage.addEventListener("wheel", e=>{ e.preventDefault(); hideHint();
+  const r = stage.getBoundingClientRect();
+  zoomAt(Math.exp(-e.deltaY*0.0015), e.clientX-r.left, e.clientY-r.top);
+},{passive:false});
+document.getElementById("zin").onclick = ()=>{ const r=stage.getBoundingClientRect(); zoomAt(1.25,r.width/2,r.height/2,true); };
+document.getElementById("zout").onclick = ()=>{ const r=stage.getBoundingClientRect(); zoomAt(.8,r.width/2,r.height/2,true); };
+document.getElementById("fit").onclick = ()=>fit(true);
+let hintT; function hideHint(){ const h=document.getElementById("hint"); h.style.opacity=0; }
+
+/* ---------- Sélection & panneau ---------- */
+const parents = {}; E.forEach(e=>{ (parents[e[1]] ||= []).push(e[0]); });
+function pathTo(id){ const p=[id]; let c=id; while(parents[c]){ c=parents[c][0]; p.unshift(c);} return p; }
+const panel = document.getElementById("panel");
+let current = null;
+
+function metricHTML(m){ return `<span class="metric${m[2]?" good":""}"><em>${m[0]}</em>${m[1]}</span>`; }
+function srcHTML(k){ const o=SRC[k]; return `<li>${o.t}, ${o.y}${NOW-o.y>10?`<span class="old">étude fondatrice &gt;10 ans</span>`:""}</li>`; }
+
+function select(id, focus){
+  current = id;
+  const n = byId[id], path = pathTo(id);
+  document.querySelectorAll(".node").forEach(el=>{
+    el.classList.toggle("sel", el.dataset.id===id);
+    el.classList.toggle("path", path.includes(el.dataset.id) && el.dataset.id!==id);
+  });
+  const onEdges = new Set(); E.forEach((e,i)=>{ const ia=path.indexOf(e[0]); if(ia>=0 && path[ia+1]===e[1]) onEdges.add(String(i)); });
+  svg.querySelectorAll("[data-e]").forEach(el=>el.classList.toggle("on", onEdges.has(el.dataset.e)));
+
+  document.getElementById("crumbs").innerHTML = path.slice(0,-1).map(p=>`<button data-go="${p}">${byId[p].title}</button>`).join("<span>›</span>");
+  const kc = {start:"var(--teal)",question:"var(--sand)",outcome:"var(--teal)",danger:"var(--coral)",sub:"var(--violet)"}[n.kind];
+  const pk = document.getElementById("pkind"); pk.textContent = n.k; pk.style.color = kc;
+  document.getElementById("ptitle").textContent = n.title;
+
+  let h = "";
+  if(n.p) h += `<p>${n.p}</p>`;
+  if(n.alert) h += `<div class="alert">${n.alert}</div>`;
+  if(n.tests) h += `<section><h4>Tests & valeurs diagnostiques</h4>${n.tests.map(t=>`<div class="test"><b>${t.n}</b><p>${t.h}</p>${t.m?`<div class="metrics">${t.m.map(metricHTML).join("")}</div>`:""}</div>`).join("")}</section>`;
+  (n.body||[]).forEach(([t,items])=>{ h += `<section><h4>${t}</h4><ul>${items.map(i=>`<li>${i}</li>`).join("")}</ul></section>`; });
+  const outs = E.filter(e=>e[0]===id);
+  if(outs.length) h += `<section><h4>${n.kind==="question"?"Ta réponse":"Suite du raisonnement"}</h4><div class="next">${outs.map(e=>{
+      const cls = e[2]==="Oui"?"yes":e[2]==="Non"?"no":"sub"; const lab = e[2]==="sub"?"Type":(e[2]||"Suite");
+      return `<button class="go" data-go="${e[1]}"><span class="tag ${e[2]?cls:"yes"}">${lab}</span><span>${byId[e[1]].title}</span></button>`; }).join("")}</div></section>`;
+  if(n.src) h += `<section class="src"><h4>Sources</h4><ul>${n.src.map(srcHTML).join("")}</ul></section>`;
+  h += `<p class="disclaimer">Outil pédagogique d'aide au raisonnement clinique. Il ne remplace ni l'examen ni le jugement du praticien.</p>`;
+  const body = document.getElementById("pbody"); body.innerHTML = h; body.scrollTop = 0;
+  panel.classList.add("open");
+  if(focus) focusNode(id);
+  try{ history.replaceState(null,"","#"+id); }catch(_){}
+}
+panel.addEventListener("click", e=>{ const b=e.target.closest("[data-go]"); if(b) select(b.dataset.go,true); });
+document.getElementById("close").onclick = ()=>{ panel.classList.remove("open"); document.querySelectorAll(".node.sel,.node.path").forEach(el=>el.classList.remove("sel","path")); svg.querySelectorAll(".on").forEach(el=>el.classList.remove("on")); current=null; };
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.getElementById("close").click(); });
+
+/* ---------- Recherche ---------- */
+const norm = t=>t.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const index = N.map(n=>({id:n.id, txt:norm([n.title,n.k,n.p,(n.tests||[]).map(t=>t.n+" "+t.h).join(" "),(n.body||[]).flat(2).join(" ")].join(" "))}));
+const q = document.getElementById("q");
+q.addEventListener("input", ()=>{
+  const v = norm(q.value.trim());
+  document.querySelectorAll(".node").forEach(el=>el.classList.remove("hit"));
+  if(!v){ stage.classList.remove("dim"); return; }
+  const hits = index.filter(i=>i.txt.includes(v)).map(i=>i.id);
+  stage.classList.toggle("dim", true);
+  hits.forEach(id=>byId[id].el.classList.add("hit"));
+});
+q.addEventListener("keydown", e=>{ if(e.key==="Enter"){ const h=document.querySelector(".node.hit"); if(h){ select(h.dataset.id,true); } } });
+
+/* ---------- Démarrage ---------- */
+function init(){
+  drawEdges(); fit(false);
+  const h = (location.hash||"").slice(1);
+  if(byId[h]) setTimeout(()=>select(h,true),300);
+  setTimeout(hideHint, 6000);
+}
+if(document.fonts && document.fonts.ready){ document.fonts.ready.then(init); } else { window.addEventListener("load", init); }
+window.addEventListener("resize", ()=>{ if(!current) fit(false); });
+</script>
+
+
+
+<script async="" src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="4971f02a-9af7-402f-983d-73de57eb486c" data-app-host="app.netlify.com" data-account-tier="free"></script>
+<iframe id="nl-badge-frame" title="Powered by Netlify" srcdoc="&lt;!doctype html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;meta name=&quot;color-scheme&quot; content=&quot;dark&quot;&gt;&lt;style&gt;
+    :root{--nl-vw:1280px;--nl-vh:720px}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:transparent;overflow:hidden}
+    body{display:flex;align-items:flex-end;justify-content:flex-end;height:100vh;
+      padding:8px 18px 18px 8px;
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#f4f9f9;-webkit-font-smoothing:antialiased}
+    .nl-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:10px;width:max-content;max-width:calc(var(--nl-vw,100vw) - 26px)}
+    button{font-family:inherit;cursor:pointer}
+    :focus-visible{outline:2px solid #32e6e2;outline-offset:2px;border-radius:6px}
+    .nl-icon-btn{position:relative;flex:none;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid transparent;background:transparent;color:#d5e3e6;transition:background .15s ease,color .15s ease}
+    .nl-icon-btn:hover{background:rgba(255,255,255,0.08);color:#f4f9f9}
+    .nl-tap::after{content:&quot;&quot;;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+      width:max(100%,44px);height:max(100%,44px)}
+    @keyframes nl-rise{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+  
+      .nl-card{position:relative;display:none;width:min(340px,calc(var(--nl-vw,100vw) - 26px));max-height:calc(var(--nl-vh,100vh) - 84px);overflow-y:auto;background:linear-gradient(180deg,#132832 0%,#0e1e25 100%);border:1px solid rgba(255,255,255,0.09);border-radius:18px;padding:18px;transform-origin:bottom right;animation:nl-rise .3s cubic-bezier(.34,1.4,.4,1) both}
+      .nl-card.open{display:block}
+      .nl-card-close{position:absolute;top:10px;right:10px}
+      .nl-card h2{margin:0;padding-right:30px;font-size:16px;font-weight:750;letter-spacing:-0.015em;line-height:1.35}
+      .nl-card h2 em{font-style:normal;background:linear-gradient(90deg,#32e6e2,#4d7cfe,#9a6bff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .nl-card p{margin:8px 0 0;font-size:12.5px;color:#d5e3e6}
+      .nl-prompt{position:relative;margin-top:14px;background:#10222b;border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:10px 12px;transition:border-color .15s ease,box-shadow .15s ease}
+      .nl-prompt:focus-within{border-color:#05bdba;box-shadow:0 0 0 3px rgba(5,189,186,0.18)}
+      .nl-prompt textarea{display:block;width:100%;height:38px;resize:none;border:0;outline:none;background:transparent;color:#f4f9f9;font:inherit;font-size:13px;line-height:19px;padding:0 28px 0 0}
+      .nl-prompt textarea::placeholder{color:#a9bdc2}
+      .nl-send{position:absolute;right:9px;bottom:9px;width:24px;height:24px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:#05bdba;color:#02191b;transition:background .15s ease}
+      .nl-send:hover{background:#32e6e2}
+      @media (pointer: coarse){
+        .nl-prompt textarea{font-size:16px;line-height:21px;height:42px}
+      }
+      .nl-or{display:flex;align-items:center;gap:10px;margin:12px 0;font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#a9bdc2}
+      .nl-or::before,.nl-or::after{content:&quot;&quot;;flex:1;height:1px;background:rgba(255,255,255,0.09)}
+      .nl-drop{display:flex;align-items:center;justify-content:space-between;gap:6px;text-decoration:none;background:#1b3a45;border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:600;color:#cfe0e3;transition:background .15s ease,color .15s ease,border-color .15s ease}
+      .nl-drop:hover{background:#224753;color:#f4f9f9;border-color:rgba(50,230,226,0.3)}
+      .nl-drop .nl-arrow{transition:transform .18s cubic-bezier(.34,1.4,.4,1)}
+      .nl-drop:hover .nl-arrow{transform:translateX(3px)}
+      .nl-badge{display:flex;align-items:center;gap:9px;white-space:nowrap;border:1px solid rgba(255,255,255,0.09);background:linear-gradient(180deg,#142b34,#0e1e25);color:#f4f9f9;border-radius:999px;padding:9px 14px 9px 11px;font-size:13px;font-weight:600;letter-spacing:0.01em;transition:border-color .2s ease}
+      .nl-badge:hover{border-color:rgba(50,230,226,0.26)}
+      .nl-hide{display:block;width:100%;margin-top:10px;border:0;background:transparent;color:#a9bdc2;font-size:11.5px;font-weight:600;padding:4px;border-radius:8px;transition:color .15s ease}
+      .nl-hide:hover{color:#d5e3e6;text-decoration:underline}
+      .nl-badge-label{color:#d5e3e6;font-weight:500}
+      .nl-badge-brand{font-weight:750}
+    &lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+      &lt;div class=&quot;nl-wrap&quot;&gt;
+        &lt;section class=&quot;nl-card&quot; id=&quot;nl-card&quot; aria-label=&quot;Build your own site on Netlify&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;nl-icon-btn nl-tap nl-card-close&quot; id=&quot;nl-card-close&quot; aria-label=&quot;Close&quot;&gt;&lt;svg width=&quot;14&quot; height=&quot;14&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.9&quot; stroke-linecap=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M4.5 4.5 11.5 11.5M11.5 4.5 4.5 11.5&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+          &lt;h2&gt;&lt;em&gt;Build your own site with Netlify&lt;/em&gt;&lt;/h2&gt;
+          &lt;p&gt;Describe what you want, and an AI agent designs, builds and deploys it in minutes.&lt;/p&gt;
+          &lt;form class=&quot;nl-prompt&quot; action=&quot;https://app.netlify.com/start&quot; method=&quot;get&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;textarea name=&quot;prompt&quot; rows=&quot;2&quot; required maxlength=&quot;300&quot; autocomplete=&quot;off&quot;
+                      enterkeyhint=&quot;go&quot;
+                      placeholder=&quot;A shop for my handmade surfboards&amp;hellip;&quot;
+                      aria-label=&quot;Describe the site you want to build&quot;&gt;&lt;/textarea&gt;
+            &lt;button type=&quot;submit&quot; class=&quot;nl-send nl-tap&quot; aria-label=&quot;Build this site&quot;&gt;&lt;svg width=&quot;13&quot; height=&quot;13&quot; viewBox=&quot;0 0 16 16&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M8 12.75v-9.5M3.9 7.35 8 3.25l4.1 4.1&quot;/&gt;&lt;/svg&gt;&lt;/button&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_source&quot; value=&quot;netlify_badge&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_campaign&quot; value=&quot;loops&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_medium&quot; value=&quot;owned&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_content&quot; value=&quot;prompt&quot;&gt;
+            &lt;input type=&quot;hidden&quot; name=&quot;utm_id&quot; value=&quot;4971f02a-9af7-402f-983d-73de57eb486c&quot;&gt;
+            
+          &lt;/form&gt;
+          &lt;div class=&quot;nl-or&quot;&gt;&lt;span&gt;or&lt;/span&gt;&lt;/div&gt;
+          &lt;a class=&quot;nl-drop&quot; href=&quot;https://app.netlify.com/drop?utm_source=netlify_badge&amp;utm_campaign=loops&amp;utm_medium=owned&amp;utm_content=drop&amp;utm_id=4971f02a-9af7-402f-983d-73de57eb486c&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;
+            &lt;span&gt;Drop a site you already have&lt;/span&gt;&lt;span class=&quot;nl-arrow&quot; aria-hidden=&quot;true&quot;&gt;&amp;rarr;&lt;/span&gt;
+          &lt;/a&gt;
+          
+        &lt;/section&gt;
+        &lt;button type=&quot;button&quot; class=&quot;nl-badge&quot; id=&quot;nl-badge&quot; aria-expanded=&quot;false&quot; aria-controls=&quot;nl-card&quot;
+                aria-label=&quot;Powered by Netlify — build your own site&quot;&gt;
+          &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 32 32&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot;&gt;
+    &lt;path fill=&quot;#fff&quot; d=&quot;M17.9922 18.3225H14.005L13.6746 17.9921V14.005L14.005 13.6746H17.9922L18.3226 14.005V17.9921L17.9922 18.3225Z&quot;/&gt;
+    &lt;g fill=&quot;#05BDBA&quot;&gt;
+      &lt;path d=&quot;M9.6958 24.3311H9.35705L7.6661 22.6401V22.3041L10.2511 19.7164L12.042 19.7191L12.2808 19.9552V21.7461L9.6958 24.3311Z&quot;/&gt;
+      &lt;path d=&quot;M7.6661 9.69576V9.35701L9.35705 7.66606H9.6958L12.2808 10.2511V12.0392L12.042 12.2808H10.2511L7.6661 9.69576Z&quot;/&gt;
+      &lt;path d=&quot;M10.0457 17.4369H0.205466L0 17.2314V14.7658L0.205466 14.5603H10.0457L10.2511 14.7658V17.2314L10.0457 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M31.7945 17.4369H21.9544L21.7489 17.2314V14.7658L21.9544 14.5603H31.7945L32 14.7658V17.2314L31.7945 17.4369Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 10.0456V2.66547L14.7686 2.46001H17.2343L17.4396 2.66547V10.0456L17.2343 10.2511H14.7686L14.5631 10.0456Z&quot;/&gt;
+      &lt;path d=&quot;M14.5631 29.3316V21.9515L14.7686 21.746H17.2343L17.4396 21.9515V29.3316L17.2343 29.5371H14.7686L14.5631 29.3316Z&quot;/&gt;
+    &lt;/g&gt;&lt;/svg&gt;
+          &lt;span&gt;&lt;span class=&quot;nl-badge-label&quot;&gt;Powered by&lt;/span&gt; &lt;span class=&quot;nl-badge-brand&quot;&gt;Netlify&lt;/span&gt;&lt;/span&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;script&gt;
+        
+    function nlSend(){
+      var wrap=document.querySelector('.nl-wrap'),boxes=[];
+      for(var i=0;i&lt;wrap.children.length;i++){
+        var c=wrap.children[i];
+        if(!c.offsetWidth||!c.offsetHeight)continue;
+        boxes.push({x:c.offsetLeft-wrap.offsetLeft+8,
+                    y:c.offsetTop-wrap.offsetTop+8,
+                    w:c.offsetWidth,h:c.offsetHeight});
+      }
+      parent.postMessage({nlHud:'resize',
+        width:wrap.offsetWidth+26,
+        height:wrap.offsetHeight+26,
+        boxes:boxes},'*');
+    }
+    function nlSendSoon(){requestAnimationFrame(nlSend);}
+    window.addEventListener('load',nlSend);
+    window.addEventListener('message',function(e){
+      if(e.source!==parent||!e.data||e.data.nlHud!=='viewport')return;
+      var s=document.documentElement.style;
+      s.setProperty('--nl-vw',e.data.w+'px');
+      s.setProperty('--nl-vh',e.data.h+'px');
+      document.documentElement.classList.toggle('nl-narrow',e.data.w&lt;600);
+      nlSendSoon();
+    });
+    var nlCoarse=window.matchMedia('(pointer: coarse)').matches;
+    function nlSubmit(form){
+      if(form.requestSubmit)return form.requestSubmit();
+      if(form.checkValidity&amp;&amp;!form.checkValidity())
+        return form.reportValidity&amp;&amp;form.reportValidity();
+      form.submit();
+    }
+  
+        var badge=document.getElementById('nl-badge'),card=document.getElementById('nl-card'),
+            box=card.querySelector('textarea');
+        function setOpen(open){
+          card.classList.toggle('open',open);
+          badge.setAttribute('aria-expanded',open?'true':'false');
+          nlSendSoon();
+          if(open&amp;&amp;!nlCoarse)box.focus();
+        }
+        box.addEventListener('keydown',function(e){
+          if(e.key==='Enter'&amp;&amp;!e.shiftKey){e.preventDefault();nlSubmit(box.form);}
+        });
+        badge.addEventListener('click',function(){setOpen(!card.classList.contains('open'));});
+        document.getElementById('nl-card-close').addEventListener('click',function(){setOpen(false);badge.focus();});
+        document.addEventListener('keydown',function(e){
+          if(e.key==='Escape'&amp;&amp;card.classList.contains('open')){setOpen(false);badge.focus();}
+        });
+        card.addEventListener('click',function(e){
+          if(e.target.closest('#nl-hide'))parent.postMessage({nlHud:'state',value:'hidden'},'*');
+        });
+      &lt;/script&gt;
+    &lt;/body&gt;&lt;/html&gt;" style="position: fixed; bottom: 0px; right: 0px; border: 0px; margin: 0px; padding: 0px; background: transparent; color-scheme: dark; z-index: 2147483645; width: 197px; height: 64px; clip-path: path(&quot;M 3 3 H 184 V 51 H 3 Z&quot;);" data-nl-ready="1"></iframe></body></html>
