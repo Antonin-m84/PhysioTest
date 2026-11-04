@@ -33,29 +33,42 @@ function probability(pre: number, likelihoods: number[]) {
 }
 
 function BodyChart({ onSelect }: { onSelect: (id: string) => void }) {
-  const points = [
-    ["cervicale", "Cervicale", "neck"], ["epaule", "Épaule", "shoulder"],
-    ["main", "Main & poignet", "hand"], ["lombaire", "Lombaire", "back"],
-    ["hanche", "Hanche", "hip"], ["genou", "Genou", "knee"],
-    ["cheville", "Cheville", "ankle"], ["atm", "ATM", "jaw"],
+  const points: [string, string, number, number, number, number][] = [
+    ["cervicale", "Cervicale", 48, 16, 36, 16],
+    ["epaule", "Épaule", 28, 27, 38, 29],
+    ["main", "Main & poignet", 12, 49, 37, 46],
+    ["lombaire", "Lombaire", 72, 43, 57, 43],
+    ["hanche", "Hanche", 73, 57, 57, 55],
+    ["genou", "Genou", 72, 72, 57, 70],
+    ["cheville", "Cheville", 70, 87, 56, 87],
+    ["atm", "ATM", 82, 20, 54, 22],
   ];
   return (
     <div className="body-chart">
-      <div className="silhouette-wrap" aria-hidden="true"><svg className="silhouette-svg" viewBox="0 0 220 450"><circle cx="110" cy="38" r="28" /><path d="M75 82 Q110 62 145 82 L151 205 Q145 225 130 225 L125 420 L100 420 L95 225 Q75 225 69 205 Z" /><path d="M75 92 L32 220 L52 227 L91 137 M145 92 L188 220 L168 227 L129 137 M98 215 L75 423 M122 215 L145 423" /></svg><span className="pulse-ring" /></div>
-      <div className="body-points">
-        {points.map(([id, label, cls]) => <button key={id} className={`body-point ${cls}`} onClick={() => onSelect(id)}>{label}<span>→</span></button>)}
+      <img className="body-chart-image" src="/bodychart.png" alt="Illustration d'un coureur avec les zones cliniques sélectionnables" />
+      <svg className="body-lines" viewBox="0 0 100 100" aria-hidden="true">
+        {points.map(([id, , x, y, tx, ty]) => <line key={id} x1={x} y1={y} x2={tx} y2={ty} />)}
+      </svg>
+      <div className="body-pins">
+        {points.map(([id, label, x, y]) => <button key={id} className="body-pin" style={{ left: `${x}%`, top: `${y}%` }} onClick={() => onSelect(id)} aria-label={`Ouvrir la région ${label}`}><span className="pin-dot" /><span className="pin-label">{label}</span></button>)}
       </div>
     </div>
   );
 }
 
-function Header({ page, setPage, regionName }: { page: Page; setPage: (page: Page) => void; regionName: string }) {
+function Header({ page, setPage, regionName, openRegion }: { page: Page; setPage: (page: Page) => void; regionName: string; openRegion: (id: string) => void }) {
+  const [regionMenuOpen, setRegionMenuOpen] = useState(false);
   return <header className="topbar">
     <button className="brand" onClick={() => setPage("Accueil")}><span className="brand-mark">P</span><span>Physio<span>Test</span></span></button>
     <nav className="main-nav floating-nav" aria-label="Navigation principale">
-      {navItems.map(item => <button key={item} className={page === item ? "active" : ""} onClick={() => setPage(item)}>{item}</button>)}
+      <button className={page === "Accueil" ? "active" : ""} onClick={() => setPage("Accueil")}>Accueil</button>
+      <div className="region-menu">
+        <button className={`region-menu-trigger ${page === "Régions" ? "active" : ""}`} onClick={() => setRegionMenuOpen(open => !open)} aria-expanded={regionMenuOpen}>Régions <span>⌄</span></button>
+        {regionMenuOpen && <div className="region-menu-list">{regionIds.map(id => <button key={id} onClick={() => { openRegion(id); setRegionMenuOpen(false); }}>{regions[id].nom}</button>)}</div>}
+      </div>
+      {navItems.filter(item => item !== "Régions" && item !== "Accueil").map(item => <button key={item} className={page === item ? "active" : ""} onClick={() => setPage(item)}>{item}</button>)}
     </nav>
-    <div className="header-context">{regionName || "Votre parcours clinique"} <i>⌄</i></div>
+    <div className="header-context">{regionName || "Votre parcours clinique"}</div>
   </header>;
 }
 
@@ -94,7 +107,7 @@ export default function Home() {
   };
 
   return <div className="site-shell">
-    <Header page={page} setPage={setPage} regionName={page === "Régions" ? region.nom : ""} />
+    <Header page={page} setPage={setPage} regionName={page === "Régions" ? region.nom : ""} openRegion={openRegion} />
     <main>
       {page === "Accueil" && <section className="home-page fade-in">
         <div className="hero">
@@ -103,15 +116,15 @@ export default function Home() {
           <p>PhysioTest structure votre examen clinique, de l&apos;interrogatoire à l&apos;interprétation des tests, sans remplacer votre expertise.</p>
           <button className="primary-button" onClick={() => document.getElementById("body-map")?.scrollIntoView({ behavior: "smooth" })}>Choisir une région <span>↓</span></button>
         </div>
-        <div className="home-intro"><div><span className="number">01</span><h2>Un parcours pensé pour la pratique</h2></div><p>Repérez les Red Flags, précisez votre hypothèse, sélectionnez vos tests et observez l&apos;évolution des probabilités. Les données sont présentées avec leur niveau de fiabilité et leur source.</p></div>
+        <div className="home-intro"><div><span className="number">01</span><h2>Comment utiliser PhysioTest</h2></div><p>Sélectionnez une zone sur la body chart pour ouvrir son parcours clinique. Repérez les Red Flags, précisez votre hypothèse, sélectionnez vos tests et observez l&apos;évolution des probabilités.</p></div>
         <section id="body-map" className="map-section"><div className="section-heading"><div><span className="eyebrow">COMMENCER ICI</span><h2>Sélectionnez une zone</h2></div><p>Choisissez une partie du corps pour ouvrir son parcours clinique.</p></div><BodyChart onSelect={openRegion} /></section>
         <div className="trust-row"><div><strong>8</strong><span>régions cliniques</span></div><div><strong>80+</strong><span>tests documentés</span></div><div><strong>100%</strong><span>pédagogique</span></div></div>
       </section>}
 
       {page === "Régions" && <section className="region-page fade-in">
-        <div className="region-hero"><div><button className="back-link" onClick={() => setPage("Accueil")}>← Accueil</button><div className="eyebrow">PARCOURS CLINIQUE</div><h1>{region.nom}</h1><p>{region.resume}</p></div><div className="region-stat"><strong>{region.tests.length}</strong><span>tests & règles<br />diagnostiques</span></div></div>
+        <div className="region-hero"><div><div className="eyebrow">PARCOURS CLINIQUE</div><h1>{region.nom}</h1><p>{region.resume}</p></div><div className="region-stat"><strong>{region.tests.length}</strong><span>tests & règles<br />diagnostiques</span></div></div>
         <div className="region-toolbar"><div className="tabs">{tabs.map(tab => <button key={tab} className={activeTab === tab ? "active" : ""} onClick={() => setActiveTab(tab)}>{tab}{tab === "Red Flags" && selectedFlags.length > 0 && <b>{selectedFlags.length}</b>}</button>)}</div><button className="reset-button" onClick={resetRegion}>Réinitialiser</button></div>
-        {activeTab === "Red Flags" && <section className="clinical-grid slide-up"><div className="section-heading"><div><span className="eyebrow">SÉCURITÉ D&apos;ABORD</span><h2>Red Flags</h2></div><p>Sélectionnez les signes présents. La conduite à tenir est affichée dans chaque carte.</p></div><div className="flag-grid">{region.red_flags.map(flag => <article key={flag.id} className={`flag-card ${flag.niveau} ${flags[`${regionId}-${flag.id}`] ? "selected" : ""}`}><label><input type="checkbox" checked={Boolean(flags[`${regionId}-${flag.id}`])} onChange={event => setFlags({ ...flags, [`${regionId}-${flag.id}`]: event.target.checked })} /><span className="custom-check">✓</span><strong>{flag.label}</strong></label><div className="flag-action"><span>CONDUITE À TENIR</span><p>{flag.orient}</p></div></article>)}</div></section>}
+        {activeTab === "Red Flags" && <section className="clinical-grid slide-up"><div className="section-heading"><div><span className="eyebrow">SÉCURITÉ D&apos;ABORD</span><h2>Red Flags</h2></div><p>Cliquez sur un signe présent pour afficher la conduite à tenir.</p></div><div className="flag-grid">{region.red_flags.map(flag => { const key = `${regionId}-${flag.id}`; return <article key={flag.id} role="button" tabIndex={0} className={`flag-card ${flag.niveau} ${flags[key] ? "selected" : ""}`} onClick={() => setFlags({ ...flags, [key]: !flags[key] })} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") setFlags({ ...flags, [key]: !flags[key] }); }}><strong>{flag.label}</strong><div className="flag-action"><span>{flags[key] ? "CONDUITE À TENIR" : "SÉLECTIONNER POUR VOIR LA CONDUITE"}</span><p>{flag.orient}</p></div></article>; })}</div></section>}
         {activeTab === "Anamnèse" && <section className="clinical-grid slide-up"><div className="section-heading"><div><span className="eyebrow">ÉTAPE 02</span><h2>Anamnèse</h2></div><p>Chaque réponse déplace les probabilités de départ. Cette heuristique oriente l&apos;examen, elle ne diagnostique pas.</p></div><div className="anam-layout"><div className="question-list">{region.questions.map(question => <article className="question-card" key={question.id}><span className="question-index">{String(region.questions.indexOf(question) + 1).padStart(2, "0")}</span><div><h3>{question.texte}</h3>{question.opts.map((option, index) => <label className={`option ${answers[question.id] === index ? "chosen" : ""}`} key={option[0]}><input type="radio" name={question.id} checked={answers[question.id] === index} onChange={() => setAnswers({ ...answers, [question.id]: index })} />{option[0]}</label>)}</div></article>)}</div><aside className="probability-panel"><div className="eyebrow">PROBABILITÉS ACTUELLES</div><h3>Vos hypothèses évoluent</h3>{[...probabilities].sort((a, b) => b.pre - a.pre).map(item => <div className="probability-row" key={item.id}><div><span>{item.nom}</span><b>{formatPercent(item.pre)}</b></div><div className="probability-track"><i style={{ width: `${item.pre * 100}%` }} /></div></div>)}</aside></div></section>}
         {activeTab === "Examen" && <section className="clinical-grid slide-up"><div className="section-heading"><div><span className="eyebrow">ÉTAPE 03</span><h2>Examen</h2></div><p>Renseignez les tests réalisés pour mettre à jour votre raisonnement.</p></div><div className="test-list">{region.tests.map(test => { const [lp, ln] = lrs(test); return <article className="test-card" key={test.id}><div className="test-main"><div className="test-title"><h3>{test.nom}</h3><span className={test.conf === "V" ? "verified" : "review"}>{test.conf === "V" ? "Valeur vérifiée" : "À vérifier"}</span></div><p>{[test.how, test.pos && `Positif si : ${test.pos}`].filter(Boolean).join(". ")}</p>{test.note && <small>{test.note}</small>}</div><div className="test-stats"><span>Se <b>{test.se === null ? "—" : test.se.toFixed(2)}</b></span><span>Sp <b>{test.sp === null ? "—" : test.sp.toFixed(2)}</b></span><span>LR+ <b>{lp === null ? "—" : lp.toFixed(1)}</b></span><span>LR− <b>{ln === null ? "—" : ln.toFixed(2)}</b></span><small>{test.src}</small></div><select value={results[test.id] || "—"} onChange={event => setResults({ ...results, [test.id]: event.target.value })}><option>—</option><option>Positif</option><option>Négatif</option></select></article>; })}</div>{region.cpr.length > 0 && <div className="cpr-list"><div className="section-heading"><div><span className="eyebrow">RÈGLES DE PRÉDICTION</span><h2>Clusters cliniques</h2></div></div>{region.cpr.map(rule => <article className="summary-card" key={rule.id}><h3>{rule.nom}</h3><p>{rule.items.join(" · ")}</p><small>{rule.src} · {rule.note}</small></article>)}</div>}</section>}
         {activeTab === "Synthèse" && <section className="clinical-grid slide-up"><div className="section-heading"><div><span className="eyebrow">ÉTAPE 04</span><h2>Synthèse</h2></div><p>Votre raisonnement clinique, regroupé au même endroit.</p></div><div className="summary-layout"><div className="summary-card"><span className="eyebrow">RED FLAGS SÉLECTIONNÉS</span>{selectedFlags.length ? selectedFlags.map(flag => <div className="summary-flag" key={flag.id}><strong>{flag.label}</strong><span>{flag.orient}</span></div>) : <p className="muted">Aucun Red Flag sélectionné.</p>}</div><div className="summary-card"><span className="eyebrow">HYPOTHÈSES</span>{probabilities.sort((a, b) => b.post - a.post).slice(0, 6).map(item => <div className="summary-test" key={item.id}><strong>{item.nom}</strong><span>{formatPercent(item.pre)} → {formatPercent(item.post)}</span></div>)}</div></div></section>}
@@ -120,6 +133,6 @@ export default function Home() {
       {page === "Tests & valeurs" && <section className="library-page fade-in"><div className="page-heading"><span className="eyebrow">BIBLIOTHÈQUE CLINIQUE</span><h1>Tests & valeurs</h1><p>Explorez les performances diagnostiques documentées de toutes les régions.</p></div><input className="search-input" placeholder="Rechercher un test, une région ou une source…" value={search} onChange={event => setSearch(event.target.value)} /><div className="library-grid">{visibleTests.map(test => { const [lp, ln] = lrs(test); return <article className="library-card" key={`${test.region}-${test.id}`}><div><span className="eyebrow">{test.region}</span><h3>{test.nom}</h3><p>{test.src}</p></div><div className="library-metrics"><span>Se <b>{test.se?.toFixed(2) ?? "—"}</b></span><span>Sp <b>{test.sp?.toFixed(2) ?? "—"}</b></span><span>LR+ <b>{lp?.toFixed(1) ?? "—"}</b></span><span>LR− <b>{ln?.toFixed(2) ?? "—"}</b></span></div></article>; })}</div></section>}
       {page === "Sources" && <section className="sources-page fade-in"><div className="page-heading"><span className="eyebrow">TRANSPARENCE</span><h1>Sources</h1><p>Chaque valeur est accompagnée de sa source et d&apos;un lien de recherche PubMed pour vérifier l&apos;article.</p></div><div className="source-list">{Object.values(regions).flatMap(item => item.tests.map(test => ({ ...test, region: item.nom }))).reduce((acc, test) => { const key = `${test.src}`; if (!acc.some(item => item.src === key)) acc.push({ src: key, region: test.region }); return acc; }, [] as {src: string; region: string}[]).map(source => <article className="source-row" key={source.src}><span className="source-dot" /><strong>{source.src}</strong><span>{source.region}</span><a href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(source.src)}`} target="_blank" rel="noreferrer">Voir la littérature ↗</a></article>)}</div></section>}
     </main>
-    <footer><span>PhysioTest</span><span>Outil pédagogique d&apos;aide au raisonnement clinique.</span></footer>
+    <footer><div><span className="number">01</span><strong>Un parcours pensé pour la pratique</strong><p>Repérez les Red Flags, précisez votre hypothèse, sélectionnez vos tests et observez l&apos;évolution des probabilités.</p></div><span>PhysioTest · conçu par Antonin-m84</span></footer>
   </div>;
 }
