@@ -1,0 +1,22 @@
+{
+  "name": "physiotest",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev web",
+    "build": "next build web",
+    "start": "next start web",
+    "typecheck": "tsc --noEmit -p web/tsconfig.json"
+  },
+  "dependencies": {
+    "next": "16.4.5",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "latest"
+  }
+}
