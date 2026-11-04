@@ -1,0 +1,3510 @@
+{
+  "epaule": {
+    "id": "epaule",
+    "nom": "Épaule",
+    "resume": "Douleur d'épaule : raideur, instabilité, AC, rachis cervical, coiffe et diagnostics différentiels.",
+    "red_flags": [
+      {
+        "id": "fx",
+        "label": "Traumatisme à haute énergie ou chute avec déformation, impotence totale ou crépitation",
+        "orient": "Radiographie et avis médical urgent (fracture, luxation)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "cardiaque",
+        "label": "Douleur épaule/bras gauche avec dyspnée, sueurs ou oppression thoracique à l'effort",
+        "orient": "Appel du 15 : origine cardiaque à exclure",
+        "niveau": "urgent"
+      },
+      {
+        "id": "infect",
+        "label": "Fièvre, épaule chaude et gonflée, injection ou chirurgie récente",
+        "orient": "Avis médical urgent (arthrite septique)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "pancoast",
+        "label": "Tabagisme, amaigrissement, myosis/ptosis, douleur apicale avec déficit C8-T1",
+        "orient": "Imagerie thoracique et avis médical rapide (tumeur de l'apex)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "cancer",
+        "label": "Antécédent de cancer avec douleur constante, nocturne, non mécanique",
+        "orient": "Bilan oncologique et avis médical rapide",
+        "niveau": "rapide"
+      },
+      {
+        "id": "neuro",
+        "label": "Déficit moteur ou sensitif progressif du membre supérieur, signes de myélopathie",
+        "orient": "Avis médical rapide (compression radiculaire ou médullaire)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "rupture",
+        "label": "Perte de force brutale après traumatisme ou effort chez un patient de plus de 40 ans",
+        "orient": "Avis orthopédique précoce (rupture aiguë de coiffe)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "visceral",
+        "label": "Douleur non reproductible par le mouvement avec signes digestifs, respiratoires ou abdominaux",
+        "orient": "Orientation médicale (douleur projetée viscérale)",
+        "niveau": "avis"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "rcrsp",
+        "nom": "Douleur liée à la coiffe / sous-acromiale",
+        "prev": 0.45,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "coiffe",
+        "nom": "Rupture transfixiante de la coiffe",
+        "prev": 0.1,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "capsulite",
+        "nom": "Capsulite rétractile",
+        "prev": 0.08,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "instab",
+        "nom": "Instabilité gléno-humérale antérieure",
+        "prev": 0.07,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "ac",
+        "nom": "Pathologie acromio-claviculaire",
+        "prev": 0.06,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "labrum",
+        "nom": "Lésion labrale / long biceps",
+        "prev": 0.06,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "cervical",
+        "nom": "Douleur projetée d'origine cervicale",
+        "prev": 0.1,
+        "desc": "Aucun test d'épaule ne la teste : utiliser la région Cervicale.",
+        "renvoi": "cervicale"
+      },
+      {
+        "id": "arthrose",
+        "nom": "Arthrose gléno-humérale",
+        "prev": 0.06,
+        "desc": "Pincement articulaire, crépitements et limitation progressive chez un sujet plus âgé.",
+        "renvoi": null
+      },
+      {
+        "id": "lux_post",
+        "nom": "Luxation postérieure verrouillée",
+        "prev": 0.01,
+        "desc": "Rotation externe impossible après crise convulsive, électrocution ou traumatisme.",
+        "renvoi": null
+      },
+      {
+        "id": "calcifiante",
+        "nom": "Tendinopathie calcifiante",
+        "prev": 0.04,
+        "desc": "Douleur aiguë intense, souvent nocturne, sans traumatisme ; radiographie à envisager.",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "mode",
+        "texte": "Comment la douleur a-t-elle débuté ?",
+        "opts": [
+          [
+            "Progressivement, avec des surcharges ou des gestes répétés",
+            {
+              "rcrsp": 2,
+              "coiffe": 0.5
+            }
+          ],
+          [
+            "Après un traumatisme (chute, choc, luxation)",
+            {
+              "instab": 1.5,
+              "ac": 2,
+              "coiffe": 1,
+              "labrum": 1
+            }
+          ],
+          [
+            "Insidieux, sans cause, avec raideur croissante",
+            {
+              "capsulite": 3
+            }
+          ],
+          [
+            "Sensation de déboîtement, souvent en rotation externe",
+            {
+              "instab": 3,
+              "labrum": 1
+            }
+          ]
+        ]
+      },
+      {
+        "id": "nuit",
+        "texte": "Douleur nocturne ?",
+        "opts": [
+          [
+            "Réveille, impossible de dormir sur l'épaule",
+            {
+              "rcrsp": 1,
+              "coiffe": 1,
+              "capsulite": 1.5
+            }
+          ],
+          [
+            "Pas de gêne nocturne particulière",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "raideur",
+        "texte": "Raideur ?",
+        "opts": [
+          [
+            "Perte importante de mobilité passive, surtout en rotation externe",
+            {
+              "capsulite": 3,
+              "rcrsp": -1
+            }
+          ],
+          [
+            "Mobilité passive conservée",
+            {
+              "rcrsp": 0.5
+            }
+          ],
+          [
+            "Rotation externe impossible après un événement violent ou une crise",
+            {
+              "lux_post": 4
+            }
+          ]
+        ]
+      },
+      {
+        "id": "force",
+        "texte": "Faiblesse ?",
+        "opts": [
+          [
+            "Faiblesse franche à l'élévation ou en rotation externe",
+            {
+              "coiffe": 2.5
+            }
+          ],
+          [
+            "Pas de vraie faiblesse",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "loc",
+        "texte": "Où est la douleur ?",
+        "opts": [
+          [
+            "Sommet de l'épaule, gêne en croisant le bras",
+            {
+              "ac": 3
+            }
+          ],
+          [
+            "Antérieure/profonde, clics ou accrochages",
+            {
+              "labrum": 2.5
+            }
+          ],
+          [
+            "Latérale, sous l'acromion et sur le deltoïde",
+            {
+              "rcrsp": 1.5
+            }
+          ],
+          [
+            "Cou douloureux, irradiation sous le coude, paresthésies",
+            {
+              "cervical": 3
+            }
+          ],
+          [
+            "Douleur profonde avec crépitements et perte progressive de mobilité",
+            {
+              "arthrose": 3
+            }
+          ],
+          [
+            "Douleur très aiguë, parfois nocturne, sans traumatisme",
+            {
+              "calcifiante": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge",
+        "opts": [
+          [
+            "Moins de 35 ans",
+            {
+              "instab": 1.5,
+              "labrum": 1
+            }
+          ],
+          [
+            "35 à 60 ans",
+            {
+              "rcrsp": 1,
+              "capsulite": 1
+            }
+          ],
+          [
+            "Plus de 60 ans",
+            {
+              "coiffe": 1.5,
+              "rcrsp": 1
+            }
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "apprehension",
+        "nom": "Test d'appréhension",
+        "hyp": "instab",
+        "se": 0.66,
+        "sp": 0.95,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Décubitus, abduction 90°, rotation externe progressive",
+        "pos": "Appréhension (pas la douleur seule)",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "relocation",
+        "nom": "Test de relocalisation",
+        "hyp": "instab",
+        "se": 0.65,
+        "sp": 0.9,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Après appréhension positive, poussée postérieure sur l'humérus",
+        "pos": "Disparition de l'appréhension",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "release",
+        "nom": "Test de libération (surprise)",
+        "hyp": "instab",
+        "se": 0.82,
+        "sp": 0.86,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Après relocalisation, relâcher brusquement la poussée",
+        "pos": "Réapparition de l'appréhension ou de la douleur",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "kim",
+        "nom": "Test de Kim",
+        "hyp": "labrum",
+        "se": 0.8,
+        "sp": 0.94,
+        "src": "Kim 2005 (étude originale)",
+        "how": "Assis, abduction 90°, charge axiale puis élévation 45° avec adduction horizontale",
+        "pos": "Douleur postérieure soudaine, parfois clic",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Étude de l'inventeur du test : valeurs probablement optimistes."
+      },
+      {
+        "id": "speed",
+        "nom": "Test de Speed",
+        "hyp": "labrum",
+        "se": 0.32,
+        "sp": 0.61,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Flexion d'épaule 90°, coude en extension, supination, résistance",
+        "pos": "Douleur dans la gouttière bicipitale",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "whipple",
+        "nom": "Test de Whipple",
+        "hyp": "rcrsp",
+        "se": 0.89,
+        "sp": 0.29,
+        "src": "Ackman 2019",
+        "how": "Main sur l'épaule opposée, résistance vers le bas",
+        "pos": "Douleur ou faiblesse par rapport au côté sain",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Sp très faible : un test positif ne confirme rien."
+      },
+      {
+        "id": "hawkins",
+        "nom": "Hawkins-Kennedy",
+        "hyp": "rcrsp",
+        "se": 0.8,
+        "sp": 0.56,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Flexion 90°, coude 90°, rotation interne passive",
+        "pos": "Douleur d'épaule reproduite",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "neer",
+        "nom": "Neer",
+        "hyp": "rcrsp",
+        "se": 0.72,
+        "sp": 0.6,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Élévation passive en rotation interne",
+        "pos": "Douleur d'épaule reproduite",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "arc",
+        "nom": "Arc douloureux",
+        "hyp": "rcrsp",
+        "se": 0.53,
+        "sp": 0.76,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Abduction active",
+        "pos": "Douleur entre ~60° et 120°",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "droparm",
+        "nom": "Drop arm test",
+        "hyp": "coiffe",
+        "se": 0.21,
+        "sp": 0.92,
+        "src": "Hegedus 2012 (BJSM)",
+        "how": "Abduction 90° puis descente lente contrôlée",
+        "pos": "Chute du bras ou douleur intense",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "ac_palp",
+        "nom": "Palpation de l'interligne AC",
+        "hyp": "ac",
+        "se": 0.96,
+        "sp": 0.1,
+        "src": "Walton 2004",
+        "how": "Palpation de l'articulation acromio-claviculaire",
+        "pos": "Douleur à la palpation",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Se élevée mais LR− ≈ 0,4 : le « SnNout » ne tient pas ici."
+      },
+      {
+        "id": "crossbody",
+        "nom": "Adduction horizontale (cross-body)",
+        "hyp": "ac",
+        "se": 0.77,
+        "sp": 0.79,
+        "src": "Chronopoulos 2004",
+        "how": "Bras à 90° amené en adduction horizontale",
+        "pos": "Douleur au sommet de l'épaule",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "coracoid",
+        "nom": "Douleur coracoïdienne",
+        "hyp": "capsulite",
+        "se": 0.96,
+        "sp": 0.88,
+        "src": "Carbone 2010",
+        "how": "Palpation du processus coracoïde",
+        "pos": "Douleur par rapport au côté sain",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Une seule étude de validation."
+      }
+    ],
+    "cpr": [
+      {
+        "id": "park",
+        "nom": "Cluster de Park (conflit sous-acromial)",
+        "hyp": "rcrsp",
+        "items": [
+          "Hawkins-Kennedy positif",
+          "Arc douloureux positif",
+          "Test de l'infra-épineux positif (rotation externe résistée)"
+        ],
+        "seuils": [
+          [
+            3,
+            10.6,
+            null
+          ]
+        ],
+        "src": "Park 2005 (JBJS Am)",
+        "conf": "M",
+        "note": "Trois critères sur trois : LR+ ≈ 10,6."
+      }
+    ]
+  },
+  "genou": {
+    "id": "genou",
+    "nom": "Genou",
+    "resume": "Genou : fracture, ligaments, ménisque, arthrose, tendons, douleur neuropathique et hanche.",
+    "red_flags": [
+      {
+        "id": "ot_age",
+        "label": "Ottawa : âge ≥ 55 ans",
+        "orient": "Règle d'Ottawa positive : radiographie du genou",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_rotule",
+        "label": "Ottawa : douleur isolée à la palpation de la rotule",
+        "orient": "Règle d'Ottawa positive : radiographie du genou",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_fibula",
+        "label": "Ottawa : douleur à la palpation de la tête de la fibula",
+        "orient": "Règle d'Ottawa positive : radiographie du genou",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_flex",
+        "label": "Ottawa : flexion impossible jusqu'à 90°",
+        "orient": "Règle d'Ottawa positive : radiographie du genou",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_appui",
+        "label": "Ottawa : incapable de faire 4 pas (immédiatement et à l'examen)",
+        "orient": "Règle d'Ottawa positive : radiographie du genou",
+        "niveau": "rapide"
+      },
+      {
+        "id": "hemarthrose",
+        "label": "Gonflement rapide (moins de 2 h) après traumatisme",
+        "orient": "Avis médical : hémarthrose (LCA, fracture ostéochondrale)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "septique",
+        "label": "Genou chaud, rouge, fébrile, sans traumatisme",
+        "orient": "Avis médical urgent (arthrite septique ou microcristalline)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "tvp",
+        "label": "Mollet gonflé, chaud, douloureux (immobilisation, chirurgie récente)",
+        "orient": "Avis médical urgent (thrombose veineuse profonde)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "deficit",
+        "label": "Pied tombant, déficit neurologique ou pouls absents",
+        "orient": "Avis médical urgent (nerf fibulaire, atteinte vasculaire, loges)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "tumeur",
+        "label": "Douleur nocturne constante, antécédent de cancer ou masse",
+        "orient": "Imagerie et avis médical rapide",
+        "niveau": "rapide"
+      },
+      {
+        "id": "blocage",
+        "label": "Blocage vrai : impossible de déplier le genou",
+        "orient": "Avis orthopédique (anse de seau, corps étranger)",
+        "niveau": "rapide"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "fracture",
+        "nom": "Fracture du genou",
+        "prev": 0.05,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "lca",
+        "nom": "Rupture du LCA",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "menisque",
+        "nom": "Lésion méniscale",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "arthrose",
+        "nom": "Gonarthrose",
+        "prev": 0.25,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "pfp",
+        "nom": "Douleur fémoro-patellaire",
+        "prev": 0.25,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "ligam",
+        "nom": "Atteinte du LCP / ligaments collatéraux",
+        "prev": 0.08,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "refere",
+        "nom": "Douleur projetée (hanche, rachis)",
+        "prev": 0.07,
+        "desc": "À rechercher si le genou est normal : voir Hanche et Lombaire.",
+        "renvoi": "hanche"
+      },
+      {
+        "id": "inflammatoire",
+        "nom": "Arthrite microcristalline ou inflammatoire",
+        "prev": 0.04,
+        "desc": "Genou chaud et gonflé sans traumatisme ; goutte, chondrocalcinose ou rhumatisme inflammatoire.",
+        "renvoi": null
+      },
+      {
+        "id": "fatigue",
+        "nom": "Fracture de fatigue",
+        "prev": 0.02,
+        "desc": "Douleur osseuse localisée après augmentation rapide de charge ; imagerie si suspicion.",
+        "renvoi": null
+      },
+      {
+        "id": "lcp",
+        "nom": "Lésion du ligament croisé postérieur",
+        "prev": 0.04,
+        "desc": "Choc sur le tibia genou fléchi ; tiroir postérieur et signe du tibia qui s'avale.",
+        "renvoi": null
+      },
+      {
+        "id": "lli",
+        "nom": "Entorse du ligament latéral interne",
+        "prev": 0.04,
+        "desc": "Choc en valgus avec douleur et laxité médiales.",
+        "renvoi": null
+      },
+      {
+        "id": "plc",
+        "nom": "Lésion du coin postéro-latéral",
+        "prev": 0.02,
+        "desc": "Varus et rotation externe, souvent associée au LCA ou au LCP.",
+        "renvoi": null
+      },
+      {
+        "id": "osteochondrite",
+        "nom": "Ostéochondrite disséquante",
+        "prev": 0.01,
+        "desc": "Enfant ou adolescent sportif, douleur mal localisée, épanchement ou blocage.",
+        "renvoi": null
+      },
+      {
+        "id": "patella",
+        "nom": "Instabilité patellaire",
+        "prev": 0.05,
+        "desc": "Subluxation ou luxation avec appréhension à la poussée latérale de la rotule.",
+        "renvoi": null
+      },
+      {
+        "id": "patella_tendon",
+        "nom": "Tendinopathie patellaire",
+        "prev": 0.06,
+        "desc": "Douleur au pôle inférieur de la rotule chez le sauteur.",
+        "renvoi": null
+      },
+      {
+        "id": "quad_tendon",
+        "nom": "Tendinopathie quadricipitale",
+        "prev": 0.02,
+        "desc": "Douleur au pôle supérieur de la rotule, liée à la charge.",
+        "renvoi": null
+      },
+      {
+        "id": "it_band",
+        "nom": "Syndrome de la bandelette ilio-tibiale",
+        "prev": 0.04,
+        "desc": "Douleur latérale chez le coureur ou cycliste, apparaissant après une distance reproductible.",
+        "renvoi": null
+      },
+      {
+        "id": "pes",
+        "nom": "Patte d'oie / tendinobursite",
+        "prev": 0.03,
+        "desc": "Douleur sous l'interligne médial, parfois associée à la gonarthrose.",
+        "renvoi": null
+      },
+      {
+        "id": "baker",
+        "nom": "Kyste poplité de Baker",
+        "prev": 0.03,
+        "desc": "Masse poplitée souvent associée à une arthrose ou une lésion méniscale.",
+        "renvoi": null
+      },
+      {
+        "id": "neuropathique",
+        "nom": "Composante neuropathique",
+        "prev": 0.04,
+        "desc": "Brûlure, décharges, allodynie ou territoire nerveux ; rechercher le nerf ou la racine.",
+        "renvoi": null
+      },
+      {
+        "id": "osteonecrose",
+        "nom": "Ostéonécrose du genou",
+        "prev": 0.01,
+        "desc": "Douleur médiale brutale, souvent nocturne, chez un sujet plus âgé ; l'IRM peut être nécessaire.",
+        "renvoi": null
+      },
+      {
+        "id": "bursite",
+        "nom": "Bursite prépatellaire",
+        "prev": 0.03,
+        "desc": "Gonflement limité devant la rotule après appuis répétés ; rougeur ou fièvre impose un avis médical.",
+        "renvoi": null
+      },
+      {
+        "id": "ischio",
+        "nom": "Atteinte des ischio-jambiers distaux ou du poplité",
+        "prev": 0.02,
+        "desc": "Douleur postérieure ou postéro-latérale, sans test clinique validé.",
+        "renvoi": null
+      },
+      {
+        "id": "saphene",
+        "nom": "Atteinte du nerf saphène infrapatellaire",
+        "prev": 0.02,
+        "desc": "Brûlure ou engourdissement antéro-médial, notamment après chirurgie.",
+        "renvoi": null
+      },
+      {
+        "id": "fibulaire",
+        "nom": "Atteinte du nerf fibulaire commun",
+        "prev": 0.01,
+        "desc": "Trouble sensitif latéral, faiblesse des releveurs ou signe de Tinel au col de la fibula.",
+        "renvoi": null
+      },
+      {
+        "id": "radiculaire",
+        "nom": "Radiculopathie L3-L4",
+        "prev": 0.02,
+        "desc": "Douleur antérieure de cuisse, réflexe rotulien diminué ou déficit du quadriceps.",
+        "renvoi": null
+      },
+      {
+        "id": "sdrc",
+        "nom": "Syndrome douloureux régional complexe",
+        "prev": 0.01,
+        "desc": "Douleur disproportionnée avec changements de couleur, température, sudation ou œdème.",
+        "renvoi": null
+      },
+      {
+        "id": "coxarthrose",
+        "nom": "Coxarthrose avec douleur projetée au genou",
+        "prev": 0.04,
+        "desc": "Douleur de genou avec rotation interne de hanche limitée ou douleur inguinale.",
+        "renvoi": "hanche"
+      },
+      {
+        "id": "epiphysio",
+        "nom": "Épiphysiolyse fémorale",
+        "prev": 0.01,
+        "desc": "Adolescent qui boite avec rotation interne de hanche limitée : radiographie urgente.",
+        "renvoi": "hanche"
+      },
+      {
+        "id": "osgood",
+        "nom": "Maladie d'Osgood-Schlatter",
+        "prev": 0.03,
+        "desc": "Douleur et saillie de la tubérosité tibiale chez l'adolescent sportif.",
+        "renvoi": null
+      },
+      {
+        "id": "sinding",
+        "nom": "Maladie de Sinding-Larsen-Johansson",
+        "prev": 0.02,
+        "desc": "Douleur au pôle inférieur de la rotule chez l'enfant ou l'adolescent.",
+        "renvoi": null
+      },
+      {
+        "id": "hoffa",
+        "nom": "Irritation du coussinet adipeux de Hoffa",
+        "prev": 0.03,
+        "desc": "Douleur sous la rotule, souvent liée à la charge et à l'extension.",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "mode",
+        "texte": "Quel est le mécanisme ?",
+        "opts": [
+          [
+            "Torsion ou pivot en charge, craquement ressenti",
+            {
+              "lca": 3,
+              "menisque": 1.5
+            }
+          ],
+          [
+            "Torsion avec accrochage ou blocage",
+            {
+              "menisque": 3
+            }
+          ],
+          [
+            "Choc latéral (varus ou valgus)",
+            {
+              "ligam": 3,
+              "lca": 1
+            }
+          ],
+          [
+            "Choc antérieur sur le tibia",
+            {
+              "ligam": 2.5,
+              "fracture": 1
+            }
+          ],
+          [
+            "Chute directe sur le genou",
+            {
+              "fracture": 2.5
+            }
+          ],
+          [
+            "Progressif, sans traumatisme",
+            {
+              "pfp": 1.5,
+              "arthrose": 1.5,
+              "inflammatoire": 1
+            }
+          ],
+          [
+            "Choc sur le tibia genou fléchi",
+            {
+              "lcp": 3
+            }
+          ],
+          [
+            "Varus et rotation externe",
+            {
+              "plc": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "gonflement",
+        "texte": "Gonflement ?",
+        "opts": [
+          [
+            "Immédiat (moins de 2 h)",
+            {
+              "lca": 2.5,
+              "fracture": 1.5
+            }
+          ],
+          [
+            "Tardif ou intermittent",
+            {
+              "menisque": 1.5,
+              "arthrose": 1.5
+            }
+          ],
+          [
+            "Aucun",
+            {
+              "pfp": 1
+            }
+          ]
+        ]
+      },
+      {
+        "id": "derobement",
+        "texte": "Dérobement ?",
+        "opts": [
+          [
+            "Oui, le genou lâche",
+            {
+              "lca": 3,
+              "ligam": 1
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "fonction",
+        "texte": "Qu'est-ce qui aggrave ?",
+        "opts": [
+          [
+            "Escaliers, accroupissement, position assise prolongée",
+            {
+              "pfp": 3
+            }
+          ],
+          [
+            "Démarrage après repos, raideur de moins de 30 min",
+            {
+              "arthrose": 3
+            }
+          ],
+          [
+            "Rotation en charge, position accroupie",
+            {
+              "menisque": 2
+            }
+          ],
+          [
+            "Sauts ou course, douleur très localisée",
+            {
+              "patella_tendon": 2,
+              "it_band": 1
+            }
+          ],
+          [
+            "Brûlure, décharges ou fourmillements",
+            {
+              "neuropathique": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge",
+        "opts": [
+          [
+            "Moins de 30 ans",
+            {
+              "lca": 1,
+              "pfp": 1
+            }
+          ],
+          [
+            "30 à 50 ans",
+            {
+              "menisque": 1
+            }
+          ],
+          [
+            "Plus de 50 ans",
+            {
+              "arthrose": 2,
+              "menisque": 0.5
+            }
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "ottawa_k",
+        "nom": "Règle d'Ottawa du genou",
+        "hyp": "fracture",
+        "se": 0.985,
+        "sp": 0.49,
+        "src": "Bachmann 2004 (Ann Intern Med)",
+        "how": "Cinq critères (voir Red Flags)",
+        "pos": "Un critère positif = radiographie",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Règle d'exclusion : seul un résultat négatif est informatif."
+      },
+      {
+        "id": "lachman",
+        "nom": "Test de Lachman",
+        "hyp": "lca",
+        "se": 0.81,
+        "sp": 0.85,
+        "src": "Sokal 2022 (KSSTA)",
+        "how": "Flexion 20–30°, translation tibiale antérieure",
+        "pos": "Translation excessive ou arrêt mou",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Benjaminse 2006 : Se 0,85 / Sp 0,94, jugé surestimé par Sokal 2022."
+      },
+      {
+        "id": "adt",
+        "nom": "Tiroir antérieur",
+        "hyp": "lca",
+        "se": 0.83,
+        "sp": 0.85,
+        "src": "Sokal 2022 (KSSTA)",
+        "how": "Flexion 90°, translation tibiale antérieure",
+        "pos": "Translation excessive",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "pivot",
+        "nom": "Pivot shift",
+        "hyp": "lca",
+        "se": 0.55,
+        "sp": 0.94,
+        "src": "Sokal 2022 (KSSTA)",
+        "how": "Valgus et rotation interne du genou en extension, puis flexion",
+        "pos": "Ressaut de subluxation puis réduction",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Très spécifique mais peu sensible en consultation."
+      },
+      {
+        "id": "lever",
+        "nom": "Lever sign (Lelli)",
+        "hyp": "lca",
+        "se": 0.83,
+        "sp": 0.91,
+        "src": "Sokal 2022 (KSSTA)",
+        "how": "Genou en flexion 30°, main sous le mollet, pression sur le quadriceps",
+        "pos": "Le talon ne se soulève pas",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "jlt",
+        "nom": "Douleur de l'interligne articulaire",
+        "hyp": "menisque",
+        "se": 0.83,
+        "sp": 0.83,
+        "src": "Hegedus 2007 (JOSPT)",
+        "how": "Palpation de l'interligne médial et latéral",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "mcmurray",
+        "nom": "McMurray",
+        "hyp": "menisque",
+        "se": 0.55,
+        "sp": 0.77,
+        "src": "Hegedus 2007 (JOSPT)",
+        "how": "Flexion maximale puis extension avec rotation",
+        "pos": "Douleur ou claquement sur l'interligne",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "thessaly",
+        "nom": "Thessaly (20°)",
+        "hyp": "menisque",
+        "se": 0.89,
+        "sp": 0.97,
+        "src": "Karachalios 2005",
+        "how": "Appui monopodal, genou à 20°, rotations du corps",
+        "pos": "Douleur d'interligne, blocage",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Étude initiale ; reproductions plus faibles (Se ≈ 0,6 ; Sp ≈ 0,7)."
+      },
+      {
+        "id": "acr",
+        "nom": "Critères cliniques ACR de gonarthrose",
+        "hyp": "arthrose",
+        "se": 0.95,
+        "sp": 0.69,
+        "src": "Altman 1986 (ACR)",
+        "how": "Douleur du genou + au moins 3 critères sur 6",
+        "pos": "Âge > 50 ans, raideur < 30 min, crépitation, sensibilité osseuse, élargissement osseux, pas de chaleur",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "squat",
+        "nom": "Douleur à l'accroupissement",
+        "hyp": "pfp",
+        "se": 0.91,
+        "sp": 0.5,
+        "src": "Nijs 2006",
+        "how": "Squat profond",
+        "pos": "Douleur antérieure de genou reproduite",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "posterior",
+        "nom": "Tiroir postérieur",
+        "hyp": "ligam",
+        "se": 0.9,
+        "sp": 0.99,
+        "src": "Rubinstein 1994",
+        "how": "Flexion 90°, translation tibiale postérieure",
+        "pos": "Translation excessive",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      }
+    ],
+    "cpr": []
+  },
+  "atm": {
+    "id": "atm",
+    "nom": "ATM",
+    "resume": "ATM : douleur musculaire ou articulaire, disque, dégénérescence, subluxation et profil psychosocial.",
+    "red_flags": [
+      {
+        "id": "trauma",
+        "label": "Traumatisme du menton ou de la face, malocclusion nouvelle, ecchymose",
+        "orient": "Radiographie et avis médical (fracture condylienne)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "ouvert",
+        "label": "Mâchoire bloquée en position ouverte",
+        "orient": "Avis médical rapide pour réduction de la luxation",
+        "niveau": "rapide"
+      },
+      {
+        "id": "gca",
+        "label": "Plus de 50 ans, céphalée temporale récente, claudication de mâchoire, troubles visuels",
+        "orient": "Avis médical urgent (artérite à cellules géantes : VS/CRP)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "angor",
+        "label": "Douleur de mâchoire à l'effort avec oppression thoracique ou dyspnée",
+        "orient": "Appel du 15 : origine cardiaque à exclure",
+        "niveau": "urgent"
+      },
+      {
+        "id": "infect",
+        "label": "Fièvre, gonflement chaud et rouge de l'articulation ou de la joue",
+        "orient": "Avis médical urgent (arthrite septique, abcès)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "neuro",
+        "label": "Engourdissement facial, paralysie d'un nerf crânien, troubles de la déglutition",
+        "orient": "Avis médical rapide (atteinte neurologique ou tumorale)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "nevralgie",
+        "label": "Éclairs douloureux très brefs déclenchés par le toucher du visage",
+        "orient": "Avis médical (névralgie du trijumeau)",
+        "niveau": "avis"
+      },
+      {
+        "id": "tumeur",
+        "label": "Perte de poids, masse palpable, limitation d'ouverture progressive sans douleur",
+        "orient": "Imagerie et avis médical rapide",
+        "niveau": "rapide"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "douleur",
+        "nom": "Douleur liée aux DTM (toute forme)",
+        "prev": 0.5,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "myalgie",
+        "nom": "Myalgie des muscles masticateurs",
+        "prev": 0.45,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "arthralgie",
+        "nom": "Arthralgie temporo-mandibulaire",
+        "prev": 0.3,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "cephalee",
+        "nom": "Céphalée attribuée aux DTM",
+        "prev": 0.1,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "ddr",
+        "nom": "Déplacement discal avec réduction",
+        "prev": 0.2,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "ddnr",
+        "nom": "Déplacement discal sans réduction, ouverture limitée",
+        "prev": 0.05,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "djd",
+        "nom": "Arthrose temporo-mandibulaire",
+        "prev": 0.1,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "myalgie_locale",
+        "nom": "Myalgie locale",
+        "prev": 0.2,
+        "desc": "Douleur familière restant sous le doigt pendant la palpation de 5 secondes.",
+        "renvoi": null
+      },
+      {
+        "id": "myofasciale",
+        "nom": "Douleur myofasciale",
+        "prev": 0.15,
+        "desc": "Douleur qui diffuse dans le muscle sans dépasser ses limites.",
+        "renvoi": null
+      },
+      {
+        "id": "myofasciale_proj",
+        "nom": "Douleur myofasciale avec projection",
+        "prev": 0.1,
+        "desc": "Douleur projetée au-delà du muscle ; le dump rapporte Se 86 % et Sp 98 %.",
+        "renvoi": null
+      },
+      {
+        "id": "ddr_bloc",
+        "nom": "Déplacement discal avec réduction et blocage intermittent",
+        "prev": 0.05,
+        "desc": "Blocages passagers avec ouverture limitée qui se débloquent seuls ou avec une manœuvre.",
+        "renvoi": null
+      },
+      {
+        "id": "ddnr_sans_lim",
+        "nom": "Déplacement discal sans réduction, sans limitation",
+        "prev": 0.05,
+        "desc": "Blocage ancien avec ouverture récupérée ; diagnostic peu fiable sans IRM.",
+        "renvoi": null
+      },
+      {
+        "id": "subluxation",
+        "nom": "Subluxation de l'ATM",
+        "prev": 0.05,
+        "desc": "Blocage bouche grande ouverte nécessitant une manœuvre pour refermer.",
+        "renvoi": null
+      },
+      {
+        "id": "axe2",
+        "nom": "Profil psychosocial et parafonctions",
+        "prev": 0.2,
+        "desc": "Intensité, retentissement, détresse, serrage, grincement et mastication à documenter.",
+        "renvoi": null
+      },
+      {
+        "id": "inflammatoire",
+        "nom": "Arthrite inflammatoire de l'ATM",
+        "prev": 0.02,
+        "desc": "Polyarthrite ou spondylarthrite avec raideur matinale et autres articulations touchées.",
+        "renvoi": null
+      },
+      {
+        "id": "migraine",
+        "nom": "Migraine ou céphalée de tension associée",
+        "prev": 0.1,
+        "desc": "Céphalée pouvant coexister avec un DTM ; avis médical si elle domine le tableau.",
+        "renvoi": null
+      },
+      {
+        "id": "occlusion",
+        "nom": "Changement évolutif de l'occlusion",
+        "prev": 0.02,
+        "desc": "Béance ou déviation progressive ; avis spécialisé pour cause inflammatoire ou résorption condylienne.",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "douleur",
+        "texte": "Douleur de mâchoire, tempe ou oreille ces 30 derniers jours ?",
+        "opts": [
+          [
+            "Oui, modifiée par mâcher, parler ou ouvrir",
+            {
+              "douleur": 3,
+              "myalgie": 1.5,
+              "arthralgie": 1.5
+            }
+          ],
+          [
+            "Oui, mais indépendante des mouvements de mâchoire",
+            {
+              "douleur": 0.5
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "cephalee",
+        "texte": "Céphalée temporale modifiée par les mouvements de la mâchoire ?",
+        "opts": [
+          [
+            "Oui",
+            {
+              "cephalee": 3,
+              "myalgie": 1
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "bruits",
+        "texte": "Bruits articulaires ?",
+        "opts": [
+          [
+            "Claquement à l'ouverture ou à la fermeture",
+            {
+              "ddr": 3
+            }
+          ],
+          [
+            "Crépitation (« sable »)",
+            {
+              "djd": 3
+            }
+          ],
+          [
+            "Aucun",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "blocage",
+        "texte": "Blocage de la mâchoire ?",
+        "opts": [
+          [
+            "Impossible d'ouvrir complètement, début récent",
+            {
+              "ddnr": 3.5
+            }
+          ],
+          [
+            "Accrochage intermittent qui se débloque",
+            {
+              "ddr": 2,
+              "ddr_bloc": 3
+            }
+          ],
+          [
+            "Bouche bloquée grande ouverte",
+            {
+              "subluxation": 4
+            }
+          ],
+          [
+            "Aucun blocage",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge",
+        "opts": [
+          [
+            "Moins de 40 ans",
+            {
+              "myalgie": 1,
+              "ddr": 1
+            }
+          ],
+          [
+            "40 à 60 ans",
+            {
+              "arthralgie": 0.5
+            }
+          ],
+          [
+            "Plus de 60 ans",
+            {
+              "djd": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "muscle",
+        "texte": "Que se passe-t-il à la palpation musculaire de 5 secondes ?",
+        "opts": [
+          [
+            "La douleur reste sous le doigt",
+            {
+              "myalgie_locale": 3
+            }
+          ],
+          [
+            "La douleur diffuse dans le muscle",
+            {
+              "myofasciale": 3
+            }
+          ],
+          [
+            "La douleur se projette vers une dent, l'oreille ou l'œil",
+            {
+              "myofasciale_proj": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "axe2",
+        "texte": "Parafonctions ou retentissement important ?",
+        "opts": [
+          [
+            "Serrage, grincement ou mastication habituelle",
+            {
+              "axe2": 3
+            }
+          ],
+          [
+            "Douleur chronique avec incapacité élevée",
+            {
+              "axe2": 3
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "screen",
+        "nom": "Dépistage de douleur DTM (6 items)",
+        "hyp": "douleur",
+        "se": 0.99,
+        "sp": 0.97,
+        "src": "Gonzalez 2011",
+        "how": "Questionnaire de dépistage de douleur DC/TMD",
+        "pos": "Score au-delà du seuil",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "myalgie_dc",
+        "nom": "Critères DC/TMD de myalgie",
+        "hyp": "myalgie",
+        "se": 0.9,
+        "sp": 0.99,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Douleur modifiée par la fonction + douleur familière à la palpation ou à l'ouverture",
+        "pos": "Critères d'histoire et d'examen réunis",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "arthralgie_dc",
+        "nom": "Critères DC/TMD d'arthralgie",
+        "hyp": "arthralgie",
+        "se": 0.89,
+        "sp": 0.98,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Douleur modifiée par la fonction + douleur familière à la palpation de l'ATM ou à l'ouverture",
+        "pos": "Critères d'histoire et d'examen réunis",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Les diagnostics douloureux validés atteignent Se ≥ 0,86 et Sp ≥ 0,98."
+      },
+      {
+        "id": "cephalee_dc",
+        "nom": "Critères DC/TMD de céphalée attribuée aux DTM",
+        "hyp": "cephalee",
+        "se": 0.89,
+        "sp": 0.87,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Céphalée temporale modifiée par la mâchoire + reproduction à l'examen",
+        "pos": "Critères réunis",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Spécificité légèrement sous la cible."
+      },
+      {
+        "id": "ddr_dc",
+        "nom": "Déplacement discal avec réduction",
+        "hyp": "ddr",
+        "se": 0.34,
+        "sp": 0.92,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Claquement à l'ouverture ET à la fermeture, reproduit à l'examen",
+        "pos": "Critères réunis",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Critères de dépistage uniquement."
+      },
+      {
+        "id": "ddnr_dc",
+        "nom": "Déplacement discal sans réduction, ouverture limitée",
+        "hyp": "ddnr",
+        "se": 0.8,
+        "sp": 0.97,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Limitation d'ouverture avec blocage et ouverture assistée < 40 mm",
+        "pos": "Critères réunis",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "djd_dc",
+        "nom": "Arthrose : crépitation à l'examen",
+        "hyp": "djd",
+        "se": 0.55,
+        "sp": 0.61,
+        "src": "Schiffman 2014 (DC/TMD)",
+        "how": "Crépitation à la palpation pendant les mouvements",
+        "pos": "Crépitation présente",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Critères de dépistage uniquement."
+      }
+    ],
+    "cpr": []
+  },
+  "lombaire": {
+    "id": "lombaire",
+    "nom": "Lombaire",
+    "resume": "Lombalgie : urgences, inflammation, radiculopathie, sténose, sacro-iliaque, hanche et nociplastie.",
+    "red_flags": [
+      {
+        "id": "queue",
+        "label": "Anesthésie en selle, rétention ou incontinence, déficit moteur bilatéral",
+        "orient": "Urgences : syndrome de la queue de cheval (imagerie immédiate)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "trauma",
+        "label": "Traumatisme majeur, ou chute chez une personne ostéoporotique ou sous corticoïdes prolongés",
+        "orient": "Radiographie et avis médical (fracture vertébrale)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "cancer",
+        "label": "Antécédent de cancer, perte de poids inexpliquée, douleur constante non mécanique",
+        "orient": "Avis médical rapide (imagerie, bilan biologique)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "infect",
+        "label": "Fièvre, immunodépression, usage de drogues injectables, infection récente",
+        "orient": "Avis médical urgent (spondylodiscite)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "nuit",
+        "label": "Douleur nocturne intense qui ne cède pas en changeant de position",
+        "orient": "Avis médical rapide (cause non mécanique)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "aorte",
+        "label": "Plus de 65 ans, douleur abdominale ou lombaire pulsatile, facteurs vasculaires",
+        "orient": "Urgences : anévrisme de l'aorte abdominale",
+        "niveau": "urgent"
+      },
+      {
+        "id": "deficit",
+        "label": "Déficit moteur progressif ou pied tombant",
+        "orient": "Avis médical rapide (compression radiculaire sévère)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "inflam",
+        "label": "Début avant 40 ans, insidieux, raideur matinale > 30 min, amélioration à l'effort, réveil en 2e partie de nuit",
+        "orient": "Orientation rhumatologique (spondyloarthrite axiale)",
+        "niveau": "avis"
+      },
+      {
+        "id": "age",
+        "label": "Premier épisode avant 20 ans ou après 55 ans",
+        "orient": "Avis médical : élargir le diagnostic différentiel",
+        "niveau": "avis"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "mecanique",
+        "nom": "Lombalgie commune (mécanique, non spécifique)",
+        "prev": 0.55,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "disque",
+        "nom": "Atteinte discale / radiculopathie",
+        "prev": 0.2,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "stenose",
+        "nom": "Sténose canalaire lombaire",
+        "prev": 0.05,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "sij",
+        "nom": "Douleur d'origine sacro-iliaque",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "manip",
+        "nom": "Réponse favorable à la manipulation (sous-groupe Flynn)",
+        "prev": 0.45,
+        "desc": "Probabilité de succès à court terme, pas un diagnostic.",
+        "renvoi": null
+      },
+      {
+        "id": "inflammatoire",
+        "nom": "Spondyloarthrite axiale suspectée",
+        "prev": 0.06,
+        "desc": "Début jeune, raideur matinale, réveils nocturnes et amélioration au mouvement.",
+        "renvoi": null
+      },
+      {
+        "id": "spondylo_ado",
+        "nom": "Spondyloarthrite juvénile",
+        "prev": 0.01,
+        "desc": "Adolescent avec enthésites, talalgie ou douleur fessière nocturne.",
+        "renvoi": null
+      },
+      {
+        "id": "hanche",
+        "nom": "Contribution de la hanche",
+        "prev": 0.08,
+        "desc": "Examiner la hanche si le rachis ne reproduit pas la douleur.",
+        "renvoi": "hanche"
+      },
+      {
+        "id": "fessiere",
+        "nom": "Tendinopathie fessière",
+        "prev": 0.05,
+        "desc": "Douleur latérale de hanche, en décubitus latéral, dans les escaliers ou en appui unipodal.",
+        "renvoi": null
+      },
+      {
+        "id": "nociplastique",
+        "nom": "Composante nociplastique ou psychosociale",
+        "prev": 0.15,
+        "desc": "Douleur diffuse, hypersensibilité, fatigue, sommeil perturbé ou peur du mouvement.",
+        "renvoi": null
+      },
+      {
+        "id": "fibromyalgie",
+        "nom": "Fibromyalgie ou douleur diffuse",
+        "prev": 0.05,
+        "desc": "Douleurs multisites, fatigue et sommeil non réparateur ; diagnostic médical.",
+        "renvoi": null
+      },
+      {
+        "id": "aigue",
+        "nom": "Lombalgie aiguë",
+        "prev": 0.3,
+        "desc": "Moins de six semaines, évolution le plus souvent favorable sans imagerie en l'absence de drapeau rouge.",
+        "renvoi": null
+      },
+      {
+        "id": "facettaire",
+        "nom": "Douleur facettaire",
+        "prev": 0.05,
+        "desc": "Douleur en extension-rotation, diagnostic d'exclusion sans test clinique validé.",
+        "renvoi": null
+      },
+      {
+        "id": "spondylolyse",
+        "nom": "Spondylolyse de l'adolescent",
+        "prev": 0.02,
+        "desc": "Sport d'hyperextension avec douleur en extension ; imagerie si suspicion.",
+        "renvoi": null
+      },
+      {
+        "id": "scheuermann",
+        "nom": "Maladie de Scheuermann",
+        "prev": 0.01,
+        "desc": "Adolescent avec cyphose raide et douleur thoracolombaire à l'effort.",
+        "renvoi": null
+      },
+      {
+        "id": "maigne",
+        "nom": "Syndrome de Maigne",
+        "prev": 0.02,
+        "desc": "Douleur lombaire ou de crête iliaque d'origine thoraco-lombaire ; aucun test validé.",
+        "renvoi": null
+      },
+      {
+        "id": "vasculaire",
+        "nom": "Claudication vasculaire",
+        "prev": 0.02,
+        "desc": "Douleur du mollet soulagée à l'arrêt debout, pouls diminués ou terrain vasculaire.",
+        "renvoi": null
+      },
+      {
+        "id": "spondylolisthesis",
+        "nom": "Spondylolisthésis dégénératif ou isthmique",
+        "prev": 0.03,
+        "desc": "Peut donner une sténose ; la marche d'escalier oriente mais l'imagerie confirme.",
+        "renvoi": null
+      },
+      {
+        "id": "pelvienne",
+        "nom": "Douleur de la ceinture pelvienne",
+        "prev": 0.04,
+        "desc": "Grossesse ou post-partum, douleur sacro-iliaque ou symphysaire, notamment au retournement au lit.",
+        "renvoi": null
+      },
+      {
+        "id": "cruralgie",
+        "nom": "Cruralgie",
+        "prev": 0.04,
+        "desc": "Douleur antérieure de cuisse avec atteinte possible du réflexe rotulien.",
+        "renvoi": null
+      },
+      {
+        "id": "piriforme",
+        "nom": "Douleur fessière profonde de type piriforme",
+        "prev": 0.03,
+        "desc": "Diagnostic d'exclusion d'une radiculopathie, souvent aggravé en position assise.",
+        "renvoi": null
+      },
+      {
+        "id": "discopathie",
+        "nom": "Discopathie ou arthrose visible à l'imagerie",
+        "prev": 0.2,
+        "desc": "Fréquente chez les personnes sans douleur et insuffisante seule pour expliquer une lombalgie.",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "duree",
+        "texte": "Durée de l'épisode ?",
+        "opts": [
+          [
+            "Moins de 16 jours",
+            {
+              "manip": 2,
+              "mecanique": 1
+            }
+          ],
+          [
+            "16 jours à 3 mois",
+            {
+              "mecanique": 1
+            }
+          ],
+          [
+            "Plus de 3 mois",
+            {
+              "stenose": 0.5
+            }
+          ]
+        ]
+      },
+      {
+        "id": "irrad",
+        "texte": "Où irradie la douleur ?",
+        "opts": [
+          [
+            "Jambe sous le genou, paresthésies dermatomales",
+            {
+              "disque": 3
+            }
+          ],
+          [
+            "Fesse ou cuisse, sans dépasser le genou",
+            {
+              "mecanique": 1,
+              "sij": 1.5,
+              "manip": 1.5
+            }
+          ],
+          [
+            "Pas d'irradiation",
+            {
+              "mecanique": 1,
+              "manip": 1.5,
+              "aigue": 1
+            }
+          ],
+          [
+            "Douleur fessière ou latérale de hanche",
+            {
+              "hanche": 2,
+              "fessiere": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "fonction",
+        "texte": "Qu'est-ce qui aggrave ?",
+        "opts": [
+          [
+            "Marche ou station debout, soulagement en s'asseyant ou en se penchant",
+            {
+              "stenose": 3
+            }
+          ],
+          [
+            "Position assise prolongée, flexion, toux ou éternuement",
+            {
+              "disque": 2
+            }
+          ],
+          [
+            "Escaliers, retournement au lit, appui monopodal",
+            {
+              "sij": 2.5
+            }
+          ],
+          [
+            "Mouvements variables, sans schéma net",
+            {
+              "mecanique": 1
+            }
+          ],
+          [
+            "Douleur diffuse avec fatigue ou sommeil non réparateur",
+            {
+              "nociplastique": 3,
+              "fibromyalgie": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge",
+        "opts": [
+          [
+            "Moins de 40 ans",
+            {
+              "manip": 1,
+              "disque": 1,
+              "sij": 0.5
+            }
+          ],
+          [
+            "40 à 65 ans",
+            {
+              "mecanique": 1
+            }
+          ],
+          [
+            "Plus de 65 ans",
+            {
+              "stenose": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "centr",
+        "texte": "Un mouvement répété (flexion ou extension) centralise-t-il ou périphérise-t-il la douleur ?",
+        "opts": [
+          [
+            "Oui, centralisation",
+            {
+              "disque": 2.5,
+              "sij": -1.5
+            }
+          ],
+          [
+            "Non",
+            {
+              "sij": 0.5
+            }
+          ],
+          [
+            "Douleur et raideur améliorées par le mouvement",
+            {
+              "inflammatoire": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "terrain",
+        "texte": "Terrain ou durée particulière ?",
+        "opts": [
+          [
+            "Moins de six semaines",
+            {
+              "aigue": 2
+            }
+          ],
+          [
+            "Adolescent sportif en hyperextension",
+            {
+              "spondylolyse": 3
+            }
+          ],
+          [
+            "Adolescent avec cyphose raide",
+            {
+              "scheuermann": 3
+            }
+          ],
+          [
+            "Plus de trois mois avec douleur diffuse",
+            {
+              "fibromyalgie": 2,
+              "nociplastique": 2
+            }
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "slr",
+        "nom": "Lasègue (SLR)",
+        "hyp": "disque",
+        "se": 0.91,
+        "sp": 0.26,
+        "src": "Devillé 2000 (Spine)",
+        "how": "Décubitus, flexion de hanche genou tendu",
+        "pos": "Douleur radiculaire sous le genou entre 30° et 70°",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Hétérogénéité importante : Cochrane 2010 rapporte Se 0,52 / Sp 0,89."
+      },
+      {
+        "id": "crossed",
+        "nom": "Lasègue croisé",
+        "hyp": "disque",
+        "se": 0.29,
+        "sp": 0.88,
+        "src": "Devillé 2000 (Spine)",
+        "how": "Lasègue du côté sain",
+        "pos": "Reproduction de la douleur du côté atteint",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "slump",
+        "nom": "Slump test",
+        "hyp": "disque",
+        "se": 0.84,
+        "sp": 0.83,
+        "src": "Majlesi 2008",
+        "how": "Assis, flexion rachis, extension de genou, dorsiflexion",
+        "pos": "Reproduction des symptômes, soulagés par la sortie de cou",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "central",
+        "nom": "Centralisation aux mouvements répétés",
+        "hyp": "disque",
+        "se": 0.4,
+        "sp": 0.94,
+        "src": "Donelson 1997",
+        "how": "Mouvements répétés en flexion ou extension",
+        "pos": "Douleur distale qui remonte vers le rachis",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "sitrelief",
+        "nom": "Douleur soulagée en position assise",
+        "hyp": "stenose",
+        "se": 0.46,
+        "sp": 0.93,
+        "src": "Katz 1995",
+        "how": "Interrogatoire",
+        "pos": "Soulagement net en s'asseyant",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "thigh",
+        "nom": "Thigh thrust",
+        "hyp": "sij",
+        "se": 0.88,
+        "sp": 0.69,
+        "src": "Laslett 2005 (Man Ther)",
+        "how": "Décubitus, hanche à 90°, poussée axiale sur le fémur",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "distraction",
+        "nom": "Distraction sacro-iliaque",
+        "hyp": "sij",
+        "se": 0.6,
+        "sp": 0.81,
+        "src": "Laslett 2005 (Man Ther)",
+        "how": "Décubitus, appui sur les épines iliaques antéro-supérieures",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "compression",
+        "nom": "Compression latérale",
+        "hyp": "sij",
+        "se": 0.69,
+        "sp": 0.69,
+        "src": "Laslett 2005 (Man Ther)",
+        "how": "Décubitus latéral, pression sur la crête iliaque",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "gaenslen",
+        "nom": "Gaenslen",
+        "hyp": "sij",
+        "se": 0.5,
+        "sp": 0.77,
+        "src": "Laslett 2005 (Man Ther)",
+        "how": "Hanche opposée en extension, hanche testée en flexion",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "sacral",
+        "nom": "Sacral thrust",
+        "hyp": "sij",
+        "se": 0.63,
+        "sp": 0.75,
+        "src": "Laslett 2005 (Man Ther)",
+        "how": "Décubitus ventral, poussée sur le sacrum",
+        "pos": "Douleur familière",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      }
+    ],
+    "cpr": [
+      {
+        "id": "laslett",
+        "nom": "Composite sacro-iliaque (au moins 3 tests sur 6)",
+        "hyp": "sij",
+        "items": [
+          "Distraction",
+          "Thigh thrust",
+          "Gaenslen droit",
+          "Gaenslen gauche",
+          "Compression",
+          "Sacral thrust"
+        ],
+        "seuils": [
+          [
+            3,
+            4.3,
+            0.08
+          ]
+        ],
+        "src": "Laslett 2005 (Man Ther)",
+        "conf": "V",
+        "note": "Se 0,94 / Sp 0,78. Aucun test positif : la sacro-iliaque est écartée."
+      },
+      {
+        "id": "laslett_c",
+        "nom": "3 tests sacro-iliaques + absence de centralisation",
+        "hyp": "sij",
+        "items": [
+          "Au moins 3 tests de provocation positifs",
+          "Aucune centralisation aux mouvements répétés"
+        ],
+        "seuils": [
+          [
+            2,
+            6.97,
+            0.08
+          ]
+        ],
+        "src": "Laslett 2003 (Man Ther)",
+        "conf": "V",
+        "note": "Se 0,93 / Sp 0,89."
+      },
+      {
+        "id": "flynn",
+        "nom": "Règle de manipulation (Flynn 2002)",
+        "hyp": "manip",
+        "items": [
+          "Début depuis moins de 16 jours",
+          "Aucun symptôme distal au genou",
+          "FABQ-W < 19",
+          "Au moins une rotation interne de hanche > 35°",
+          "Hypomobilité lombaire"
+        ],
+        "seuils": [
+          [
+            4,
+            24.4,
+            null
+          ]
+        ],
+        "src": "Flynn 2002 (Spine)",
+        "conf": "M",
+        "note": "Règle dérivée en cohorte ; probabilité de succès pré-test d'environ 45 %."
+      }
+    ]
+  },
+  "cervicale": {
+    "id": "cervicale",
+    "nom": "Cervicale",
+    "resume": "Cervicalgie : tri post-traumatique, radiculopathie, myélopathie, céphalée cervicogénique, instabilité haute.",
+    "red_flags": [
+      {
+        "id": "ccr",
+        "label": "Traumatisme : âge ≥ 65 ans, mécanisme dangereux (chute > 1 m, charge axiale, collision rapide) ou paresthésies des membres",
+        "orient": "Règle canadienne : imagerie du rachis cervical avant toute mobilisation",
+        "niveau": "urgent"
+      },
+      {
+        "id": "cad",
+        "label": "Cervicalgie ou céphalée brutale inhabituelle avec vertiges, diplopie, dysarthrie, dysphagie, ptosis, ataxie ou drop attacks",
+        "orient": "Appel du 15 : dysfonction artérielle cervicale ou AVC possible",
+        "niveau": "urgent"
+      },
+      {
+        "id": "myelo",
+        "label": "Maladresse des mains, troubles de la marche, signes de Hoffmann ou de Babinski, troubles sphinctériens",
+        "orient": "Avis médical rapide (myélopathie cervicale)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "cancer",
+        "label": "Antécédent de cancer, amaigrissement, douleur nocturne constante",
+        "orient": "Avis médical rapide",
+        "niveau": "rapide"
+      },
+      {
+        "id": "infect",
+        "label": "Fièvre, immunodépression, douleur intense avec raideur du cou",
+        "orient": "Avis médical urgent (spondylodiscite, méningite)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "c1c2",
+        "label": "Polyarthrite rhumatoïde, trisomie 21 ou traumatisme récent avec sensation d'instabilité haute",
+        "orient": "Imagerie avant mobilisation (instabilité C1–C2)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "cardiaque",
+        "label": "Douleur cervico-brachiale gauche avec dyspnée, sueurs ou effort",
+        "orient": "Appel du 15 : origine cardiaque",
+        "niveau": "urgent"
+      },
+      {
+        "id": "gca",
+        "label": "Plus de 50 ans, céphalée temporale récente, claudication de mâchoire, troubles visuels",
+        "orient": "Avis médical urgent (artérite à cellules géantes)",
+        "niveau": "urgent"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "fracture",
+        "nom": "Lésion osseuse ou instable post-traumatique",
+        "prev": 0.05,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "mecanique",
+        "nom": "Cervicalgie mécanique non spécifique",
+        "prev": 0.55,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "radiculo",
+        "nom": "Radiculopathie cervicale",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "myelo",
+        "nom": "Myélopathie cervicale",
+        "prev": 0.03,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "cgh",
+        "nom": "Céphalée cervicogénique",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "instab",
+        "nom": "Instabilité cervicale haute (C1–C2)",
+        "prev": 0.02,
+        "desc": "",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "mode",
+        "texte": "Comment cela a-t-il commencé ?",
+        "opts": [
+          [
+            "Après un traumatisme important",
+            {
+              "fracture": 3
+            }
+          ],
+          [
+            "Après un faible traumatisme ou un mouvement brusque",
+            {
+              "mecanique": 1.5,
+              "radiculo": 0.5
+            }
+          ],
+          [
+            "Progressivement, posture ou charge de travail",
+            {
+              "mecanique": 2
+            }
+          ]
+        ]
+      },
+      {
+        "id": "bras",
+        "texte": "Symptômes dans le bras ?",
+        "opts": [
+          [
+            "Douleur ou paresthésies dermatomales jusqu'à la main",
+            {
+              "radiculo": 3.5
+            }
+          ],
+          [
+            "Douleur référée à l'épaule ou au bras sans paresthésies",
+            {
+              "mecanique": 1
+            }
+          ],
+          [
+            "Aucun symptôme dans le bras",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "mains",
+        "texte": "Maladresse des mains ou troubles de la marche ?",
+        "opts": [
+          [
+            "Oui, progressifs",
+            {
+              "myelo": 4
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "cephalee",
+        "texte": "Céphalée ?",
+        "opts": [
+          [
+            "Unilatérale, déclenchée par les mouvements ou postures du cou",
+            {
+              "cgh": 3.5
+            }
+          ],
+          [
+            "Pas de céphalée particulière",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge",
+        "opts": [
+          [
+            "Moins de 40 ans",
+            {
+              "mecanique": 1,
+              "cgh": 0.5
+            }
+          ],
+          [
+            "40 à 60 ans",
+            {
+              "radiculo": 1
+            }
+          ],
+          [
+            "Plus de 60 ans",
+            {
+              "myelo": 1.5,
+              "radiculo": 0.5
+            }
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "ccr",
+        "nom": "Règle canadienne du rachis cervical",
+        "hyp": "fracture",
+        "se": 0.994,
+        "sp": 0.451,
+        "src": "Stiell 2001 (JAMA)",
+        "how": "Facteurs à haut risque, puis à faible risque, puis rotation active de 45°",
+        "pos": "Imagerie indiquée",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Patients stables et alertes après traumatisme. Seul un résultat négatif est informatif."
+      },
+      {
+        "id": "nexus",
+        "nom": "Critères NEXUS",
+        "hyp": "fracture",
+        "se": 0.996,
+        "sp": 0.129,
+        "src": "Hoffman 2000 (NEJM)",
+        "how": "Sensibilité médiane de la ligne médiane, intoxication, déficit, distraction",
+        "pos": "Un critère positif = imagerie",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Règle d'exclusion : seul un résultat négatif est informatif."
+      },
+      {
+        "id": "ultta",
+        "nom": "ULTT A (nerf médian)",
+        "hyp": "radiculo",
+        "se": 0.97,
+        "sp": 0.22,
+        "src": "Wainner 2003 (Spine)",
+        "how": "Décubitus, abaissement d'épaule, abduction 110°, rotation externe, extension coude/poignet",
+        "pos": "Reproduction des symptômes, modifiés par flexion latérale cervicale",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "rot",
+        "nom": "Rotation cervicale < 60° du côté atteint",
+        "hyp": "radiculo",
+        "se": 0.89,
+        "sp": 0.49,
+        "src": "Wainner 2003 (Spine)",
+        "how": "Rotation active mesurée à l'inclinomètre",
+        "pos": "Moins de 60°",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "dist",
+        "nom": "Test de distraction",
+        "hyp": "radiculo",
+        "se": 0.44,
+        "sp": 0.9,
+        "src": "Wainner 2003 (Spine)",
+        "how": "Traction manuelle de la tête en décubitus",
+        "pos": "Soulagement des symptômes",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "spurling",
+        "nom": "Spurling A",
+        "hyp": "radiculo",
+        "se": 0.5,
+        "sp": 0.86,
+        "src": "Wainner 2003 (Spine)",
+        "how": "Extension et inclinaison du côté atteint, puis compression axiale",
+        "pos": "Reproduction des symptômes dans le bras",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "hoffmann",
+        "nom": "Signe de Hoffmann",
+        "hyp": "myelo",
+        "se": 0.58,
+        "sp": 0.78,
+        "src": "Cook 2010 (JOSPT)",
+        "how": "Flexion brusque de la dernière phalange du majeur",
+        "pos": "Flexion réflexe du pouce et de l'index",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "sharp",
+        "nom": "Test de Sharp-Purser",
+        "hyp": "instab",
+        "se": 0.69,
+        "sp": 0.96,
+        "src": "Uitvlugt 1988",
+        "how": "Flexion de tête avec pression postérieure sur C2",
+        "pos": "Glissement ou soulagement des symptômes",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Ne pas réaliser sans exclure une instabilité sévère."
+      },
+      {
+        "id": "cfrt",
+        "nom": "Test de flexion-rotation cervicale",
+        "hyp": "cgh",
+        "se": 0.91,
+        "sp": 0.9,
+        "src": "Ogince 2007",
+        "how": "Flexion maximale du cou puis rotation passive",
+        "pos": "Rotation réduite d'au moins 10° par rapport au côté opposé",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      }
+    ],
+    "cpr": [
+      {
+        "id": "wainner",
+        "nom": "Cluster de Wainner (radiculopathie cervicale)",
+        "hyp": "radiculo",
+        "items": [
+          "ULTT A positif",
+          "Rotation < 60° du côté atteint",
+          "Distraction soulage",
+          "Spurling A positif"
+        ],
+        "seuils": [
+          [
+            3,
+            6.1,
+            0.65
+          ],
+          [
+            4,
+            30.3,
+            0.77
+          ]
+        ],
+        "src": "Wainner 2003 (Spine)",
+        "conf": "V",
+        "note": "Intervalle de confiance très large à 4 critères (1,7 à 538) : peu de patients."
+      },
+      {
+        "id": "cook",
+        "nom": "Cluster de Cook (myélopathie cervicale)",
+        "hyp": "myelo",
+        "items": [
+          "Trouble de la marche",
+          "Hoffmann positif",
+          "Signe du supinateur inversé",
+          "Babinski positif",
+          "Âge > 45 ans"
+        ],
+        "seuils": [
+          [
+            1,
+            null,
+            0.18
+          ],
+          [
+            3,
+            30.9,
+            null
+          ]
+        ],
+        "src": "Cook 2010 (JOSPT)",
+        "conf": "M",
+        "note": "Au moins 1 critère sur 5 exclut assez bien ; 3 sur 5 confirme."
+      }
+    ]
+  },
+  "cheville": {
+    "id": "cheville",
+    "nom": "Cheville",
+    "resume": "Cheville : fracture (Ottawa), entorse latérale, syndesmose, Achille, instabilité chronique.",
+    "red_flags": [
+      {
+        "id": "ot_mall",
+        "label": "Ottawa : douleur malléolaire avec sensibilité osseuse du bord postérieur ou de la pointe d'une malléole",
+        "orient": "Règle d'Ottawa positive : radiographie cheville/pied",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_pied",
+        "label": "Ottawa : sensibilité osseuse de la base du 5e métatarsien ou du naviculaire",
+        "orient": "Règle d'Ottawa positive : radiographie cheville/pied",
+        "niveau": "rapide"
+      },
+      {
+        "id": "ot_appui",
+        "label": "Ottawa : incapable de faire 4 pas (immédiatement et à l'examen)",
+        "orient": "Règle d'Ottawa positive : radiographie cheville/pied",
+        "niveau": "rapide"
+      },
+      {
+        "id": "fibula",
+        "label": "Douleur à la tête de la fibula ou le long de la jambe après entorse en rotation externe",
+        "orient": "Avis médical : fracture de Maisonneuve, syndesmose",
+        "niveau": "rapide"
+      },
+      {
+        "id": "achille",
+        "label": "Claquement brutal « coup de fouet » avec impossibilité de se mettre sur la pointe des pieds",
+        "orient": "Avis orthopédique rapide (rupture du tendon d'Achille)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "tvp",
+        "label": "Mollet gonflé, chaud et douloureux après immobilisation",
+        "orient": "Avis médical urgent (thrombose veineuse profonde)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "vasc",
+        "label": "Pied froid, pâle, pouls absents, douleur disproportionnée avec dureté de loge",
+        "orient": "Appel du 15 : ischémie ou syndrome de loges",
+        "niveau": "urgent"
+      },
+      {
+        "id": "septique",
+        "label": "Fièvre, articulation chaude et rouge sans traumatisme",
+        "orient": "Avis médical urgent (arthrite septique, goutte)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "persist",
+        "label": "Douleur ou instabilité inchangée plus de 6 semaines après entorse",
+        "orient": "Avis médical : lésion ostéochondrale, syndesmose, instabilité",
+        "niveau": "avis"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "fracture",
+        "nom": "Fracture de cheville ou du médio-pied",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "entorse",
+        "nom": "Rupture ligamentaire latérale (LTFA/LCF)",
+        "prev": 0.5,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "syndesmose",
+        "nom": "Atteinte de la syndesmose (entorse haute)",
+        "prev": 0.1,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "rupt_achille",
+        "nom": "Rupture du tendon d'Achille",
+        "prev": 0.03,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "tendino",
+        "nom": "Tendinopathie d'Achille",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "cai",
+        "nom": "Instabilité chronique de cheville",
+        "prev": 0.2,
+        "desc": "",
+        "renvoi": null
+      }
+    ],
+    "questions": [
+      {
+        "id": "mode",
+        "texte": "Quel est le mécanisme ?",
+        "opts": [
+          [
+            "Inversion (cheville qui se tord vers l'intérieur)",
+            {
+              "entorse": 3,
+              "fracture": 1
+            }
+          ],
+          [
+            "Rotation externe avec pied fixé",
+            {
+              "syndesmose": 3,
+              "fracture": 1
+            }
+          ],
+          [
+            "Claquement brutal à l'arrière, sensation de coup",
+            {
+              "rupt_achille": 4
+            }
+          ],
+          [
+            "Progressif, avec la charge d'entraînement",
+            {
+              "tendino": 3
+            }
+          ],
+          [
+            "Chute de hauteur ou choc direct",
+            {
+              "fracture": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "appui",
+        "texte": "Appui possible ?",
+        "opts": [
+          [
+            "Impossible ou très douloureux (moins de 4 pas)",
+            {
+              "fracture": 3,
+              "syndesmose": 1
+            }
+          ],
+          [
+            "Possible avec douleur",
+            {
+              "entorse": 1
+            }
+          ],
+          [
+            "Possible sans difficulté",
+            {
+              "tendino": 0.5,
+              "cai": 1
+            }
+          ]
+        ]
+      },
+      {
+        "id": "delai",
+        "texte": "Depuis combien de temps ?",
+        "opts": [
+          [
+            "Moins de 1 semaine",
+            {
+              "entorse": 1,
+              "fracture": 1
+            }
+          ],
+          [
+            "1 à 6 semaines",
+            {
+              "syndesmose": 1
+            }
+          ],
+          [
+            "Plus de 6 semaines, avec récidives",
+            {
+              "cai": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "derob",
+        "texte": "Dérobements fréquents ?",
+        "opts": [
+          [
+            "Oui, cheville qui lâche dans la vie quotidienne ou le sport",
+            {
+              "cai": 3
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "ottawa_a",
+        "nom": "Règle d'Ottawa de la cheville et du pied",
+        "hyp": "fracture",
+        "se": 0.976,
+        "sp": 0.315,
+        "src": "Bachmann 2003 (BMJ)",
+        "how": "Palpation malléolaire et du médio-pied + 4 pas",
+        "pos": "Un critère positif = radiographie",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "LR− = 0,08. Règle d'exclusion : seul un résultat négatif est informatif."
+      },
+      {
+        "id": "delayed",
+        "nom": "Examen retardé (4–5 jours) : hématome, palpation LTFA, tiroir antérieur",
+        "hyp": "entorse",
+        "se": 0.96,
+        "sp": 0.84,
+        "src": "van Dijk 1996",
+        "how": "Examen combiné 4 à 5 jours après le traumatisme",
+        "pos": "Au moins deux signes sur trois",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "squeeze",
+        "nom": "Squeeze test",
+        "hyp": "syndesmose",
+        "se": 0.3,
+        "sp": 0.93,
+        "src": "Sman 2015 (revue)",
+        "how": "Compression tibia–fibula à mi-jambe",
+        "pos": "Douleur au niveau de la syndesmose",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "er_stress",
+        "nom": "Stress en rotation externe",
+        "hyp": "syndesmose",
+        "se": 0.2,
+        "sp": 0.85,
+        "src": "Sman 2015 (revue)",
+        "how": "Pied en dorsiflexion, rotation externe passive",
+        "pos": "Douleur au niveau de la syndesmose",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "thompson",
+        "nom": "Test de Thompson",
+        "hyp": "rupt_achille",
+        "se": 0.96,
+        "sp": 0.93,
+        "src": "Maffulli 1998",
+        "how": "Ventre, pression sur le mollet",
+        "pos": "Absence de flexion plantaire",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "arc",
+        "nom": "Arc sign",
+        "hyp": "tendino",
+        "se": 0.52,
+        "sp": 0.88,
+        "src": "Hutchison 2013",
+        "how": "Palpation du tendon pendant la flexion-extension active",
+        "pos": "Zone douloureuse qui se déplace avec le mouvement",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "cait",
+        "nom": "Questionnaire CAIT < 28",
+        "hyp": "cai",
+        "se": 0.83,
+        "sp": 0.75,
+        "src": "Hiller 2006",
+        "how": "Cumberland Ankle Instability Tool",
+        "pos": "Score inférieur à 28",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      }
+    ],
+    "cpr": []
+  },
+  "hanche": {
+    "id": "hanche",
+    "nom": "Hanche",
+    "resume": "Hanche : fracture, coxarthrose (règle de Sutlive), conflit fémoro-acétabulaire, douleur latérale.",
+    "red_flags": [
+      {
+        "id": "fx",
+        "label": "Chute ou traumatisme avec douleur d'aine, appui impossible, membre raccourci en rotation externe",
+        "orient": "Urgences : fracture du col du fémur",
+        "niveau": "urgent"
+      },
+      {
+        "id": "fatigue",
+        "label": "Coureur ou militaire : douleur d'aine à l'effort qui s'aggrave, parfois nocturne",
+        "orient": "Avis médical rapide (fracture de fatigue du col fémoral)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "epiphysiolyse",
+        "label": "Enfant ou adolescent avec boiterie, douleur de hanche ou de genou, surpoids",
+        "orient": "Avis médical urgent (épiphysiolyse fémorale)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "necrose",
+        "label": "Corticothérapie ou alcool, douleur d'aine nocturne et progressive",
+        "orient": "Imagerie et avis médical rapide (ostéonécrose)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "septique",
+        "label": "Fièvre, hanche douloureuse à toute mobilisation, prothèse ou infection récente",
+        "orient": "Avis médical urgent (arthrite septique, infection de prothèse)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "cancer",
+        "label": "Antécédent de cancer, amaigrissement, douleur nocturne constante",
+        "orient": "Imagerie et avis médical rapide",
+        "niveau": "rapide"
+      },
+      {
+        "id": "queue",
+        "label": "Troubles sphinctériens ou anesthésie en selle avec douleur de fesse ou de cuisse",
+        "orient": "Urgences : syndrome de la queue de cheval",
+        "niveau": "urgent"
+      },
+      {
+        "id": "hernie",
+        "label": "Masse inguinale, douleur abdominale ou testiculaire associée",
+        "orient": "Avis médical (hernie, cause urologique ou vasculaire)",
+        "niveau": "avis"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "fracture",
+        "nom": "Fracture du col du fémur",
+        "prev": 0.05,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "coxarthrose",
+        "nom": "Coxarthrose symptomatique",
+        "prev": 0.3,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "fai",
+        "nom": "Conflit fémoro-acétabulaire / lésion labrale",
+        "prev": 0.2,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "gtps",
+        "nom": "Douleur latérale de hanche (tendinopathie fessière)",
+        "prev": 0.25,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "refere",
+        "nom": "Douleur projetée lombaire ou sacro-iliaque",
+        "prev": 0.15,
+        "desc": "À envisager si les tests de hanche sont normaux : voir Lombaire.",
+        "renvoi": "lombaire"
+      }
+    ],
+    "questions": [
+      {
+        "id": "loc",
+        "texte": "Où est la douleur ?",
+        "opts": [
+          [
+            "Aine ou face antérieure de la cuisse",
+            {
+              "coxarthrose": 2,
+              "fai": 2,
+              "fracture": 1
+            }
+          ],
+          [
+            "Face latérale, sur le grand trochanter",
+            {
+              "gtps": 3.5
+            }
+          ],
+          [
+            "Fesse ou lombes, irradiation postérieure",
+            {
+              "refere": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "age",
+        "texte": "Âge et profil",
+        "opts": [
+          [
+            "Moins de 40 ans, actif, sportif",
+            {
+              "fai": 2.5
+            }
+          ],
+          [
+            "40 à 60 ans",
+            {
+              "gtps": 1.5,
+              "coxarthrose": 1
+            }
+          ],
+          [
+            "Plus de 60 ans",
+            {
+              "coxarthrose": 2.5,
+              "fracture": 1
+            }
+          ]
+        ]
+      },
+      {
+        "id": "agg",
+        "texte": "Qu'est-ce qui aggrave ?",
+        "opts": [
+          [
+            "Accroupissement, position assise prolongée, flexion profonde",
+            {
+              "fai": 2,
+              "coxarthrose": 1.5
+            }
+          ],
+          [
+            "Décubitus latéral sur la hanche, montée d'escaliers",
+            {
+              "gtps": 3
+            }
+          ],
+          [
+            "Marche prolongée, démarrage après repos, raideur matinale",
+            {
+              "coxarthrose": 2.5
+            }
+          ]
+        ]
+      },
+      {
+        "id": "mode",
+        "texte": "Mécanisme déclenchant ?",
+        "opts": [
+          [
+            "Chute ou traumatisme",
+            {
+              "fracture": 3
+            }
+          ],
+          [
+            "Progressif",
+            {
+              "coxarthrose": 0.5,
+              "gtps": 0.5
+            }
+          ],
+          [
+            "Mouvement brusque en flexion-rotation",
+            {
+              "fai": 1.5
+            }
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "percussion",
+        "nom": "Percussion patello-pubienne",
+        "hyp": "fracture",
+        "se": 0.95,
+        "sp": 0.86,
+        "src": "Reiman 2013 (BJSM)",
+        "how": "Stéthoscope sur la symphyse pubienne, percussion des deux rotules",
+        "pos": "Son asymétrique ou sourd du côté atteint",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "squat_s",
+        "nom": "Accroupissement aggravant (Sutlive)",
+        "hyp": "coxarthrose",
+        "se": 0.24,
+        "sp": 0.96,
+        "src": "Sutlive 2008 (JOSPT)",
+        "how": "Interrogatoire",
+        "pos": "Le patient rapporte que s'accroupir aggrave",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "abdadd",
+        "nom": "Douleur en abduction ou adduction",
+        "hyp": "coxarthrose",
+        "se": 0.33,
+        "sp": 0.94,
+        "src": "Sutlive 2008 (JOSPT)",
+        "how": "Décubitus, mouvements passifs",
+        "pos": "Douleur reproduite",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "fadir",
+        "nom": "FADIR (flexion, adduction, rotation interne)",
+        "hyp": "fai",
+        "se": 0.99,
+        "sp": 0.05,
+        "src": "Reiman 2015 (BJSM)",
+        "how": "Décubitus, flexion 90°, adduction, rotation interne",
+        "pos": "Douleur d'aine reproduite",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": "Pratiquement aucune spécificité : sert à ne pas passer à côté, pas à confirmer."
+      },
+      {
+        "id": "derot",
+        "nom": "Rotation externe résistée (dérotation)",
+        "hyp": "gtps",
+        "se": 0.88,
+        "sp": 0.97,
+        "src": "Lequesne 2008",
+        "how": "Décubitus, hanche et genou fléchis, rotation externe résistée",
+        "pos": "Douleur latérale reproduite",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Étude de faible effectif : à confirmer."
+      }
+    ],
+    "cpr": [
+      {
+        "id": "sutlive",
+        "nom": "Règle de Sutlive (coxarthrose)",
+        "hyp": "coxarthrose",
+        "items": [
+          "S'accroupir aggrave",
+          "Flexion active de hanche douloureuse",
+          "Scour test douloureux en adduction",
+          "Extension active de hanche douloureuse",
+          "Rotation interne passive ≤ 25°"
+        ],
+        "seuils": [
+          [
+            3,
+            5.2,
+            0.33
+          ],
+          [
+            4,
+            24.3,
+            0.53
+          ]
+        ],
+        "src": "Sutlive 2008 (JOSPT)",
+        "conf": "V",
+        "note": "Au moins 4 critères sur 5 : probabilité d'arthrose de 91 % dans l'échantillon. Règle non encore validée."
+      }
+    ]
+  },
+  "main": {
+    "id": "main",
+    "nom": "Main et poignet",
+    "resume": "Main et poignet : canal carpien, rhizarthrose, De Quervain, TFCC ; fracture du scaphoïde en Red Flag.",
+    "red_flags": [
+      {
+        "id": "scaphoide",
+        "label": "Chute sur la paume avec douleur de la tabatière anatomique ou du tubercule du scaphoïde",
+        "orient": "Imagerie dédiée au scaphoïde (radiographies spécifiques, IRM si doute) et immobilisation",
+        "niveau": "rapide"
+      },
+      {
+        "id": "kanavel",
+        "label": "Doigt en flexion, tuméfié, douleur à l'extension passive de la gaine, douleur sur le trajet du tendon",
+        "orient": "Urgences : ténosynovite septique des fléchisseurs (signes de Kanavel)",
+        "niveau": "urgent"
+      },
+      {
+        "id": "ischemie",
+        "label": "Main froide, pâle ou cyanosée, pouls absents",
+        "orient": "Appel du 15 : ischémie aiguë",
+        "niveau": "urgent"
+      },
+      {
+        "id": "loges",
+        "label": "Douleur disproportionnée et gonflement tendu après traumatisme ou immobilisation",
+        "orient": "Urgences : syndrome de loges ou algodystrophie",
+        "niveau": "urgent"
+      },
+      {
+        "id": "amyo",
+        "label": "Amyotrophie thénar, déficit moteur ou sensitif progressif",
+        "orient": "Avis médical rapide (EMG, décompression à discuter)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "c8",
+        "label": "Douleur de la main avec déficit C8-T1, signes de Horner, tabagisme",
+        "orient": "Avis médical rapide (cause apicale ou radiculaire)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "arthrite",
+        "label": "Articulation chaude et gonflée, fièvre, plusieurs articulations touchées",
+        "orient": "Avis médical (arthrite septique, goutte, rhumatisme inflammatoire)",
+        "niveau": "rapide"
+      },
+      {
+        "id": "bilat",
+        "label": "Engourdissement brutal des deux mains ou du visage",
+        "orient": "Appel du 15 : cause centrale possible",
+        "niveau": "urgent"
+      }
+    ],
+    "hyps": [
+      {
+        "id": "canal",
+        "nom": "Syndrome du canal carpien",
+        "prev": 0.35,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "rhizarthrose",
+        "nom": "Rhizarthrose (arthrose trapézo-métacarpienne)",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "dequervain",
+        "nom": "Ténosynovite de De Quervain",
+        "prev": 0.15,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "tfcc",
+        "nom": "Atteinte du TFCC / douleur ulnaire du poignet",
+        "prev": 0.1,
+        "desc": "",
+        "renvoi": null
+      },
+      {
+        "id": "cervical",
+        "nom": "Douleur projetée cervicale (C6–C7)",
+        "prev": 0.1,
+        "desc": "Voir la région Cervicale (cluster de Wainner).",
+        "renvoi": "cervicale"
+      }
+    ],
+    "questions": [
+      {
+        "id": "symptome",
+        "texte": "Quel est le symptôme principal ?",
+        "opts": [
+          [
+            "Fourmillements pouce, index, majeur, réveils nocturnes",
+            {
+              "canal": 4
+            }
+          ],
+          [
+            "Douleur à la base du pouce, à la pince et à l'ouverture de bocaux",
+            {
+              "rhizarthrose": 3.5
+            }
+          ],
+          [
+            "Douleur du bord radial du poignet, aggravée en saisissant avec le pouce",
+            {
+              "dequervain": 3.5
+            }
+          ],
+          [
+            "Douleur du bord ulnaire, avec clic ou charge en rotation",
+            {
+              "tfcc": 3.5
+            }
+          ],
+          [
+            "Douleur du cou avec irradiation dans le bras",
+            {
+              "cervical": 3
+            }
+          ]
+        ]
+      },
+      {
+        "id": "profil",
+        "texte": "Profil",
+        "opts": [
+          [
+            "Femme de 40 à 60 ans, ou grossesse récente",
+            {
+              "canal": 1.5,
+              "dequervain": 1
+            }
+          ],
+          [
+            "Plus de 50 ans, antécédent d'arthrose des mains",
+            {
+              "rhizarthrose": 2
+            }
+          ],
+          [
+            "Jeune sportif ou travailleur manuel avec chute ou torsion",
+            {
+              "tfcc": 2
+            }
+          ],
+          [
+            "Autre",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "gestes",
+        "texte": "Gestes déclenchants ?",
+        "opts": [
+          [
+            "Préhension prolongée, travail avec vibrations ou flexion de poignet",
+            {
+              "canal": 1.5
+            }
+          ],
+          [
+            "Port répété de bébé ou gestes avec déviation ulnaire",
+            {
+              "dequervain": 2
+            }
+          ],
+          [
+            "Aucun geste particulier",
+            {}
+          ]
+        ]
+      },
+      {
+        "id": "atcd",
+        "texte": "Antécédent récent ?",
+        "opts": [
+          [
+            "Chute sur la main ou entorse du poignet",
+            {
+              "tfcc": 2
+            }
+          ],
+          [
+            "Non",
+            {}
+          ]
+        ]
+      }
+    ],
+    "tests": [
+      {
+        "id": "phalen",
+        "nom": "Test de Phalen",
+        "hyp": "canal",
+        "se": 0.68,
+        "sp": 0.73,
+        "src": "MacDermid & Wessel 2004",
+        "how": "Flexion maximale de poignet pendant 60 s",
+        "pos": "Paresthésies dans le territoire du médian",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "tinel",
+        "nom": "Signe de Tinel (canal carpien)",
+        "hyp": "canal",
+        "se": 0.5,
+        "sp": 0.77,
+        "src": "MacDermid & Wessel 2004",
+        "how": "Percussion du nerf médian au poignet",
+        "pos": "Paresthésies dans le territoire du médian",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "compression",
+        "nom": "Compression carpienne (Durkan)",
+        "hyp": "canal",
+        "se": 0.64,
+        "sp": 0.83,
+        "src": "MacDermid & Wessel 2004",
+        "how": "Pression du pouce sur le canal carpien pendant 30 s",
+        "pos": "Paresthésies dans le territoire du médian",
+        "conf": "V",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "katz",
+        "nom": "Diagramme de Katz : classique ou probable",
+        "hyp": "canal",
+        "se": null,
+        "sp": null,
+        "src": "D'Arcy & McGee 2000 (JAMA)",
+        "how": "Le patient colore les zones de symptômes",
+        "pos": "Territoire du médian, sans paume ni dos de main",
+        "conf": "V",
+        "lrp": 2.4,
+        "lrn": null,
+        "note": "LR− non rapporté ici : un diagramme négatif ne fait pas varier la probabilité dans ce calcul."
+      },
+      {
+        "id": "grind",
+        "nom": "Grind test (trapézo-métacarpienne)",
+        "hyp": "rhizarthrose",
+        "se": 0.3,
+        "sp": 0.97,
+        "src": "Choa 2014",
+        "how": "Compression axiale et rotation du premier métacarpien",
+        "pos": "Douleur reproduite",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Peu sensible : un test négatif n'exclut pas."
+      },
+      {
+        "id": "what",
+        "nom": "WHAT test (flexion de poignet + abduction du pouce)",
+        "hyp": "dequervain",
+        "se": 0.99,
+        "sp": 0.29,
+        "src": "Goubau 2014",
+        "how": "Flexion maximale de poignet avec abduction du pouce pendant 30 s",
+        "pos": "Douleur du bord radial",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      },
+      {
+        "id": "finkelstein",
+        "nom": "Test d'Eichhoff / Finkelstein",
+        "hyp": "dequervain",
+        "se": 0.89,
+        "sp": 0.14,
+        "src": "Goubau 2014",
+        "how": "Pouce fermé dans le poing, déviation ulnaire",
+        "pos": "Douleur du bord radial",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": "Très faible spécificité : positif chez beaucoup de poignets non atteints."
+      },
+      {
+        "id": "fovea",
+        "nom": "Signe de la fovea ulnaire",
+        "hyp": "tfcc",
+        "se": 0.95,
+        "sp": 0.87,
+        "src": "Tay 2007 (J Hand Surg Am)",
+        "how": "Palpation de la fovea entre styloïde ulnaire et pisiforme",
+        "pos": "Douleur reproduite, comparée au côté sain",
+        "conf": "M",
+        "lrp": null,
+        "lrn": null,
+        "note": ""
+      }
+    ],
+    "cpr": [
+      {
+        "id": "wainner_cts",
+        "nom": "Règle de Wainner (canal carpien)",
+        "hyp": "canal",
+        "items": [
+          "Secouer la main soulage",
+          "Ratio du poignet > 0,67",
+          "Score de gravité des symptômes > 1,9",
+          "Perte de sensibilité du champ du médian au pouce",
+          "Âge > 45 ans"
+        ],
+        "seuils": [
+          [
+            4,
+            4.6,
+            null
+          ],
+          [
+            5,
+            18.3,
+            null
+          ]
+        ],
+        "src": "Wainner 2005 (Arch Phys Med Rehabil)",
+        "conf": "M",
+        "note": "Probabilité pré-test de 51 % dans l'échantillon de dérivation ; valeurs à revérifier."
+      }
+    ]
+  }
+}

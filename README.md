@@ -54,3 +54,20 @@ Le site construit ses cartes en JavaScript : un simple téléchargement de la pa
 dans `byr_dump/`. Les tableaux cliniques, sous-types et orientations visibles dans ces rendus
 servent à compléter les fichiers de `regions/`. Le dump ne fournit pas toujours les noms ou les
 valeurs diagnostiques détaillées des tests : aucune Se/Sp n'est inventée lorsqu'elle n'y figure pas.
+
+## Version web Vercel
+
+La version professionnelle Next.js se trouve dans [`web/`](./web/). La version Streamlit
+à la racine est conservée comme référence et solution de secours. La version web reprend
+les huit régions et leurs données cliniques exportées dans `web/src/data/regions.json`,
+avec une interface responsive, une carte corporelle, des animations, les Red Flags,
+l'anamnèse, l'examen, la synthèse, la bibliothèque des tests et les sources.
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Le fichier `vercel.json` permet de déployer le projet depuis la racine du dépôt.
+La commande de production validée est `npm --prefix web run build`.
