@@ -69,6 +69,6 @@ npm install
 npm run dev
 ```
 
-Le fichier `vercel.json` déclare Next.js sans remplacer les commandes automatiques de Vercel.
+Le fichier `vercel.json` déclare Next.js et indique à Vercel le dossier de sortie `web/.next`.
 Le projet Vercel doit utiliser la racine du dépôt comme **Root Directory** (et non `web/`).
 La commande de production validée est `npm run build`.
